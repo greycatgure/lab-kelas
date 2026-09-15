@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meja Sekretaris — Kesekretariatan 2</title>
+<style>
+/* =========================================================
+   MEJA SEKRETARIS — Kesekretariatan 2 (D3 Administrasi Bisnis)
+   Sekeluarga dengan Lab Tiga Engine: kertas & tinta sama,
+   aksen amber karena ini meja kerja, bukan ruang mesin.
+   ========================================================= */
+:root{
+  --paper:#F1F2EC; --card:#FBFBF7; --ink:#17202B; --ink-soft:#4A5563; --rule:#CDD1C2;
+  --amber:#B4700E; --good:#2E6B45; --bad:#A32020; --info:#2547C8; --plum:#7B2D7A;
+  --sans:"Arial Narrow","Helvetica Neue Condensed","Liberation Sans Narrow",system-ui,sans-serif;
+  --serif:Georgia,"Iowan Old Style","Palatino Linotype",serif;
+  --mono:ui-monospace,"SFMono-Regular","Consolas","Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:17px; line-height:1.6; -webkit-text-size-adjust:100%}
+h1,h2,h3,h4,.u-sans{font-family:var(--sans); letter-spacing:-.01em; font-weight:700; line-height:1.1}
+h1{font-size:2.3rem;margin:0}
+h2{font-size:1.75rem;margin:0 0 6px}
+h3{font-size:1.15rem;margin:22px 0 6px}
+p{margin:0 0 .9em; max-width:68ch}
+button:focus{outline:2px solid var(--amber); outline-offset:2px}
+:focus-visible{outline:3px solid var(--amber); outline-offset:2px}
+
+.wrap{display:grid; grid-template-columns:258px minmax(0,1fr); min-height:100vh}
+.rail{background:var(--ink); color:#E7EAE2; padding:20px 16px 40px; position:sticky; top:0; align-self:start; height:100vh; overflow:auto; -webkit-overflow-scrolling:touch}
+.stage{padding:32px 36px 90px; max-width:940px}
+
+.wm{font-family:var(--sans); font-size:1.4rem; line-height:1}
+.wm span{display:block; font-family:var(--mono); font-size:.68rem; color:#9AA69B; margin-top:6px; letter-spacing:.02em}
+.who{margin:16px 0; padding:10px 12px; background:#22303F; border-radius:3px; font-family:var(--sans); font-size:.88rem}
+.who b{display:block; font-size:1.05rem}
+.who em{display:block; color:#9AA69B; font-style:normal; font-family:var(--mono); font-size:.72rem; margin-top:3px}
+.xp{height:7px; background:#0E151D; border-radius:99px; margin-top:8px; overflow:hidden}
+.xp i{display:block; height:100%; background:#E0A94B; width:0; transition:width .6s ease}
+.blok{margin:16px 0 5px; font-family:var(--sans); font-size:.8rem; color:#8E9A8F}
+.mlist{list-style:none; margin:0; padding:0}
+.mlist button{width:100%; text-align:left; background:none; border:0; color:#D8DDD3; cursor:pointer; font-family:var(--sans); font-size:.94rem; padding:6px 8px 6px 26px; border-radius:3px; position:relative; line-height:1.25}
+.mlist button:hover{background:#22303F}
+.mlist button[aria-current="true"]{background:#2C3C4E; color:#fff}
+.mlist button:before{content:attr(data-n); position:absolute; left:6px; top:6px; font-family:var(--mono); font-size:.7rem; color:#7E8A80}
+.mlist button.done:before{content:"\2713"; color:#E0A94B}
+.mlist button.locked{opacity:.42; cursor:not-allowed}
+.mlist .w{font-family:var(--mono); font-size:.68rem; opacity:.65}
+.tools{margin-top:20px; border-top:1px solid #2C3C4E; padding-top:12px; display:grid; gap:5px}
+.tools button{background:none; border:1px solid #3A4C60; color:#C9D0C6; font-family:var(--sans); font-size:.86rem; padding:5px 9px; border-radius:3px; cursor:pointer; text-align:left}
+.tools button:hover{background:#22303F; color:#fff}
+.badges{display:flex; gap:6px; flex-wrap:wrap; margin-top:8px}
+.badge{font-family:var(--sans); font-size:.76rem; border:1px solid #3A4C60; color:#9AA69B; padding:2px 7px; border-radius:99px}
+.badge.on{background:#E0A94B; color:#17202B; border-color:#E0A94B}
+
+.tag{font-family:var(--sans); font-size:.9rem; color:var(--amber); display:flex; align-items:center; gap:8px; margin-bottom:8px}
+.tag:before{content:""; width:30px; height:4px; background:var(--amber)}
+.mt{display:flex; gap:11px; align-items:baseline; margin-bottom:5px}
+.mt .no{font-family:var(--mono); font-size:.95rem; color:var(--ink-soft)}
+.goal{font-family:var(--sans); font-size:1.04rem; color:var(--ink-soft); max-width:62ch; margin-bottom:20px}
+.brief{border-left:4px solid var(--rule); padding-left:18px; margin-bottom:22px}
+ol.steps{counter-reset:s; list-style:none; padding:0; margin:0 0 22px; max-width:68ch}
+ol.steps li{counter-increment:s; position:relative; padding-left:38px; margin-bottom:10px}
+ol.steps li:before{content:counter(s); position:absolute; left:0; top:2px; width:25px; height:25px; background:var(--amber); color:#fff; font-family:var(--mono); font-size:.8rem; display:grid; place-items:center; border-radius:50%}
+.note{background:#E6E9DC; border-radius:3px; padding:12px 16px; font-size:.94rem; margin-bottom:20px; max-width:70ch}
+.note b{font-family:var(--sans)}
+
+.card{background:var(--card); border:1px solid var(--rule); border-radius:4px; padding:16px 18px; margin-bottom:16px}
+.card>h3:first-child{margin-top:0}
+label.fl{display:block; font-family:var(--sans); font-size:.92rem; margin-bottom:3px}
+label.fl small{color:var(--ink-soft); font-family:var(--mono); font-size:.72rem; margin-left:5px}
+input[type=text],input[type=number],select,textarea{width:100%; font-family:var(--serif); font-size:1rem; color:var(--ink); background:#fff; border:1px solid var(--rule); border-radius:3px; padding:8px 10px; margin-bottom:12px}
+input[type=number]{font-family:var(--mono)}
+select{font-family:var(--sans)}
+textarea{min-height:80px; resize:vertical}
+.btn{font-family:var(--sans); font-size:1rem; background:var(--ink); color:#fff; border:0; padding:10px 20px; border-radius:3px; cursor:pointer}
+.btn:hover{background:#0E151D}
+.btn.go{background:var(--amber)} .btn.go:hover{background:#8C5709}
+.btn.ghost{background:none; color:var(--ink); border:1px solid var(--ink)}
+.btn.ghost:hover{background:#E6E9DC}
+.btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:4px 0 22px}
+.hint{font-family:var(--mono); font-size:.74rem; color:var(--ink-soft); margin:-8px 0 12px}
+
+/* soal & pilihan */
+.q{border-bottom:1px solid var(--rule); padding:13px 0}
+.q:last-child{border-bottom:0}
+.q .stem{font-size:1.02rem; margin-bottom:7px; max-width:70ch}
+.q .stem b{font-family:var(--sans)}
+.opts{display:flex; gap:7px; flex-wrap:wrap}
+.opts button{font-family:var(--sans); font-size:.92rem; background:#fff; border:1px solid var(--rule); padding:6px 12px; border-radius:99px; cursor:pointer}
+.opts button[aria-pressed="true"]{background:var(--ink); color:#fff; border-color:var(--ink)}
+.opts button.right{background:#DCEBE0; border-color:var(--good); color:var(--good)}
+.opts button.part{background:#F6EBD6; border-color:var(--amber); color:var(--amber)}
+.opts button.wrong{background:#F4DCDC; border-color:var(--bad); color:var(--bad)}
+.why{font-size:.9rem; color:var(--ink-soft); margin-top:7px; max-width:72ch}
+
+/* checklist chip */
+.chips{display:flex; gap:7px; flex-wrap:wrap; margin-bottom:6px}
+.chip{font-family:var(--sans); font-size:.9rem; background:#fff; border:1px solid var(--rule); padding:6px 12px; border-radius:99px; cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink); color:#fff; border-color:var(--ink)}
+.chip.right{background:#DCEBE0; border-color:var(--good); color:var(--good)}
+.chip.wrong{background:#F4DCDC; border-color:var(--bad); color:var(--bad)}
+.chip.miss{background:#fff; border-color:var(--good); color:var(--good); border-style:dashed}
+
+/* urutan */
+.seq{list-style:none; padding:0; margin:0 0 10px}
+.seq li{background:#fff; border:1px solid var(--rule); border-radius:3px; padding:8px 12px; margin-bottom:6px; display:flex; gap:10px; align-items:center; font-size:.95rem}
+.seq li .n{font-family:var(--mono); font-size:.8rem; width:22px; color:var(--ink-soft)}
+.seq li .mv{margin-left:auto; display:flex; gap:4px}
+.seq li .mv button{font-family:var(--mono); background:#fff; border:1px solid var(--rule); width:28px; height:26px; border-radius:3px; cursor:pointer}
+.seq li.ok{border-color:var(--good); background:#F2F8F3}
+.seq li.no{border-color:var(--bad); background:#FBF3F3}
+
+/* tabel kas kecil */
+table.t{width:100%; border-collapse:collapse; font-size:.92rem; margin:10px 0 16px}
+table.t th,table.t td{border-bottom:1px solid var(--rule); padding:6px 7px; text-align:left; vertical-align:middle}
+table.t th{font-family:var(--sans); font-size:.88rem}
+table.t td.n,table.t th.n{font-family:var(--mono); text-align:right; white-space:nowrap}
+table.t select{margin:0; padding:4px 6px; font-size:.85rem}
+table.t tfoot td{font-family:var(--sans); border-top:2px solid var(--ink); border-bottom:0}
+.wrapx{overflow-x:auto}
+
+/* grid tata ruang */
+.room{display:grid; gap:3px; margin:10px 0 14px; max-width:520px}
+.cell{aspect-ratio:1/1; background:#fff; border:1px solid var(--rule); border-radius:2px; font-family:var(--sans); font-size:.62rem; line-height:1.05; padding:2px; cursor:pointer; overflow:hidden; text-align:center; color:var(--ink-soft)}
+.cell.fix{background:#E2E5DA; cursor:default; color:var(--ink)}
+.cell.door{background:#DDE6D9; border-color:var(--good); color:var(--good)}
+.cell.pimp{background:#EBD9EB; border-color:var(--plum); color:var(--plum)}
+.cell.win{background:#DDE4EF; border-color:var(--info); color:var(--info)}
+.cell.has{background:#F6EBD6; border-color:var(--amber); color:#6B4408; font-weight:700}
+.cell.sel{box-shadow:inset 0 0 0 2px var(--amber)}
+.palette{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px}
+.palette button{font-family:var(--sans); font-size:.86rem; background:#fff; border:1px solid var(--rule); padding:5px 10px; border-radius:3px; cursor:pointer}
+.palette button[aria-pressed="true"]{background:var(--amber); color:#fff; border-color:var(--amber)}
+.palette button.placed{opacity:.5}
+
+ul.find{list-style:none; padding:0; margin:0 0 16px}
+ul.find li{position:relative; padding:8px 0 8px 28px; border-bottom:1px solid var(--rule); max-width:74ch; font-size:.94rem}
+ul.find li:before{position:absolute; left:2px; top:8px; font-family:var(--mono); font-size:.88rem}
+ul.find li.ok:before{content:"\2713"; color:var(--good)}
+ul.find li.part:before{content:"~"; color:var(--amber)}
+ul.find li.no:before{content:"\00D7"; color:var(--bad)}
+ul.find li.info:before{content:"i"; color:var(--info)}
+ul.find li b{font-family:var(--sans)}
+
+.score{border:1px solid var(--ink); border-radius:4px; overflow:hidden; margin-bottom:20px}
+.score>header{background:var(--ink); color:#E7EAE2; font-family:var(--sans); font-size:.94rem; padding:8px 14px; display:flex; justify-content:space-between}
+.score .body{background:var(--card); padding:15px}
+.score .v{font-family:var(--sans); font-size:2.4rem; line-height:1}
+.score .track{height:8px; background:#E2E5DA; border-radius:99px; overflow:hidden; margin:8px 0 10px}
+.score .track i{display:block; height:100%; width:0; background:var(--amber); transition:width .6s ease}
+
+.modal{position:fixed; top:0; right:0; bottom:0; left:0; background:rgba(23,32,43,.72); display:grid; place-items:center; padding:18px; z-index:40}
+.modal[hidden]{display:none}
+.sheet{background:var(--paper); border-radius:5px; padding:24px; max-width:720px; width:100%; max-height:88vh; overflow:auto}
+.toast{position:fixed; left:50%; bottom:22px; transform:translateX(-50%); background:var(--ink); color:#fff; font-family:var(--sans); padding:10px 18px; border-radius:3px; z-index:50}
+.toast[hidden]{display:none}
+.rep{font-family:var(--mono); font-size:.78rem; line-height:1.5; white-space:pre; min-height:300px}
+
+@media (max-width:820px){
+  .wrap{grid-template-columns:1fr}
+  .rail{position:static; height:auto; padding-bottom:16px}
+  .stage{padding:22px 16px 70px}
+  h1{font-size:1.8rem} h2{font-size:1.4rem}
+  .room{max-width:100%}
+  .cell{font-size:.5rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{.rail,.btnrow,.tools,.modal{display:none!important} body{background:#fff} .stage{max-width:none;padding:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="rail" aria-label="Daftar tugas">
+    <div class="wm">MEJA SEKRETARIS<span>kesekretariatan 2 &middot; d3 administrasi bisnis</span></div>
+    <div class="who" id="who"></div>
+    <div id="nav"></div>
+    <div class="tools">
+      <button id="btnRubrik">Rubrik &amp; bobot</button>
+      <button id="btnPanduan">Panduan istilah</button>
+      <button id="btnRapor">Rapor saya</button>
+      <button id="btnExport">Export jawaban</button>
+      <button id="btnImport">Import jawaban</button>
+      <button id="btnReset">Kosongkan</button>
+    </div>
+  </nav>
+  <main class="stage" id="stage" tabindex="-1"></main>
+</div>
+<div class="modal" id="modal" hidden><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast" hidden></div>
+<script>
+/* =======================================================================
+   MEJA SEKRETARIS \u2014 Kesekretariatan 2
+   Tujuh tugas mengikuti Sub-CPMK pada RPS, dengan bobot yang sama.
+   Berjalan offline, tersimpan di browser mahasiswa.
+   ======================================================================= */
+"use strict";
+
+var KEY = "mejasekretaris.v1";
+var BLOK = { 1: "Blok UTS \u2014 minggu 1\u20139", 2: "Blok UAS \u2014 minggu 11\u201317" };
+var LEVELS = [
+  { at: 0, t: "Staf Baru" }, { at: 150, t: "Staf Administrasi" },
+  { at: 320, t: "Sekretaris Junior" }, { at: 480, t: "Sekretaris" },
+  { at: 620, t: "Sekretaris Senior" }
+];
+var BADGES = [
+  { id: "sumber", t: "Pemilih Sumber" }, { id: "dinas", t: "Perencana Dinas" },
+  { id: "kas", t: "Kas Kecil Rapi" }, { id: "bank", t: "Paham Perbankan" },
+  { id: "ruang", t: "Penata Ruang" }, { id: "mesin", t: "Analis Mesin" },
+  { id: "dokumen", t: "Kurator Dokumen" }, { id: "lengkap", t: "Tujuh Tugas Tuntas" }
+];
+
+/* ---------------- state ---------------- */
+var S = null;
+function fresh() { return { v: 1, nama: "", npm: "", xp: 0, badges: [], m: {}, cur: null }; }
+function load() {
+  try { var r = localStorage.getItem(KEY); S = r ? JSON.parse(r) : fresh(); }
+  catch (e) { S = fresh(); }
+  if (!S || S.v !== 1) S = fresh();
+  if (!S.m) S.m = {}; if (!S.badges) S.badges = [];
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) { toast("Browser menolak menyimpan. Pakai Export jawaban."); }
+}
+function award(id) {
+  if (S.badges.indexOf(id) < 0) {
+    S.badges.push(id);
+    var b = null;
+    for (var i = 0; i < BADGES.length; i++) if (BADGES[i].id === id) b = BADGES[i];
+    if (b) toast("Badge baru: " + b.t);
+  }
+}
+function levelOf(xp) {
+  var out = LEVELS[0];
+  for (var i = 0; i < LEVELS.length; i++) if (xp >= LEVELS[i].at) out = LEVELS[i];
+  return out;
+}
+function finish(id, score, data) {
+  var prev = S.m[id] ? S.m[id].score : 0;
+  S.m[id] = { score: Math.max(prev, Math.round(score)), attempts: ((S.m[id] && S.m[id].attempts) || 0) + 1, data: data || {}, at: Date.now() };
+  S.xp = 0;
+  for (var k in S.m) S.xp += S.m[k].score;
+  var done = 0;
+  for (var j = 0; j < MISSIONS.length; j++) if (S.m[MISSIONS[j].id]) done++;
+  if (done === MISSIONS.length) award("lengkap");
+  save(); paintRail();
+}
+
+/* ---------------- helper ---------------- */
+function el(id) { return document.getElementById(id); }
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
+var tt = null;
+function toast(m) { var t = el("toast"); t.textContent = m; t.hidden = false; clearTimeout(tt); tt = setTimeout(function () { t.hidden = true; }, 3400); }
+function modal(h) { el("sheet").innerHTML = h; el("modal").hidden = false; }
+function closeModal() { el("modal").hidden = true; }
+function num(v) { var n = parseFloat(String(v).replace(/[^0-9.\-]/g, "")); return isFinite(n) ? n : null; }
+function rp(n) {
+  if (n == null) return "\u2014";
+  var s = Math.round(Math.abs(n)).toString(), out = "", c = 0;
+  for (var i = s.length - 1; i >= 0; i--) { out = s.charAt(i) + out; if (++c % 3 === 0 && i > 0) out = "." + out; }
+  return (n < 0 ? "-Rp" : "Rp") + out;
+}
+function mk(w, got, t, why) { return { w: w, got: Math.max(0, Math.min(1, got)), t: t, why: why || "" }; }
+function total(cs) {
+  var s = 0, m = 0;
+  for (var i = 0; i < cs.length; i++) { s += cs[i].w * cs[i].got; m += cs[i].w; }
+  return m ? Math.round(s / m * 100) : 0;
+}
+function checkList(cs) {
+  return '<ul class="find">' + cs.map(function (c) {
+    var cl = c.got >= .99 ? "ok" : (c.got > 0 ? "part" : "no");
+    return '<li class="' + cl + '"><b>' + esc(c.t) + "</b>" + (c.why ? " \u2014 " + esc(c.why) : "") + "</li>";
+  }).join("") + "</ul>";
+}
+function scoreBox(sc, cap, cs) {
+  return '<section class="score"><header><span>Penilaian</span><span>' + esc(cap || "") + "</span></header>" +
+    '<div class="body"><div class="v">' + sc + '<span style="font-size:1rem;color:var(--ink-soft)">/100</span></div>' +
+    '<div class="track"><i style="width:' + sc + '%"></i></div>' +
+    (cs ? checkList(cs) : "") + "</div></section>";
+}
+function inArr(a, v) { return a && a.indexOf(v) >= 0; }
+/* =======================================================================
+   DAFTAR TUGAS \u2014 mengikuti Sub-CPMK dan bobot pada RPS
+   Menambah tugas: salin satu objek, ubah id (unik), blok, no, bobot,
+   lalu pilih kind: match | dinas | kas | ruang | mesin | dokumen
+   ======================================================================= */
+
+var MISSIONS = [
+{
+  id: "t1", blok: 1, no: 1, bobot: 11,
+  title: "Memilih sumber informasi",
+  goal: "Pimpinan minta data untuk rapat pembelian kendaraan operasional. Tentukan dari mana tiap informasi sebaiknya diambil.",
+  brief:
+    "<p>Kamu staf administrasi di <b>PT Sinar Usaha Palembang</b>. Kepala bagian minta bahan untuk rapat evaluasi bulanan yang membahas rencana pembelian kendaraan operasional.</p>" +
+    "<p>Semua informasi bisa ditemukan di internet dalam lima menit. Yang membedakan staf yang teliti bukan kecepatan mencarinya, tapi kemampuan menilai <b>sumber mana yang layak dipercaya untuk informasi jenis apa</b>. Harga dari marketplace dan harga dari dealer resmi bukan informasi yang sama, walaupun angkanya mirip.</p>" +
+    "<p>Dua hal yang perlu dipisahkan sejak awal:</p>" +
+    "<p><b>Sumber primer</b> \u2014 informasi langsung dari pihak yang berwenang atau mengalaminya sendiri: wawancara dealer, brosur resmi, dokumen perusahaan.<br>" +
+    "<b>Sumber sekunder</b> \u2014 informasi yang sudah diolah atau diceritakan ulang: berita, blog, rangkuman pihak ketiga.</p>",
+  steps: [
+    "Baca dulu informasi apa yang diminta, jangan langsung mencari.",
+    "Untuk tiap kebutuhan, tanya: siapa pihak yang paling berhak tahu angka ini?",
+    "Perhatikan informasi yang cepat kedaluwarsa \u2014 harga dan promo berubah tiap bulan.",
+    "Catat tanggal pengambilan data. Informasi tanpa tanggal tidak bisa dipertanggungjawabkan di rapat."
+  ],
+  note: "<b>Yang sering salah:</b> memakai angka konsumsi bahan bakar dari brosur pabrik sebagai dasar perhitungan biaya operasional. Angka itu hasil uji laboratorium, bukan pemakaian di jalan Palembang.",
+  kind: "match",
+  opts: [
+    "Situs resmi produsen (APM)", "Dealer resmi di Palembang", "Marketplace umum",
+    "Blog atau forum otomotif", "Brosur resmi dealer", "Berita media nasional",
+    "Pengguna kendaraan sejenis", "Situs resmi instansi pemerintah"
+  ],
+  items: [
+    { stem: "Harga resmi dan potongan yang berlaku bulan ini di Palembang", ans: 1, alt: 4,
+      why: "Harga berlaku lokal dan berubah tiap bulan, jadi hanya dealer resmi setempat yang bisa memastikan. Brosur bisa dipakai, tapi wajib dicek masa berlakunya." },
+    { stem: "Spesifikasi teknis mesin, dimensi, dan kapasitas angkut", ans: 0, alt: 4,
+      why: "Spesifikasi teknis paling akurat dari produsennya sendiri, dan tidak berubah-ubah seperti harga." },
+    { stem: "Konsumsi bahan bakar pada pemakaian harian yang sebenarnya", ans: 6, alt: 3,
+      why: "Angka resmi adalah hasil uji dalam kondisi ideal. Untuk perkiraan biaya operasional, pemakaian nyata pengguna sejenis lebih mendekati kenyataan." },
+    { stem: "Daftar dealer resmi beserta alamat dan jam layanan", ans: 0, alt: 1,
+      why: "Situs resmi produsen memuat daftar dealer yang sah, sehingga kamu tidak salah mendatangi bengkel umum yang mengaku dealer." },
+    { stem: "Syarat dan ketentuan pembelian secara kredit untuk badan usaha", ans: 1, alt: 4,
+      why: "Ketentuan kredit badan usaha diatur per dealer dan per lembaga pembiayaan. Harus ditanyakan langsung, jangan disimpulkan dari iklan." },
+    { stem: "Besaran pajak kendaraan bermotor yang baru berlaku", ans: 7, alt: 5,
+      why: "Aturan pajak hanya sah kalau bersumber dari instansi resmi. Berita boleh dipakai sebagai penunjuk, lalu diverifikasi ke sumber aslinya." },
+    { stem: "Hasil wawancara langsung dengan petugas dealer termasuk sumber apa?", ans: 0, alt: -1,
+      opts: ["Sumber primer", "Sumber sekunder", "Sumber tersier"],
+      why: "Informasi yang kamu peroleh sendiri dari pihak berwenang adalah sumber primer. Kalau kamu membacanya di berita, itu sudah sekunder." },
+    { stem: "Informasi mana yang paling wajib dicek tanggal berlakunya?", ans: 1, alt: -1,
+      opts: ["Dimensi kendaraan", "Harga dan promo", "Sejarah perusahaan"],
+      why: "Harga dan promo paling cepat kedaluwarsa. Membawa harga bulan lalu ke rapat pengambilan keputusan adalah kesalahan yang mahal." }
+  ],
+  badge: "sumber"
+},
+{
+  id: "t2", blok: 1, no: 2, bobot: 11,
+  title: "Merencanakan perjalanan dinas",
+  goal: "Direktur ke Jakarta tiga hari. Susun tahapannya, siapkan dokumennya, hitung biayanya.",
+  brief:
+    "<p>Kamu sekretaris di <b>PT Cipta Karya Palembang</b>. Direktur akan melakukan perjalanan dinas ke Jakarta selama tiga hari untuk bertemu calon mitra bisnis.</p>" +
+    "<p>Keterangan dari pimpinan: berangkat dari Palembang <b>Senin pagi</b>, pertemuan dengan mitra <b>Senin sore</b>, kunjungan ke kantor mitra <b>Selasa</b>, kembali ke Palembang <b>Rabu siang</b>. Butuh transportasi, hotel, transportasi lokal, dan dokumen perjalanan. Biaya harus wajar.</p>" +
+    "<p>Perjalanan dinas dinilai dari hal-hal kecil: satu dokumen yang tertinggal bisa membuat biaya tidak bisa direimburse, dan satu malam hotel yang salah hitung membuat pimpinan menginap di lobi.</p>",
+  steps: [
+    "Susun tahapan kerjanya dulu. Memesan tiket sebelum surat tugas keluar adalah urutan yang berisiko.",
+    "Pilih dokumen yang benar-benar dibutuhkan. Dokumen berlebih membuat pekerjaan sendiri dan orang lain bertambah.",
+    "Hitung malam hotel dari tanggal menginap, bukan dari jumlah hari perjalanan.",
+    "Cantumkan estimasi biaya yang bisa dipertanggungjawabkan, bukan angka bulat tanpa dasar."
+  ],
+  note: "<b>Hitung perlahan:</b> berangkat Senin pagi, kembali Rabu siang. Pimpinan bermalam pada malam Senin dan malam Selasa. Perjalanan tiga hari, tetapi hotelnya <b>dua malam</b>. Kesalahan ini termasuk yang paling sering muncul di tugas mahasiswa.",
+  kind: "dinas",
+  stages: [
+    "Menerima dan mencatat instruksi pimpinan",
+    "Mengonfirmasi jadwal dan kesediaan pihak mitra",
+    "Mengurus surat tugas dan SPPD",
+    "Memesan transportasi dan akomodasi",
+    "Menyiapkan dokumen dan bahan rapat",
+    "Menyusun itinerary final dan menyerahkannya ke pimpinan",
+    "Memantau pelaksanaan dan melayani kebutuhan selama perjalanan",
+    "Menyusun laporan dan pertanggungjawaban biaya"
+  ],
+  docs: [
+    { t: "Surat tugas", ok: 1 },
+    { t: "SPPD (Surat Perintah Perjalanan Dinas)", ok: 1 },
+    { t: "Tiket berangkat dan tiket kembali", ok: 1 },
+    { t: "Bukti pemesanan hotel", ok: 1 },
+    { t: "Itinerary / jadwal perjalanan", ok: 1 },
+    { t: "Daftar kontak mitra dan nomor darurat", ok: 1 },
+    { t: "Bahan dan materi rapat", ok: 1 },
+    { t: "Uang muka perjalanan beserta kuitansi", ok: 1 },
+    { t: "Kartu identitas (KTP)", ok: 1 },
+    { t: "Paspor dan visa", ok: 0, why: "Perjalanan dalam negeri tidak memerlukan paspor maupun visa." },
+    { t: "Surat keterangan sehat", ok: 0, why: "Bukan syarat perjalanan dinas domestik biasa." },
+    { t: "Ijazah pimpinan", ok: 0, why: "Tidak ada kaitannya dengan pelaksanaan perjalanan." },
+    { t: "Surat izin keramaian", ok: 0, why: "Dipakai untuk acara publik, bukan pertemuan bisnis." },
+    { t: "Kartu NPWP pribadi pimpinan", ok: 0, why: "Tidak diperlukan untuk perjalanan; NPWP perusahaan dipakai untuk urusan pajak, bukan perjalanan." }
+  ],
+  badge: "dinas"
+},
+{
+  id: "t3", blok: 1, no: 3, bobot: 16,
+  title: "Mengelola kas kecil",
+  goal: "Dana kas kecil Rp3.000.000, sepuluh transaksi, dua metode pencatatan. Kerjakan sampai pengisian kembali.",
+  brief:
+    "<p>Kamu Staf Administrasi <b>PT Maju Bersama</b>. Pada 1 Oktober 2026 perusahaan menetapkan dana kas kecil <b>Rp3.000.000</b> untuk kebutuhan operasional harian. Dana dikelola oleh staf administrasi, dan setiap pengeluaran harus didukung bukti transaksi.</p>" +
+    "<p>Selama 1\u201310 Oktober terjadi sepuluh pengeluaran. Pada 10 Oktober dilakukan pemeriksaan: semua pengeluaran punya bukti dan tidak ada selisih kas.</p>" +
+    "<p>Dua metode yang harus kamu kuasai:</p>" +
+    "<p><b>Metode imprest</b> (dana tetap) \u2014 dana kas kecil ditetapkan pada jumlah tertentu. Pengeluaran dikumpulkan lewat bukti, lalu pada akhir periode dana diisi kembali <b>sebesar pengeluarannya</b>, sehingga saldo awal periode berikutnya selalu kembali ke jumlah yang ditetapkan.<br>" +
+    "<b>Metode fluktuasi</b> \u2014 saldo kas kecil dibiarkan naik-turun. Setiap transaksi langsung mengurangi saldo buku, dan pengisian kembali boleh berapa saja sesuai kebutuhan.</p>",
+  steps: [
+    "Kelompokkan setiap pengeluaran menurut jenisnya. Pengelompokan ini yang nanti masuk laporan pertanggungjawaban.",
+    "Jumlahkan seluruh pengeluaran, lalu hitung saldo yang tersisa di tangan.",
+    "Tentukan jumlah pengisian kembali dengan metode imprest, supaya saldo balik ke Rp3.000.000.",
+    "Terakhir, bedakan mana pernyataan yang berlaku untuk imprest dan mana untuk fluktuasi."
+  ],
+  note: "<b>Kenapa dua metode ini penting:</b> dalam imprest, jumlah pengisian kembali selalu sama dengan total pengeluaran \u2014 itu yang membuat kas kecil mudah diaudit. Kalau kamu bisa menjelaskan sebabnya, bukan hanya menghafal angkanya, soal UTS bentuk apa pun bisa kamu kerjakan.",
+  kind: "kas",
+  dana: 3000000,
+  kat: ["ATK dan cetak", "Konsumsi dan rapat", "Pengiriman dan transportasi", "Perlengkapan kantor"],
+  trx: [
+    { tgl: "1 Okt", ket: "Pembelian ATK", n: 450000, k: 0 },
+    { tgl: "2 Okt", ket: "Pembelian air minum dan perlengkapan rapat", n: 275000, k: 1 },
+    { tgl: "3 Okt", ket: "Biaya pengiriman dokumen melalui kurir", n: 150000, k: 2 },
+    { tgl: "4 Okt", ket: "Transportasi pengiriman dokumen ke kantor mitra", n: 225000, k: 2 },
+    { tgl: "5 Okt", ket: "Konsumsi rapat pimpinan", n: 350000, k: 1 },
+    { tgl: "6 Okt", ket: "Pembelian tinta printer", n: 425000, k: 0 },
+    { tgl: "7 Okt", ket: "Biaya parkir dan tol kegiatan administrasi", n: 175000, k: 2 },
+    { tgl: "8 Okt", ket: "Pembelian perlengkapan kebersihan kantor", n: 250000, k: 3 },
+    { tgl: "9 Okt", ket: "Biaya pengiriman dokumen", n: 180000, k: 2 },
+    { tgl: "10 Okt", ket: "Konsumsi rapat internal", n: 220000, k: 1 }
+  ],
+  metode: [
+    { stem: "Saldo awal periode berikutnya selalu kembali ke jumlah yang ditetapkan.", ans: 0,
+      why: "Ciri utama imprest: dana dikembalikan ke jumlah tetap setiap kali diisi." },
+    { stem: "Jumlah pengisian kembali boleh berbeda dari total pengeluaran.", ans: 1,
+      why: "Hanya pada fluktuasi. Pada imprest, pengisian kembali persis sebesar pengeluaran." },
+    { stem: "Setiap transaksi langsung mengurangi saldo pada buku kas kecil.", ans: 1,
+      why: "Pada fluktuasi saldo buku bergerak terus. Pada imprest, pengeluaran ditampung lewat bukti dan dijurnal saat pengisian kembali." },
+    { stem: "Setiap pengeluaran wajib didukung bukti transaksi.", ans: 2,
+      why: "Berlaku pada kedua metode. Tidak ada metode yang membolehkan pengeluaran tanpa bukti." }
+  ],
+  metodeOpts: ["Imprest", "Fluktuasi", "Keduanya"],
+  badge: "kas"
+},
+{
+  id: "t4", blok: 1, no: 4, bobot: 18,
+  title: "Memilih layanan perbankan",
+  goal: "Sembilan kebutuhan kantor, satu layanan bank yang paling tepat untuk masing-masing.",
+  brief:
+    "<p>Sekretaris jarang mengurus uang perusahaan langsung, tapi hampir selalu yang pertama tahu kebutuhannya: gaji harus keluar tanggal 25, supplier menagih hari ini, sertifikat tanah perlu tempat aman.</p>" +
+    "<p>Yang membedakan staf yang paham perbankan adalah kemampuan mencocokkan <b>kebutuhan dengan produk</b>, bukan menghafal nama produk. Tiga hal yang menentukan pilihan:</p>" +
+    "<p><b>Nominalnya</b> \u2014 besar atau kecil.<br><b>Waktunya</b> \u2014 harus sampai hari ini, atau boleh besok.<br><b>Tujuannya</b> \u2014 memindahkan dana, menyimpan, menjamin, atau menerima pembayaran.</p>",
+  steps: [
+    "Baca kebutuhannya, lalu tentukan dulu: ini soal memindahkan dana, menyimpan, menjamin, atau menerima?",
+    "Kalau soal memindahkan dana, lihat nominal dan tenggat waktunya.",
+    "Kalau soal menerima pembayaran dari banyak pihak, pikirkan bagaimana kantor mengenali siapa yang sudah bayar.",
+    "Terakhir, periksa biaya. Layanan tercepat hampir selalu yang termahal."
+  ],
+  note: "<b>Perlu dicek ulang:</b> batas nominal dan biaya tiap layanan transfer diatur dan berubah dari waktu ke waktu. Jangan menghafal angkanya dari catatan kuliah \u2014 periksa ketentuan yang berlaku di situs resmi bank atau Bank Indonesia sebelum dipakai di pekerjaan nyata.",
+  kind: "match",
+  opts: [
+    "Rekening giro", "Tabungan", "Deposito berjangka", "Transfer RTGS",
+    "Transfer BI-FAST atau kliring", "Virtual account", "Safe deposit box",
+    "Bank garansi", "Letter of credit (L/C)", "Layanan payroll"
+  ],
+  items: [
+    { stem: "Membayar gaji 42 karyawan setiap tanggal 25 dari satu rekening perusahaan", ans: 9, alt: 4,
+      why: "Layanan payroll memindahkan dana ke banyak rekening sekaligus dari satu perintah, lengkap dengan daftarnya. Transfer satu per satu boros waktu dan rawan salah nominal." },
+    { stem: "Melunasi tagihan supplier Rp850 juta yang harus diterima hari ini", ans: 3, alt: 4,
+      why: "RTGS ditujukan untuk nominal besar yang harus sampai pada hari yang sama. Biayanya lebih mahal, dan di sini kecepatan itu yang dibayar." },
+    { stem: "Membayar tagihan rutin Rp9 juta yang tidak mendesak, biaya ingin ditekan", ans: 4, alt: 3,
+      why: "Untuk nominal kecil dan tidak mendesak, BI-FAST atau kliring jauh lebih murah. Memakai RTGS di sini hanya membuang biaya." },
+    { stem: "Menerima pembayaran dari 300 pelanggan dan ingin otomatis tahu siapa yang sudah bayar", ans: 5, alt: 0,
+      why: "Virtual account memberi nomor unik per pelanggan, jadi pencocokan pembayaran terjadi sendiri. Tanpa itu, staf harus mencocokkan mutasi satu per satu." },
+    { stem: "Menyimpan sertifikat tanah dan akta pendirian agar aman dari kebakaran", ans: 6, alt: -1,
+      why: "Safe deposit box adalah layanan penyimpanan fisik. Ini satu-satunya pilihan yang menjawab soal keamanan dokumen, bukan soal uang." },
+    { stem: "Dana Rp500 juta tidak terpakai selama enam bulan dan ingin bunga lebih tinggi", ans: 2, alt: 1,
+      why: "Deposito berjangka memberi bunga lebih tinggi dengan syarat dana mengendap sampai jatuh tempo. Cocok karena dananya memang tidak dipakai." },
+    { stem: "Mengikuti tender proyek yang mensyaratkan jaminan penawaran dari bank", ans: 7, alt: -1,
+      why: "Bank garansi adalah pernyataan bank bahwa ia menjamin kewajiban perusahaan. Ini dokumen jaminan, bukan pemindahan dana." },
+    { stem: "Mengimpor mesin dari luar negeri dan penjual minta kepastian pembayaran", ans: 8, alt: -1,
+      why: "L/C melindungi kedua pihak dalam perdagangan lintas negara: penjual yakin dibayar, pembeli yakin barang dikirim sesuai syarat." },
+    { stem: "Rekening operasional harian yang sering dipakai bertransaksi dengan cek dan bilyet giro", ans: 0, alt: 1,
+      why: "Giro dirancang untuk lalu lintas pembayaran badan usaha dan bisa memakai cek serta bilyet giro. Tabungan tidak menyediakan alat bayar itu." }
+  ],
+  badge: "bank"
+},
+{
+  id: "t5", blok: 2, no: 5, bobot: 18,
+  title: "Menata perabot dan peralatan kantor",
+  goal: "Satu ruang kerja, tujuh perabot. Tempatkan berdasarkan alur kerja, bukan selera.",
+  brief:
+    "<p>Ruang administrasi di kantormu baru dikosongkan. Kamu diminta menata ulang perabot dan peralatannya supaya pekerjaan administrasi lancar.</p>" +
+    "<p>Penataan ruang kantor punya asas yang sudah lama dipakai:</p>" +
+    "<p><b>Asas jarak terpendek</b> \u2014 hal yang paling sering dikerjakan harus paling dekat dijangkau. Sekretaris yang mejanya jauh dari pintu pimpinan akan berjalan puluhan kali sehari tanpa perlu.<br>" +
+    "<b>Asas rangkaian kerja</b> \u2014 perabot diletakkan menurut urutan pekerjaan, bukan menurut kerapian tampilan.<br>" +
+    "<b>Asas penggunaan seluruh ruang</b> \u2014 tidak ada sudut yang terbuang, dan tidak ada jalan yang terhalang.</p>" +
+    "<p>Ada juga pertimbangan praktis yang jarang ditulis di buku: dispenser tidak diletakkan menempel lemari arsip, dan mesin yang berisik tidak ditaruh di sebelah kursi tamu.</p>",
+  steps: [
+    "Pilih satu perabot di daftar, lalu ketuk kotak tempat menaruhnya. Ketuk kotak berisi perabot untuk mengambilnya kembali.",
+    "Mulai dari meja sekretaris. Posisi meja ini menentukan letak yang lain.",
+    "Pastikan masih ada jalur kosong dari pintu masuk sampai pintu ruang pimpinan.",
+    "Jangan menutup jendela dengan lemari. Cahaya alami termasuk bagian dari kenyamanan kerja."
+  ],
+  note: "<b>Yang dinilai bukan kerapian gambar,</b> tapi alasan di balik posisinya. Karena itu setiap penilaian di bawah menyebut asas yang dipakai \u2014 itu yang perlu kamu tulis di laporan tugas.",
+  kind: "ruang",
+  cols: 7, rows: 5,
+  fixed: [
+    { x: 0, y: 4, t: "door", lb: "Pintu masuk" },
+    { x: 6, y: 0, t: "pimp", lb: "Ruang pimpinan" },
+    { x: 2, y: 0, t: "win", lb: "Jendela" },
+    { x: 3, y: 0, t: "win", lb: "Jendela" }
+  ],
+  items: [
+    { k: "sek", lb: "Meja sekretaris" },
+    { k: "fil", lb: "Filing cabinet" },
+    { k: "ars", lb: "Lemari arsip" },
+    { k: "tam", lb: "Kursi tamu" },
+    { k: "pri", lb: "Printer & fotokopi" },
+    { k: "dis", lb: "Dispenser" },
+    { k: "stf", lb: "Meja kerja staf" }
+  ],
+  badge: "ruang"
+},
+{
+  id: "t6", blok: 2, no: 6, bobot: 13,
+  title: "Menganalisis kebutuhan mesin kantor",
+  goal: "Enam jenis pekerjaan, anggaran Rp45 juta. Pilih mesin yang cukup, bukan yang paling hebat.",
+  brief:
+    "<p>Bagian Administrasi dan Keuangan berisi sembilan staf. Kamu diminta mengusulkan mesin kantor yang dibutuhkan, dengan anggaran <b>Rp45.000.000</b>.</p>" +
+    "<p>Volume pekerjaan per bulan: fotokopi sekitar 6.000 lembar, cetak hitam-putih 3.000 lembar, pindai berkas 800 lembar, jilid laporan 20 dokumen, penghancuran dokumen rahasia rutin, serta penghitungan uang tunai kas kecil.</p>" +
+    "<p>Dua kesalahan yang sama buruknya:</p>" +
+    "<p><b>Kurang kapasitas</b> \u2014 mesin cepat rusak, pekerjaan tersendat, biaya perbaikan menumpuk.<br>" +
+    "<b>Lebih kapasitas</b> \u2014 uang perusahaan terpakai untuk kemampuan yang tidak pernah dipakai, dan anggaran untuk kebutuhan lain habis.</p>",
+  steps: [
+    "Tulis dulu jenis pekerjaannya, baru cari mesinnya. Jangan mulai dari katalog.",
+    "Bandingkan kapasitas bulanan mesin dengan volume pekerjaan sebenarnya.",
+    "Perhatikan mesin multifungsi: satu unit bisa menutup beberapa kebutuhan sekaligus dan sering lebih murah daripada membeli terpisah.",
+    "Pastikan semua kebutuhan tertutup sebelum anggaran habis."
+  ],
+  note: "<b>Kalimat yang dicari penilai:</b> \u201cmesin ini dipilih karena volume pekerjaan 6.000 lembar per bulan masih di bawah kapasitasnya\u201d. Bukan \u201cmesin ini dipilih karena kualitasnya bagus\u201d.",
+  kind: "mesin",
+  budget: 45000000,
+  needs: [
+    { k: "n1", t: "Fotokopi 6.000 lembar/bulan" },
+    { k: "n2", t: "Cetak hitam-putih 3.000 lembar/bulan" },
+    { k: "n3", t: "Pindai berkas 800 lembar/bulan" },
+    { k: "n4", t: "Jilid laporan 20 dokumen/bulan" },
+    { k: "n5", t: "Hancurkan dokumen rahasia" },
+    { k: "n6", t: "Hitung uang tunai kas kecil" }
+  ],
+  opts: [
+    { k: "a", nm: "Fotokopi multifungsi kelas menengah", spec: "copy, cetak, pindai \u00b7 kapasitas 20.000 lembar/bulan", price: 28000000, covers: ["n1", "n2", "n3"] },
+    { k: "b", nm: "Printer laser hitam-putih", spec: "kapasitas 3.000 lembar/bulan", price: 3500000, covers: ["n2"] },
+    { k: "c", nm: "Pemindai dokumen ADF", spec: "kapasitas 2.000 lembar/bulan", price: 4500000, covers: ["n3"] },
+    { k: "d", nm: "Fotokopi kelas berat", spec: "kapasitas 80.000 lembar/bulan", price: 75000000, covers: ["n1", "n2", "n3"], over: 1 },
+    { k: "e", nm: "Mesin jilid spiral", spec: "manual, untuk laporan dan proposal", price: 1800000, covers: ["n4"] },
+    { k: "f", nm: "Mesin penghancur kertas", spec: "potongan menyilang, dokumen rahasia", price: 2900000, covers: ["n5"] },
+    { k: "g", nm: "Mesin hitung uang", spec: "verifikasi jumlah dan keaslian", price: 4200000, covers: ["n6"] },
+    { k: "h", nm: "Printer inkjet rumahan", spec: "kapasitas 500 lembar/bulan", price: 1200000, covers: ["n2"], under: 1 }
+  ],
+  badge: "mesin"
+},
+{
+  id: "t7", blok: 2, no: 7, bobot: 13,
+  title: "Menentukan dokumen bisnis",
+  goal: "Pilih satu kegiatan bisnis, tentukan dokumen yang diperlukan, lalu susun urutan pemakaiannya.",
+  brief:
+    "<p>Staf administrasi tidak hanya berurusan dengan surat-menyurat. Setiap kegiatan bisnis punya dokumen sendiri, dan setiap dokumen punya fungsi, penerbit, serta saat pemakaian yang berbeda.</p>" +
+    "<p>Yang dinilai di tugas ini bukan panjangnya daftar dokumen, tetapi dua hal:</p>" +
+    "<p><b>Ketepatan</b> \u2014 dokumen itu memang dipakai dalam kegiatan tersebut, bukan dokumen dari kegiatan lain yang kebetulan terdengar mirip.<br>" +
+    "<b>Urutan</b> \u2014 dokumen mana yang harus ada lebih dulu. Akta jual beli yang dibuat sebelum sertifikat diperiksa adalah urutan yang berbahaya, bukan sekadar keliru.</p>",
+  steps: [
+    "Pilih satu kegiatan bisnis di bawah.",
+    "Pilih dokumen yang diperlukan. Ada dokumen pengecoh yang berasal dari kegiatan lain.",
+    "Setelah memilih, susun urutan pemakaiannya dari yang paling awal.",
+    "Untuk laporan tugasmu, tuliskan juga siapa yang menerbitkan dan siapa yang memakai setiap dokumen."
+  ],
+  note: "<b>Prinsip yang berlaku di semua kasus:</b> dokumen pemeriksaan dan pengecekan keabsahan selalu mendahului dokumen pengikatan, dan dokumen pembayaran mengikuti dokumen pengikatan \u2014 bukan sebaliknya.",
+  kind: "dokumen",
+  cases: [
+    { k: "tanah", nm: "Perusahaan membeli tanah untuk kantor baru",
+      docs: ["Surat penawaran dan hasil negosiasi harga", "Sertifikat tanah dan pemeriksaan keabsahannya di BPN",
+        "Perjanjian Pengikatan Jual Beli (PPJB)", "Kuitansi dan bukti pembayaran",
+        "Akta Jual Beli (AJB) di hadapan PPAT", "Bukti setor BPHTB dan PPh penjual",
+        "Permohonan pendaftaran peralihan hak di BPN"],
+      salah: ["BPKB dan STNK", "Berita acara serah terima kendaraan", "Polis asuransi kendaraan",
+        "Perjanjian sewa-menyewa", "Surat jalan pengiriman barang"] },
+    { k: "kendaraan", nm: "Perusahaan membeli kendaraan operasional",
+      docs: ["Surat penawaran atau daftar harga dealer", "Surat pesanan (purchase order)",
+        "Faktur pembelian dan faktur pajak", "Kuitansi pembayaran",
+        "BPKB dan STNK", "Berita acara serah terima kendaraan", "Polis asuransi kendaraan"],
+      salah: ["Sertifikat tanah", "Akta Jual Beli di hadapan PPAT", "Bukti setor BPHTB",
+        "Perjanjian sewa-menyewa gedung", "Surat kuasa waris"] },
+    { k: "gedung", nm: "Perusahaan menyewa gedung untuk kantor cabang",
+      docs: ["Surat penawaran sewa", "Legalitas pemilik dan bukti kepemilikan gedung",
+        "Perjanjian sewa-menyewa", "Kuitansi pembayaran sewa dan deposit",
+        "Berita acara serah terima gedung", "Bukti pembayaran PPh atas sewa",
+        "Kelengkapan izin bangunan (PBG/IMB)"],
+      salah: ["BPKB dan STNK", "Akta Jual Beli di hadapan PPAT", "Faktur pajak pembelian kendaraan",
+        "Surat jalan pengiriman barang", "Bukti setor BPHTB"] }
+  ],
+  badge: "dokumen"
+}
+];
+
+function missionById(id) {
+  for (var i = 0; i < MISSIONS.length; i++) if (MISSIONS[i].id === id) return MISSIONS[i];
+  return null;
+}
+function unlocked(i) { return i === 0 ? true : !!S.m[MISSIONS[i - 1].id]; }
+/* =======================================================================
+   TAMPILAN TUGAS
+   ======================================================================= */
+var cur = null;
+
+function paintRail() {
+  var lv = levelOf(S.xp), nx = null;
+  for (var i = 0; i < LEVELS.length; i++) if (LEVELS[i].at > S.xp) { nx = LEVELS[i]; break; }
+  var pct = nx ? Math.round((S.xp - lv.at) / (nx.at - lv.at) * 100) : 100;
+  el("who").innerHTML = "<b>" + esc(lv.t) + "</b><em>" + S.xp + " poin" +
+    (nx ? " \u00b7 " + (nx.at - S.xp) + " lagi ke " + nx.t : " \u00b7 tertinggi") + "</em>" +
+    (S.nama ? "<em>" + esc(S.nama) + (S.npm ? " \u00b7 " + esc(S.npm) : "") + "</em>" : "") +
+    '<div class="xp"><i style="width:' + pct + '%"></i></div>' +
+    '<div class="badges">' + BADGES.map(function (b) {
+      return '<span class="badge' + (inArr(S.badges, b.id) ? " on" : "") + '">' + esc(b.t) + "</span>";
+    }).join("") + "</div>";
+
+  var html = "", blok = 0;
+  for (var j = 0; j < MISSIONS.length; j++) {
+    var m = MISSIONS[j];
+    if (m.blok !== blok) {
+      if (blok) html += "</ul>";
+      blok = m.blok;
+      html += '<div class="blok">' + esc(BLOK[blok]) + '</div><ul class="mlist">';
+    }
+    var done = !!S.m[m.id], open = unlocked(j);
+    html += '<li><button data-go="' + m.id + '" data-n="' + m.no + '" class="' + (done ? "done" : "") +
+      (open ? "" : " locked") + '"' + (open ? "" : " disabled") + (cur === m.id ? ' aria-current="true"' : "") + ">" +
+      esc(m.title) + ' <span class="w">' + m.bobot + "%" + (done ? " \u00b7 " + S.m[m.id].score : "") + "</span></button></li>";
+  }
+  html += "</ul>";
+  el("nav").innerHTML = html;
+}
+
+function shell(m, task) {
+  return '<div class="tag">' + esc(BLOK[m.blok]) + " \u00b7 bobot " + m.bobot + "% dari nilai akhir</div>" +
+    '<div class="mt"><span class="no">Tugas ' + m.no + "</span><h2>" + esc(m.title) + "</h2></div>" +
+    '<p class="goal">' + esc(m.goal) + "</p>" +
+    '<div class="brief">' + m.brief + "</div>" +
+    "<h3>Langkah kerja</h3><ol class=\"steps\">" + m.steps.map(function (s) { return "<li>" + s + "</li>"; }).join("") + "</ol>" +
+    '<div class="note">' + m.note + "</div>" + task;
+}
+function nextBtn(m) {
+  var i = MISSIONS.indexOf(m), n = MISSIONS[i + 1];
+  return '<div class="btnrow" id="after" hidden>' +
+    (n ? '<button class="btn ghost" id="bNext">Tugas ' + n.no + ": " + esc(n.title) + "</button>"
+       : '<button class="btn ghost" id="bRapor">Lihat rapor akhir</button>') + "</div>";
+}
+function wireNext(m) {
+  var i = MISSIONS.indexOf(m), n = MISSIONS[i + 1];
+  if (el("bNext") && n) el("bNext").onclick = function () { go(n.id); };
+  if (el("bRapor")) el("bRapor").onclick = rapor;
+}
+function done(m, sc, data, badgeAt) {
+  finish(m.id, sc, data);
+  if (m.badge && sc >= (badgeAt || 75)) award(m.badge);
+  save(); paintRail();
+  el("after").hidden = false; wireNext(m);
+}
+
+function go(id) {
+  cur = id; S.cur = id; save();
+  var m = missionById(id); if (!m) return;
+  var f = { match: vMatch, dinas: vDinas, kas: vKas, ruang: vRuang, mesin: vMesin, dokumen: vDok }[m.kind];
+  el("stage").innerHTML = shell(m, f.view(m));
+  paintRail(); window.scrollTo(0, 0);
+  f.wire(m);
+}
+
+/* ---------- urutan: dipakai tugas 2 dan 7 ---------- */
+function gcd(a, b) { while (b) { var t = a % b; a = b; b = t; } return a; }
+function scramble(arr) {
+  var n = arr.length, muls = [5, 7, 11, 3, 2, 1], m = 1;
+  for (var i = 0; i < muls.length; i++) if (gcd(muls[i], n) === 1) { m = muls[i]; break; }
+  var out = [];
+  for (var j = 0; j < n; j++) out.push(arr[(j * m + 2) % n]);
+  return out;
+}
+function seqHTML(list, id) {
+  return '<ul class="seq" id="' + id + '">' + list.map(function (t, i) {
+    return '<li data-i="' + i + '"><span class="n">' + (i + 1) + "</span><span>" + esc(t) + "</span>" +
+      '<span class="mv"><button data-mv="up" data-i="' + i + '" aria-label="naikkan">\u2191</button>' +
+      '<button data-mv="dn" data-i="' + i + '" aria-label="turunkan">\u2193</button></span></li>';
+  }).join("") + "</ul>";
+}
+function wireSeq(id, list, after) {
+  el(id).onclick = function (e) {
+    var b = e.target.closest("button[data-mv]"); if (!b) return;
+    var i = +b.getAttribute("data-i"), d = b.getAttribute("data-mv") === "up" ? -1 : 1, j = i + d;
+    if (j < 0 || j >= list.length) return;
+    var t = list[i]; list[i] = list[j]; list[j] = t;
+    el(id).outerHTML = seqHTML(list, id);
+    wireSeq(id, list, after);
+    if (after) after();
+  };
+}
+
+/* =========================== 1 & 4: MATCH =========================== */
+var vMatch = {
+  view: function (m) {
+    var d = (S.m[m.id] && S.m[m.id].data && S.m[m.id].data.pick) || [];
+    return '<section class="card" id="qs">' + m.items.map(function (it, i) {
+      var opts = it.opts || m.opts;
+      return '<div class="q" data-i="' + i + '"><p class="stem"><b>' + (i + 1) + ".</b> " + esc(it.stem) + '</p><div class="opts">' +
+        opts.map(function (o, j) {
+          return '<button data-q="' + i + '" data-o="' + j + '" aria-pressed="' + (d[i] === j ? "true" : "false") + '">' + esc(o) + "</button>";
+        }).join("") + '</div><p class="why" hidden></p></div>';
+    }).join("") + "</section>" +
+      '<div class="btnrow"><button class="btn go" id="bCek">Periksa jawaban</button></div><div id="out"></div>' + nextBtn(m);
+  },
+  wire: function (m) {
+    var pick = (S.m[m.id] && S.m[m.id].data && S.m[m.id].data.pick) ? S.m[m.id].data.pick.slice() : [];
+    el("qs").onclick = function (e) {
+      var b = e.target.closest("button[data-q]"); if (!b) return;
+      var qi = +b.getAttribute("data-q");
+      pick[qi] = +b.getAttribute("data-o");
+      var row = el("qs").querySelectorAll('.q[data-i="' + qi + '"] .opts button');
+      for (var i = 0; i < row.length; i++) row[i].setAttribute("aria-pressed", row[i] === b ? "true" : "false");
+    };
+    el("bCek").onclick = function () {
+      var got = 0, cs = [];
+      for (var i = 0; i < m.items.length; i++) {
+        var it = m.items[i], bs = el("qs").querySelectorAll('.q[data-i="' + i + '"] .opts button');
+        var v = pick[i], g = v === it.ans ? 1 : (it.alt >= 0 && v === it.alt ? .5 : 0);
+        got += g;
+        for (var j = 0; j < bs.length; j++) {
+          bs[j].classList.remove("right", "part", "wrong");
+          if (j === it.ans) bs[j].classList.add("right");
+          else if (it.alt >= 0 && j === it.alt) bs[j].classList.add("part");
+          else if (v === j) bs[j].classList.add("wrong");
+        }
+        var w = el("qs").querySelector('.q[data-i="' + i + '"] .why');
+        w.hidden = false; w.textContent = it.why;
+        cs.push(mk(1, g, "Nomor " + (i + 1), g === 1 ? "tepat" : (g > 0 ? "bisa diterima, tetapi bukan yang terbaik" : (v == null ? "belum dijawab" : "belum tepat"))));
+      }
+      var sc = Math.round(got / m.items.length * 100);
+      el("out").innerHTML = scoreBox(sc, "jawaban tepat bernilai penuh, jawaban yang bisa diterima bernilai separuh", cs);
+      done(m, sc, { pick: pick });
+    };
+    wireNext(m);
+  }
+};
+
+/* =========================== 2: PERJALANAN DINAS =========================== */
+var vDinas = {
+  view: function (m) {
+    var d = (S.m[m.id] && S.m[m.id].data) || {};
+    var order = d.order || scramble(m.stages.slice());
+    vDinas._order = order.slice();
+    var chips = scramble(m.docs.map(function (x, i) { return i; })).map(function (i) {
+      return '<button class="chip" data-d="' + i + '" aria-pressed="' + (inArr(d.docs, i) ? "true" : "false") + '">' + esc(m.docs[i].t) + "</button>";
+    }).join("");
+    return '<section class="card"><h3>A. Urutkan tahapan kerjanya</h3><p class="hint">Pakai tanda panah untuk memindahkan.</p>' +
+      seqHTML(order, "seqD") + "</section>" +
+      '<section class="card"><h3>B. Pilih dokumen yang diperlukan</h3><p class="hint">Ada dokumen yang tidak dibutuhkan untuk perjalanan dalam negeri.</p>' +
+      '<div class="chips" id="docs">' + chips + "</div></section>" +
+      '<section class="card"><h3>C. Estimasi biaya</h3>' +
+      '<label class="fl" for="malam">Jumlah malam hotel<small>hitung dari tanggal menginap</small></label><input type="number" id="malam" min="0" value="' + esc(d.malam || "") + '">' +
+      '<label class="fl" for="tarif">Tarif hotel per malam (Rp)</label><input type="number" id="tarif" min="0" step="50000" value="' + esc(d.tarif || "") + '">' +
+      '<label class="fl" for="trans">Transportasi Palembang\u2013Jakarta pulang pergi (Rp)</label><input type="number" id="trans" min="0" step="50000" value="' + esc(d.trans || "") + '">' +
+      '<label class="fl" for="lokal">Transportasi lokal seluruh perjalanan (Rp)</label><input type="number" id="lokal" min="0" step="50000" value="' + esc(d.lokal || "") + '">' +
+      '<label class="fl" for="harian">Uang harian per hari (Rp)</label><input type="number" id="harian" min="0" step="50000" value="' + esc(d.harian || "") + '">' +
+      '<p class="budget u-sans" id="tot"></p></section>' +
+      '<div class="btnrow"><button class="btn go" id="bCek">Periksa pekerjaan</button></div><div id="out"></div>' + nextBtn(m);
+  },
+  wire: function (m) {
+    var order = vDinas._order, docs = ((S.m[m.id] && S.m[m.id].data && S.m[m.id].data.docs) || []).slice();
+    wireSeq("seqD", order);
+    el("docs").onclick = function (e) {
+      var b = e.target.closest("button[data-d]"); if (!b) return;
+      var i = +b.getAttribute("data-d"), at = docs.indexOf(i);
+      if (at >= 0) docs.splice(at, 1); else docs.push(i);
+      b.setAttribute("aria-pressed", at >= 0 ? "false" : "true");
+    };
+    function tot() {
+      var ml = num(el("malam").value) || 0, tf = num(el("tarif").value) || 0;
+      var tr = num(el("trans").value) || 0, lk = num(el("lokal").value) || 0, hr = num(el("harian").value) || 0;
+      var t = tr + ml * tf + lk + hr * 3;
+      el("tot").innerHTML = "Total estimasi: <b>" + rp(t) + "</b>" + (ml ? " \u00b7 hotel " + ml + " malam \u00d7 " + rp(tf) : "");
+      return t;
+    }
+    ["malam", "tarif", "trans", "lokal", "harian"].forEach(function (k) { el(k).oninput = tot; });
+    tot();
+    el("bCek").onclick = function () {
+      var cs = [], exact = 0;
+      for (var i = 0; i < order.length; i++) if (order[i] === m.stages[i]) exact++;
+      var lis = el("seqD").querySelectorAll("li");
+      for (var q = 0; q < lis.length; q++) lis[q].className = order[q] === m.stages[q] ? "ok" : "no";
+      cs.push(mk(30, exact / m.stages.length, "Urutan tahapan: " + exact + " dari " + m.stages.length + " tepat",
+        exact === m.stages.length ? "" : "Urutan yang benar sekarang ditandai. Perhatikan: surat tugas keluar sebelum tiket dipesan, dan laporan biaya paling akhir."));
+
+      var benar = 0, salahPilih = [], adaBenar = 0;
+      for (var j = 0; j < m.docs.length; j++) {
+        if (m.docs[j].ok) adaBenar++;
+        var chip = el("docs").querySelector('button[data-d="' + j + '"]');
+        chip.classList.remove("right", "wrong", "miss");
+        if (inArr(docs, j)) {
+          if (m.docs[j].ok) { benar++; chip.classList.add("right"); }
+          else { salahPilih.push(m.docs[j]); chip.classList.add("wrong"); }
+        } else if (m.docs[j].ok) chip.classList.add("miss");
+      }
+      var recall = benar / adaBenar, prec = docs.length ? benar / docs.length : 0;
+      cs.push(mk(35, (recall + prec) / 2, "Dokumen: " + benar + " dari " + adaBenar + " dokumen wajib terpilih" +
+        (salahPilih.length ? ", " + salahPilih.length + " dokumen tidak perlu ikut terpilih" : ""),
+        salahPilih.length ? salahPilih.map(function (x) { return x.t + " \u2014 " + x.why; })[0] :
+          (recall < 1 ? "Dokumen bergaris putus-putus adalah yang terlewat." : "")));
+
+      var ml = num(el("malam").value);
+      cs.push(mk(15, ml === 2 ? 1 : 0, "Jumlah malam hotel: " + (ml == null ? "belum diisi" : ml),
+        ml === 2 ? "" : "Berangkat Senin pagi, kembali Rabu siang. Pimpinan bermalam pada malam Senin dan malam Selasa, jadi dua malam."));
+
+      var t = tot(), isi = ["tarif", "trans", "lokal", "harian"].every(function (k) { return (num(el(k).value) || 0) > 0; });
+      cs.push(mk(20, isi && t > 0 ? 1 : (t > 0 ? .5 : 0), "Estimasi biaya: " + rp(t),
+        isi ? "Pastikan setiap angka bisa kamu tunjukkan sumbernya saat ditanya." : "Masih ada komponen biaya yang kosong. Perjalanan tanpa transportasi lokal atau uang harian tidak realistis."));
+
+      var sc = total(cs);
+      el("out").innerHTML = scoreBox(sc, "urutan 30 \u00b7 dokumen 35 \u00b7 malam 15 \u00b7 biaya 20", cs);
+      done(m, sc, { order: order, docs: docs, malam: el("malam").value, tarif: el("tarif").value, trans: el("trans").value, lokal: el("lokal").value, harian: el("harian").value });
+    };
+    wireNext(m);
+  }
+};
+
+/* =========================== 3: KAS KECIL =========================== */
+var vKas = {
+  view: function (m) {
+    var d = (S.m[m.id] && S.m[m.id].data) || {}, kk = d.kat || [];
+    var rows = m.trx.map(function (t, i) {
+      return "<tr><td>" + esc(t.tgl) + "</td><td>" + esc(t.ket) + '</td><td class="n">' + rp(t.n) + "</td>" +
+        '<td><select data-k="' + i + '"><option value="">\u2014 pilih \u2014</option>' +
+        m.kat.map(function (k, j) { return '<option value="' + j + '"' + (kk[i] === j ? " selected" : "") + ">" + esc(k) + "</option>"; }).join("") +
+        '</select></td><td class="n" id="sal' + i + '"></td></tr>';
+    }).join("");
+    return '<section class="card"><h3>A. Catat dan kelompokkan pengeluaran</h3>' +
+      '<p class="hint">Dana ditetapkan ' + rp(m.dana) + ' pada 1 Oktober 2026. Kolom saldo terisi sendiri.</p>' +
+      '<div class="wrapx"><table class="t" id="tk"><tr><th>Tanggal</th><th>Keterangan</th><th class="n">Jumlah</th><th>Kelompok</th><th class="n">Saldo</th></tr>' +
+      rows + '<tfoot><tr><td colspan="2">Total pengeluaran</td><td class="n" id="ttl"></td><td></td><td class="n" id="sisa"></td></tr></tfoot></table></div></section>' +
+      '<section class="card"><h3>B. Hitung sendiri, lalu bandingkan</h3><p class="hint">Isi tanpa melihat kolom saldo di atas kalau ingin benar-benar berlatih.</p>' +
+      '<label class="fl" for="q1">Total pengeluaran 1\u201310 Oktober (Rp)</label><input type="number" id="q1" value="' + esc(d.q1 || "") + '">' +
+      '<label class="fl" for="q2">Saldo kas kecil pada 10 Oktober (Rp)</label><input type="number" id="q2" value="' + esc(d.q2 || "") + '">' +
+      '<label class="fl" for="q3">Jumlah pengisian kembali dengan metode imprest (Rp)</label><input type="number" id="q3" value="' + esc(d.q3 || "") + '">' +
+      "</section>" +
+      '<section class="card" id="mt"><h3>C. Imprest atau fluktuasi?</h3>' +
+      m.metode.map(function (x, i) {
+        return '<div class="q" data-i="' + i + '"><p class="stem">' + esc(x.stem) + '</p><div class="opts">' +
+          m.metodeOpts.map(function (o, j) {
+            return '<button data-q="' + i + '" data-o="' + j + '" aria-pressed="' + ((d.met || [])[i] === j ? "true" : "false") + '">' + esc(o) + "</button>";
+          }).join("") + '</div><p class="why" hidden></p></div>';
+      }).join("") + "</section>" +
+      '<div class="btnrow"><button class="btn go" id="bCek">Periksa pekerjaan</button></div><div id="out"></div>' + nextBtn(m);
+  },
+  wire: function (m) {
+    var kat = ((S.m[m.id] && S.m[m.id].data && S.m[m.id].data.kat) || []).slice();
+    var met = ((S.m[m.id] && S.m[m.id].data && S.m[m.id].data.met) || []).slice();
+    function paint() {
+      var sal = m.dana, ttl = 0;
+      for (var i = 0; i < m.trx.length; i++) { sal -= m.trx[i].n; ttl += m.trx[i].n; el("sal" + i).textContent = rp(sal); }
+      el("ttl").textContent = rp(ttl); el("sisa").textContent = rp(sal);
+    }
+    paint();
+    el("tk").onchange = function (e) {
+      var s = e.target; if (!s.getAttribute("data-k")) return;
+      kat[+s.getAttribute("data-k")] = s.value === "" ? null : +s.value;
+    };
+    el("mt").onclick = function (e) {
+      var b = e.target.closest("button[data-q]"); if (!b) return;
+      var qi = +b.getAttribute("data-q"); met[qi] = +b.getAttribute("data-o");
+      var row = el("mt").querySelectorAll('.q[data-i="' + qi + '"] .opts button');
+      for (var i = 0; i < row.length; i++) row[i].setAttribute("aria-pressed", row[i] === b ? "true" : "false");
+    };
+    el("bCek").onclick = function () {
+      var cs = [], benar = 0;
+      for (var i = 0; i < m.trx.length; i++) if (kat[i] === m.trx[i].k) benar++;
+      cs.push(mk(30, benar / m.trx.length, "Pengelompokan: " + benar + " dari " + m.trx.length + " tepat",
+        benar === m.trx.length ? "" : "Perhatikan yang bercampur: parkir dan tol masuk pengiriman dan transportasi, tinta printer masuk ATK dan cetak, perlengkapan kebersihan bukan konsumsi."));
+
+      var ttl = 0; for (var j = 0; j < m.trx.length; j++) ttl += m.trx[j].n;
+      var sisa = m.dana - ttl;
+      var a1 = num(el("q1").value), a2 = num(el("q2").value), a3 = num(el("q3").value);
+      cs.push(mk(15, a1 === ttl ? 1 : 0, "Total pengeluaran", a1 === ttl ? rp(ttl) : "Seharusnya " + rp(ttl) + ", jawabanmu " + (a1 == null ? "kosong" : rp(a1))));
+      cs.push(mk(15, a2 === sisa ? 1 : 0, "Saldo 10 Oktober", a2 === sisa ? rp(sisa) : "Seharusnya " + rp(m.dana) + " \u2212 " + rp(ttl) + " = " + rp(sisa)));
+      cs.push(mk(15, a3 === ttl ? 1 : 0, "Pengisian kembali (imprest)",
+        a3 === ttl ? rp(ttl) : "Pada imprest, dana diisi kembali sebesar pengeluarannya, yaitu " + rp(ttl) + ", supaya saldo balik ke " + rp(m.dana) + "."));
+
+      var mb = 0;
+      for (var q = 0; q < m.metode.length; q++) {
+        var bs = el("mt").querySelectorAll('.q[data-i="' + q + '"] .opts button');
+        for (var z = 0; z < bs.length; z++) {
+          bs[z].classList.remove("right", "wrong");
+          if (z === m.metode[q].ans) bs[z].classList.add("right");
+          else if (met[q] === z) bs[z].classList.add("wrong");
+        }
+        var w = el("mt").querySelector('.q[data-i="' + q + '"] .why');
+        w.hidden = false; w.textContent = m.metode[q].why;
+        if (met[q] === m.metode[q].ans) mb++;
+      }
+      cs.push(mk(25, mb / m.metode.length, "Pemahaman metode: " + mb + " dari " + m.metode.length + " tepat", ""));
+
+      var sc = total(cs);
+      el("out").innerHTML = scoreBox(sc, "pengelompokan 30 \u00b7 hitungan 45 \u00b7 metode 25", cs);
+      done(m, sc, { kat: kat, met: met, q1: el("q1").value, q2: el("q2").value, q3: el("q3").value });
+    };
+    wireNext(m);
+  }
+};
+
+/* =========================== 5: TATA RUANG =========================== */
+var vRuang = {
+  view: function (m) {
+    var d = (S.m[m.id] && S.m[m.id].data && S.m[m.id].data.pos) || {};
+    vRuang._pos = {}; for (var k in d) vRuang._pos[k] = d[k];
+    return '<section class="card"><h3>Pilih perabot, lalu ketuk tempatnya</h3>' +
+      '<div class="palette" id="pal">' + m.items.map(function (it) {
+        return '<button data-it="' + it.k + '" aria-pressed="false">' + esc(it.lb) + "</button>";
+      }).join("") + "</div>" +
+      '<div class="room" id="room" style="grid-template-columns:repeat(' + m.cols + ',1fr)"></div>' +
+      '<p class="hint">Hijau: pintu masuk. Ungu: pintu ruang pimpinan. Biru: jendela.</p></section>' +
+      '<div class="btnrow"><button class="btn go" id="bCek">Periksa penataan</button>' +
+      '<button class="btn ghost" id="bClr">Kosongkan ruang</button></div><div id="out"></div>' + nextBtn(m);
+  },
+  wire: function (m) {
+    var pos = vRuang._pos, sel = null;
+    function fixAt(x, y) {
+      for (var i = 0; i < m.fixed.length; i++) if (m.fixed[i].x === x && m.fixed[i].y === y) return m.fixed[i];
+      return null;
+    }
+    function itemAt(x, y) {
+      for (var k in pos) if (pos[k] === x + "," + y) return k;
+      return null;
+    }
+    function lbOf(k) { for (var i = 0; i < m.items.length; i++) if (m.items[i].k === k) return m.items[i].lb; return k; }
+    function paint() {
+      var h = "";
+      for (var y = 0; y < m.rows; y++) for (var x = 0; x < m.cols; x++) {
+        var f = fixAt(x, y), it = itemAt(x, y);
+        h += '<div class="cell ' + (f ? "fix " + f.t : (it ? "has" : "")) + (sel && !f && !it ? " " : "") +
+          '" data-x="' + x + '" data-y="' + y + '">' + esc(f ? f.lb : (it ? lbOf(it) : "")) + "</div>";
+      }
+      el("room").innerHTML = h;
+      var bs = el("pal").querySelectorAll("button");
+      for (var i = 0; i < bs.length; i++) {
+        var k = bs[i].getAttribute("data-it");
+        bs[i].setAttribute("aria-pressed", sel === k ? "true" : "false");
+        bs[i].className = pos[k] ? "placed" : "";
+      }
+    }
+    paint();
+    el("pal").onclick = function (e) {
+      var b = e.target.closest("button[data-it]"); if (!b) return;
+      sel = (sel === b.getAttribute("data-it")) ? null : b.getAttribute("data-it");
+      paint();
+    };
+    el("room").onclick = function (e) {
+      var c = e.target.closest(".cell"); if (!c) return;
+      var x = +c.getAttribute("data-x"), y = +c.getAttribute("data-y");
+      if (fixAt(x, y)) { toast("Kotak itu pintu atau jendela, tidak bisa diisi."); return; }
+      var it = itemAt(x, y);
+      if (it) { delete pos[it]; sel = it; paint(); return; }
+      if (!sel) { toast("Pilih dulu perabot di daftar atas."); return; }
+      pos[sel] = x + "," + y; sel = null; paint();
+    };
+    el("bClr").onclick = function () { for (var k in pos) delete pos[k]; sel = null; paint(); };
+    el("bCek").onclick = function () {
+      var cs = [], P = function (k) { return pos[k] ? pos[k].split(",").map(Number) : null; };
+      function dist(a, b) { return (a && b) ? Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]) : 99; }
+      var sek = P("sek"), fil = P("fil"), ars = P("ars"), tam = P("tam"), pri = P("pri"), dis = P("dis");
+      var pimp = [6, 0], pintu = [0, 4];
+      var n = 0; for (var k in pos) n++;
+
+      cs.push(mk(15, n / m.items.length, "Perabot terpasang: " + n + " dari " + m.items.length, n < m.items.length ? "Masih ada perabot yang belum ditempatkan." : ""));
+      cs.push(mk(20, dist(sek, pimp) <= 2 ? 1 : (dist(sek, pimp) <= 3 ? .5 : 0),
+        "Meja sekretaris dekat pintu ruang pimpinan (jarak " + (sek ? dist(sek, pimp) : "\u2014") + " kotak)",
+        dist(sek, pimp) <= 2 ? "Asas jarak terpendek terpenuhi." : "Asas jarak terpendek: sekretaris dipanggil pimpinan berkali-kali sehari."));
+      cs.push(mk(15, dist(fil, sek) <= 2 ? 1 : (dist(fil, sek) <= 3 ? .5 : 0),
+        "Filing cabinet dalam jangkauan meja sekretaris",
+        dist(fil, sek) <= 2 ? "Asas rangkaian kerja terpenuhi." : "Berkas aktif paling sering diambil, jadi filing cabinet harus dekat meja kerja."));
+      cs.push(mk(10, dist(tam, pintu) <= 2 ? 1 : 0, "Kursi tamu dekat pintu masuk",
+        dist(tam, pintu) <= 2 ? "" : "Tamu tidak perlu melewati seluruh ruang kerja untuk duduk."));
+
+      /* jalur kosong dari pintu masuk ke pintu pimpinan */
+      var blocked = {}; for (var kk in pos) blocked[pos[kk]] = 1;
+      for (var i2 = 0; i2 < m.fixed.length; i2++) if (m.fixed[i2].t === "win") blocked[m.fixed[i2].x + "," + m.fixed[i2].y] = 1;
+      var seen = {}, qq = [pintu.join(",")], ok = false;
+      seen[qq[0]] = 1;
+      while (qq.length) {
+        var cu = qq.shift().split(",").map(Number);
+        if (cu[0] === pimp[0] && cu[1] === pimp[1]) { ok = true; break; }
+        var dd = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+        for (var t2 = 0; t2 < 4; t2++) {
+          var nx = cu[0] + dd[t2][0], ny = cu[1] + dd[t2][1], key = nx + "," + ny;
+          if (nx < 0 || ny < 0 || nx >= m.cols || ny >= m.rows || seen[key] || blocked[key]) continue;
+          seen[key] = 1; qq.push(key);
+        }
+      }
+      cs.push(mk(20, ok ? 1 : 0, "Ada jalur kosong dari pintu masuk ke ruang pimpinan",
+        ok ? "" : "Perabotmu menutup jalan. Asas penggunaan seluruh ruang bukan berarti setiap kotak diisi."));
+
+      var basah = dist(dis, fil) <= 1 || dist(dis, ars) <= 1;
+      cs.push(mk(10, dis && !basah ? 1 : (dis ? 0 : 0), "Dispenser tidak menempel lemari arsip atau filing cabinet",
+        basah ? "Air dan kertas arsip tidak diletakkan bersebelahan. Satu tumpahan bisa merusak dokumen bertahun-tahun." : (dis ? "" : "Dispenser belum ditempatkan.")));
+      var bising = dist(pri, tam) <= 1;
+      cs.push(mk(10, pri && !bising ? 1 : 0, "Printer tidak bersebelahan dengan kursi tamu",
+        bising ? "Mesin berisik di sebelah tamu mengganggu, dan dokumen yang tercetak bisa terbaca orang luar." : (pri ? "" : "Printer belum ditempatkan.")));
+
+      var sc = total(cs);
+      el("out").innerHTML = scoreBox(sc, "setiap butir menyebut asas yang dipakai", cs);
+      done(m, sc, { pos: pos });
+    };
+    wireNext(m);
+  }
+};
+
+/* =========================== 6: MESIN KANTOR =========================== */
+var vMesin = {
+  view: function (m) {
+    var d = (S.m[m.id] && S.m[m.id].data && S.m[m.id].data.pilih) || [];
+    return '<section class="card"><h3>Kebutuhan pekerjaan</h3><div class="chips">' +
+      m.needs.map(function (nd) { return '<span class="chip" style="cursor:default">' + esc(nd.t) + "</span>"; }).join("") + "</div></section>" +
+      '<section class="card"><h3>Pilih mesin</h3><div class="wrapx"><table class="t" id="tm">' +
+      '<tr><th></th><th>Mesin</th><th>Keterangan</th><th class="n">Harga</th></tr>' +
+      m.opts.map(function (o) {
+        return '<tr><td><input type="checkbox" data-o="' + o.k + '"' + (inArr(d, o.k) ? " checked" : "") + ' style="width:auto;margin:0"></td>' +
+          "<td>" + esc(o.nm) + "</td><td>" + esc(o.spec) + '</td><td class="n">' + rp(o.price) + "</td></tr>";
+      }).join("") + "</table></div>" +
+      '<p class="u-sans" id="bud"></p></section>' +
+      '<div class="btnrow"><button class="btn go" id="bCek">Periksa usulan</button></div><div id="out"></div>' + nextBtn(m);
+  },
+  wire: function (m) {
+    function picked() {
+      var out = [], bs = el("tm").querySelectorAll("input[data-o]");
+      for (var i = 0; i < bs.length; i++) if (bs[i].checked) out.push(bs[i].getAttribute("data-o"));
+      return out;
+    }
+    function optOf(k) { for (var i = 0; i < m.opts.length; i++) if (m.opts[i].k === k) return m.opts[i]; return null; }
+    function bud() {
+      var p = picked(), t = 0;
+      for (var i = 0; i < p.length; i++) t += optOf(p[i]).price;
+      el("bud").innerHTML = "Total usulan: <b>" + rp(t) + "</b> dari anggaran " + rp(m.budget) +
+        (t > m.budget ? ' <span style="color:var(--bad)">\u2014 melebihi anggaran ' + rp(t - m.budget) + "</span>" : (t ? " \u00b7 sisa " + rp(m.budget - t) : ""));
+      return t;
+    }
+    el("tm").onchange = bud; bud();
+    el("bCek").onclick = function () {
+      var p = picked(), t = 0, cover = {}, cs = [], over = [], under = [];
+      for (var i = 0; i < p.length; i++) {
+        var o = optOf(p[i]); t += o.price;
+        for (var j = 0; j < o.covers.length; j++) cover[o.covers[j]] = 1;
+        if (o.over) over.push(o.nm);
+        if (o.under) under.push(o.nm);
+      }
+      var kur = [];
+      for (var n = 0; n < m.needs.length; n++) if (!cover[m.needs[n].k]) kur.push(m.needs[n].t);
+      cs.push(mk(40, (m.needs.length - kur.length) / m.needs.length,
+        "Kebutuhan tertutup: " + (m.needs.length - kur.length) + " dari " + m.needs.length,
+        kur.length ? "Belum tertutup: " + kur.join("; ") : ""));
+      cs.push(mk(25, t <= m.budget && t > 0 ? 1 : 0, "Total usulan " + rp(t),
+        t > m.budget ? "Melebihi anggaran " + rp(t - m.budget) + ". Usulan yang tidak bisa dibeli bukan usulan." : (t ? "" : "Belum ada mesin dipilih.")));
+      cs.push(mk(15, over.length ? 0 : 1, "Tidak ada mesin yang kapasitasnya berlebihan",
+        over.length ? over.join(", ") + " berkapasitas jauh di atas 6.000 lembar per bulan. Uangnya terpakai untuk kemampuan yang tidak dipakai." : ""));
+      cs.push(mk(10, under.length ? 0 : 1, "Tidak ada mesin yang kapasitasnya kurang",
+        under.length ? under.join(", ") + " hanya sanggup 500 lembar per bulan, sementara kebutuhan cetak 3.000 lembar. Mesin akan cepat rusak." : ""));
+      var efisien = t > 0 && t <= m.budget && !kur.length;
+      cs.push(mk(10, efisien ? 1 : 0, "Seluruh kebutuhan tertutup di dalam anggaran",
+        efisien ? "Sisa anggaran " + rp(m.budget - t) + " bisa diusulkan untuk pemeliharaan." : ""));
+      var sc = total(cs);
+      el("out").innerHTML = scoreBox(sc, "kebutuhan 40 \u00b7 anggaran 25 \u00b7 kapasitas 25 \u00b7 efisiensi 10", cs);
+      done(m, sc, { pilih: p });
+    };
+    wireNext(m);
+  }
+};
+
+/* =========================== 7: DOKUMEN BISNIS =========================== */
+var vDok = {
+  view: function (m) {
+    var d = (S.m[m.id] && S.m[m.id].data) || {};
+    var ci = d.ci != null ? d.ci : 0;
+    vDok._ci = ci; vDok._sel = (d.sel || []).slice(); vDok._ord = (d.ord || []).slice();
+    return '<section class="card"><h3>A. Pilih kegiatan bisnis</h3><div class="chips" id="cases">' +
+      m.cases.map(function (c, i) {
+        return '<button class="chip" data-c="' + i + '" aria-pressed="' + (i === ci ? "true" : "false") + '">' + esc(c.nm) + "</button>";
+      }).join("") + "</div></section>" +
+      '<section class="card"><h3>B. Pilih dokumen yang diperlukan</h3><p class="hint">Minimal 5 dokumen. Beberapa pilihan berasal dari kegiatan bisnis lain.</p>' +
+      '<div class="chips" id="pool"></div></section>' +
+      '<section class="card"><h3>C. Susun urutan pemakaiannya</h3><p class="hint">Dari yang paling awal dipakai.</p><div id="ordbox"></div></section>' +
+      '<div class="btnrow"><button class="btn go" id="bCek">Periksa jawaban</button></div><div id="out"></div>' + nextBtn(m);
+  },
+  wire: function (m) {
+    function C() { return m.cases[vDok._ci]; }
+    function pool() { return scramble(C().docs.concat(C().salah)); }
+    var pl = pool();
+    function paintPool() {
+      el("pool").innerHTML = pl.map(function (t, i) {
+        return '<button class="chip" data-p="' + i + '" aria-pressed="' + (inArr(vDok._sel, t) ? "true" : "false") + '">' + esc(t) + "</button>";
+      }).join("");
+      paintOrd();
+    }
+    function paintOrd() {
+      if (!vDok._sel.length) { el("ordbox").innerHTML = '<p class="hint">Pilih dokumen dulu di bagian B.</p>'; return; }
+      vDok._ord = vDok._ord.filter(function (t) { return inArr(vDok._sel, t); });
+      for (var i = 0; i < vDok._sel.length; i++) if (!inArr(vDok._ord, vDok._sel[i])) vDok._ord.push(vDok._sel[i]);
+      el("ordbox").innerHTML = seqHTML(vDok._ord, "seqO");
+      wireSeq("seqO", vDok._ord);
+    }
+    el("cases").onclick = function (e) {
+      var b = e.target.closest("button[data-c]"); if (!b) return;
+      vDok._ci = +b.getAttribute("data-c"); vDok._sel = []; vDok._ord = [];
+      var bs = el("cases").querySelectorAll("button");
+      for (var i = 0; i < bs.length; i++) bs[i].setAttribute("aria-pressed", bs[i] === b ? "true" : "false");
+      pl = pool(); paintPool();
+    };
+    el("pool").onclick = function (e) {
+      var b = e.target.closest("button[data-p]"); if (!b) return;
+      var t = pl[+b.getAttribute("data-p")], at = vDok._sel.indexOf(t);
+      if (at >= 0) vDok._sel.splice(at, 1); else vDok._sel.push(t);
+      b.setAttribute("aria-pressed", at >= 0 ? "false" : "true");
+      paintOrd();
+    };
+    paintPool();
+    el("bCek").onclick = function () {
+      var c = C(), cs = [], benar = 0, salah = [];
+      for (var i = 0; i < vDok._sel.length; i++) {
+        if (inArr(c.docs, vDok._sel[i])) benar++; else salah.push(vDok._sel[i]);
+      }
+      var bs = el("pool").querySelectorAll("button[data-p]");
+      for (var b2 = 0; b2 < bs.length; b2++) {
+        var t2 = pl[+bs[b2].getAttribute("data-p")];
+        bs[b2].classList.remove("right", "wrong", "miss");
+        if (inArr(vDok._sel, t2)) bs[b2].classList.add(inArr(c.docs, t2) ? "right" : "wrong");
+        else if (inArr(c.docs, t2)) bs[b2].classList.add("miss");
+      }
+      var recall = benar / c.docs.length, prec = vDok._sel.length ? benar / vDok._sel.length : 0;
+      cs.push(mk(50, (recall + prec) / 2, "Ketepatan dokumen: " + benar + " dari " + c.docs.length + " tepat" +
+        (salah.length ? ", " + salah.length + " dari kegiatan lain" : ""),
+        salah.length ? "Tidak dipakai di kasus ini: " + salah.join("; ") : (recall < 1 ? "Yang bergaris putus-putus adalah dokumen yang terlewat." : "")));
+
+      var urutBenar = vDok._ord.filter(function (t) { return inArr(c.docs, t); });
+      var pas = 0;
+      for (var u = 1; u < urutBenar.length; u++) {
+        if (c.docs.indexOf(urutBenar[u]) > c.docs.indexOf(urutBenar[u - 1])) pas++;
+      }
+      var maxPas = Math.max(1, urutBenar.length - 1);
+      cs.push(mk(35, pas / maxPas, "Urutan pemakaian: " + pas + " dari " + maxPas + " pasangan sudah berurutan",
+        pas === maxPas ? "" : "Urutan yang benar: " + c.docs.join(" \u2192 ")));
+      cs.push(mk(15, vDok._sel.length >= 5 ? 1 : vDok._sel.length / 5, "Jumlah dokumen minimal 5 (" + vDok._sel.length + ")", ""));
+      var sc = total(cs);
+      el("out").innerHTML = scoreBox(sc, "ketepatan 50 \u00b7 urutan 35 \u00b7 kelengkapan 15", cs);
+      done(m, sc, { ci: vDok._ci, sel: vDok._sel, ord: vDok._ord });
+    };
+    wireNext(m);
+  }
+};
+/* =======================================================================
+   RAPOR, RUBRIK, EKSPOR, PEMBUKA
+   ======================================================================= */
+function nilaiAkhir() {
+  var t = 0;
+  for (var i = 0; i < MISSIONS.length; i++) {
+    var m = MISSIONS[i], r = S.m[m.id];
+    if (r) t += r.score * m.bobot / 100;
+  }
+  return Math.round(t * 10) / 10;
+}
+function pad(s, n) { s = String(s); while (s.length < n) s += " "; return s; }
+
+function laporan() {
+  var L = [];
+  L.push("LAPORAN HASIL LATIHAN \u2014 MEJA SEKRETARIS");
+  L.push("Mata kuliah Kesekretariatan 2 \u00b7 D3 Administrasi Bisnis");
+  L.push("");
+  L.push("Nama : " + (S.nama || "-"));
+  L.push("NPM  : " + (S.npm || "-"));
+  L.push("");
+  L.push(pad("Tugas", 40) + pad("Bobot", 8) + pad("Nilai", 8) + "Percobaan");
+  L.push(new Array(72).join("-"));
+  for (var i = 0; i < MISSIONS.length; i++) {
+    var m = MISSIONS[i], r = S.m[m.id];
+    var t = m.no + ". " + m.title;
+    if (t.length > 38) t = t.slice(0, 37) + "\u2026";
+    L.push(pad(t, 40) + pad(m.bobot + "%", 8) + pad(r ? r.score : "-", 8) + (r ? r.attempts + "\u00d7" : "-"));
+  }
+  L.push(new Array(72).join("-"));
+  L.push(pad("Nilai akhir terbobot", 40) + pad("100%", 8) + nilaiAkhir());
+  L.push("");
+  var got = [];
+  for (var b = 0; b < BADGES.length; b++) if (inArr(S.badges, BADGES[b].id)) got.push(BADGES[b].t);
+  L.push("Badge: " + (got.length ? got.join(", ") : "belum ada"));
+  L.push("");
+  L.push("Catatan: nilai di latihan ini bukan nilai mata kuliah. Angkanya");
+  L.push("menunjukkan seberapa sesuai pekerjaanmu dengan prosedur yang");
+  L.push("diajarkan, dan dipakai untuk berlatih sebelum tugas sebenarnya.");
+  return L.join("\n");
+}
+function rapor() {
+  var rows = MISSIONS.map(function (m) {
+    var r = S.m[m.id];
+    return "<tr><td>" + m.no + "</td><td>" + esc(m.title) + '</td><td class="n">' + m.bobot + '%</td><td class="n">' +
+      (r ? r.score : "\u2014") + '</td><td class="n">' + (r ? (r.score * m.bobot / 100).toFixed(1) : "\u2014") + "</td></tr>";
+  }).join("");
+  modal("<h2>Rapor saya</h2>" +
+    '<div class="card"><label class="fl" for="rn">Nama</label><input type="text" id="rn" value="' + esc(S.nama) + '">' +
+    '<label class="fl" for="rp">NPM</label><input type="text" id="rp" value="' + esc(S.npm) + '"></div>' +
+    '<table class="t"><tr><th>#</th><th>Tugas</th><th class="n">Bobot</th><th class="n">Nilai</th><th class="n">Kontribusi</th></tr>' + rows +
+    '<tfoot><tr><td colspan="4">Nilai akhir terbobot</td><td class="n">' + nilaiAkhir() + "</td></tr></tfoot></table>" +
+    '<textarea class="rep" id="repT" rows="16"></textarea>' +
+    '<div class="btnrow"><button class="btn go" id="rC">Copy laporan</button>' +
+    '<button class="btn ghost" onclick="window.print()">Cetak / PDF</button>' +
+    '<button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+  el("repT").value = laporan();
+  el("rn").oninput = function () { S.nama = this.value; save(); paintRail(); el("repT").value = laporan(); };
+  el("rp").oninput = function () { S.npm = this.value; save(); paintRail(); el("repT").value = laporan(); };
+  el("rC").onclick = function () { copyBox("repT"); };
+}
+
+function rubrik() {
+  modal("<h2>Rubrik dan bobot</h2>" +
+    "<p>Bobot tiap tugas di latihan ini sama dengan bobot Sub-CPMK pada RPS, jadi nilai akhir terbobot di rapor sebanding dengan cara mata kuliah ini dinilai.</p>" +
+    '<table class="t"><tr><th>Tugas</th><th>Sub-CPMK</th><th class="n">Bobot</th><th>Minggu</th></tr>' +
+    "<tr><td>Memilih sumber informasi</td><td>1</td><td class=\"n\">11%</td><td>1\u20132</td></tr>" +
+    "<tr><td>Merencanakan perjalanan dinas</td><td>2</td><td class=\"n\">11%</td><td>3\u20134</td></tr>" +
+    "<tr><td>Mengelola kas kecil</td><td>3</td><td class=\"n\">16%</td><td>5\u20137</td></tr>" +
+    "<tr><td>Memilih layanan perbankan</td><td>4</td><td class=\"n\">18%</td><td>8\u20139</td></tr>" +
+    "<tr><td>Menata perabot kantor</td><td>5</td><td class=\"n\">18%</td><td>11\u201312</td></tr>" +
+    "<tr><td>Menganalisis mesin kantor</td><td>6</td><td class=\"n\">13%</td><td>13\u201314</td></tr>" +
+    "<tr><td>Menentukan dokumen bisnis</td><td>7</td><td class=\"n\">13%</td><td>15\u201317</td></tr></table>" +
+    "<h3>Empat aspek yang dinilai pada tugas aslinya</h3>" +
+    "<p>Rubrik RPS memakai empat aspek bernilai 0\u201325 untuk setiap tugas: ketepatan mengidentifikasi kebutuhan, ketepatan memilih atau menentukan, kelengkapan hasil, serta kerapian dan ketelitian penyajian. Latihan ini menilai tiga aspek pertama secara otomatis. Aspek kerapian penyajian hanya bisa dinilai dosen dari dokumen yang kamu kumpulkan.</p>" +
+    "<h3>Yang tidak bisa digantikan latihan ini</h3>" +
+    "<p>Tugas sebenarnya pada RPS menuntut hasil dalam bentuk dokumen, tabel Excel, PDF, dan presentasi kelompok. Latihan ini melatih keputusannya \u2014 sumber mana, dokumen mana, mesin mana, urutan mana \u2014 supaya waktu mengerjakan dokumen aslinya tidak habis untuk menebak.</p>" +
+    '<div class="btnrow"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+}
+function panduan() {
+  modal("<h2>Panduan istilah</h2>" +
+    "<h3>Perjalanan dinas</h3>" +
+    "<p><b>Surat tugas</b> \u2014 surat dari pimpinan yang menyatakan seseorang ditugaskan melakukan pekerjaan tertentu.<br>" +
+    "<b>SPPD</b> \u2014 Surat Perintah Perjalanan Dinas, dasar administrasi dan pertanggungjawaban biaya perjalanan.<br>" +
+    "<b>Itinerary</b> \u2014 jadwal perjalanan terperinci: jam, tempat, kegiatan, dan kontak.<br>" +
+    "<b>Uang harian</b> \u2014 uang untuk makan dan kebutuhan harian selama bertugas, dibayarkan per hari.</p>" +
+    "<h3>Kas kecil</h3>" +
+    "<p><b>Imprest</b> \u2014 dana kas kecil ditetapkan tetap dan diisi kembali sebesar pengeluarannya.<br>" +
+    "<b>Fluktuasi</b> \u2014 saldo kas kecil dibiarkan berubah, pengisian kembali boleh berapa saja.<br>" +
+    "<b>Voucher kas kecil</b> \u2014 bukti pengeluaran internal yang ditandatangani, dilampiri nota atau kuitansi.<br>" +
+    "<b>Laporan pertanggungjawaban</b> \u2014 rekap pengeluaran per jenis beserta saldo akhir.</p>" +
+    "<h3>Perbankan</h3>" +
+    "<p><b>Giro</b> \u2014 rekening untuk lalu lintas pembayaran badan usaha, bisa memakai cek dan bilyet giro.<br>" +
+    "<b>RTGS</b> \u2014 transfer nominal besar yang diproses seketika pada hari yang sama.<br>" +
+    "<b>BI-FAST dan kliring</b> \u2014 transfer berbiaya lebih murah untuk nominal kecil dan menengah.<br>" +
+    "<b>Virtual account</b> \u2014 nomor rekening unik per pelanggan agar pembayaran otomatis teridentifikasi.<br>" +
+    "<b>Bank garansi</b> \u2014 jaminan bank atas kewajiban perusahaan, sering disyaratkan dalam tender.<br>" +
+    "<b>L/C</b> \u2014 jaminan pembayaran dalam perdagangan antarnegara.<br>" +
+    "<b>Safe deposit box</b> \u2014 penyimpanan dokumen dan benda berharga di bank.</p>" +
+    "<p class=\"hint\">Batas nominal dan biaya setiap layanan transfer berubah dari waktu ke waktu. Periksa ketentuan yang berlaku sebelum memakainya di pekerjaan nyata.</p>" +
+    "<h3>Tata ruang</h3>" +
+    "<p><b>Asas jarak terpendek</b> \u2014 pekerjaan yang paling sering dilakukan ditempatkan paling dekat.<br>" +
+    "<b>Asas rangkaian kerja</b> \u2014 perabot disusun mengikuti urutan pekerjaan.<br>" +
+    "<b>Asas penggunaan seluruh ruang</b> \u2014 tidak ada sudut terbuang dan tidak ada jalan terhalang.</p>" +
+    '<div class="btnrow"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+}
+
+/* ---------------- ekspor / impor ---------------- */
+function copyBox(id) {
+  var ta = el(id);
+  ta.focus(); ta.select();
+  try { ta.setSelectionRange(0, ta.value.length); } catch (e) {}
+  var ok = false;
+  try { ok = document.execCommand("copy"); } catch (e2) { ok = false; }
+  if (!ok && navigator.clipboard) {
+    navigator.clipboard.writeText(ta.value).then(function () { toast("Tersalin."); },
+      function () { toast("Tekan lama di kotak teks, lalu Select All \u2192 Copy."); });
+    return;
+  }
+  toast(ok ? "Tersalin. Tempel ke dokumen atau LMS." : "Tekan lama di kotak teks, lalu Select All \u2192 Copy.");
+}
+function exportDialog() {
+  var json = JSON.stringify(S, null, 2);
+  var name = "mejasekretaris-" + (S.npm || "siswa").replace(/[^a-zA-Z0-9]+/g, "") + "-" + new Date().toISOString().slice(0, 10) + ".json";
+  modal("<h2>Export jawaban</h2><p>Di iPhone dan iPad tombol download biasanya tidak berfungsi \u2014 pakai Copy, lalu tempel ke WhatsApp, email, atau kolom tugas di LMS.</p>" +
+    '<div class="btnrow"><button class="btn go" id="eC">Copy semua teks</button><button class="btn ghost" id="eD">Download .json</button></div>' +
+    '<textarea id="eT" rows="8">' + esc(json) + "</textarea>" +
+    '<p class="hint">Nama berkas: ' + esc(name) + "</p>" +
+    '<div class="btnrow"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+  el("eC").onclick = function () { copyBox("eT"); };
+  el("eD").onclick = function () {
+    try {
+      var b = new Blob([json], { type: "application/json" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(b); a.download = name;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+      toast("Berkas " + name + " diunduh.");
+    } catch (e) { toast("Download tidak didukung di browser ini. Pakai Copy."); }
+  };
+}
+function applyImport(txt) {
+  try {
+    var o = JSON.parse(txt);
+    if (!o || o.v !== 1) throw 0;
+    S = o; if (!S.m) S.m = {}; if (!S.badges) S.badges = [];
+    save(); closeModal(); paintRail(); go(S.cur || MISSIONS[0].id); toast("Jawaban dimuat.");
+  } catch (e) { toast("Teks tidak dikenali. Pastikan seluruh isi berkas .json tersalin."); }
+}
+function importDialog() {
+  modal("<h2>Import jawaban</h2><p>Pilih berkas .json, atau tempel isinya ke kotak di bawah.</p>" +
+    '<input type="file" id="iF" accept="application/json,text/plain,.json" style="margin-bottom:12px">' +
+    '<textarea id="iT" rows="6" placeholder="Tempel isi berkas .json di sini."></textarea>' +
+    '<div class="btnrow"><button class="btn go" id="iG">Muat</button><button class="btn ghost" onclick="closeModal()">Batal</button></div>');
+  el("iF").onchange = function () {
+    if (!this.files || !this.files[0]) return;
+    var r = new FileReader();
+    r.onload = function () { applyImport(r.result); };
+    r.onerror = function () { toast("Berkas tidak bisa dibaca. Pakai cara tempel teks."); };
+    r.readAsText(this.files[0]);
+  };
+  el("iG").onclick = function () {
+    var v = el("iT").value.trim();
+    if (!v) { toast("Kotaknya masih kosong."); return; }
+    applyImport(v);
+  };
+}
+
+/* ---------------- pembuka ---------------- */
+function pembuka() {
+  cur = null; paintRail();
+  el("stage").innerHTML =
+    '<div class="tag">Sebelum mulai</div><h1>Tujuh pekerjaan di meja sekretaris</h1>' +
+    '<p class="goal" style="font-size:1.12rem">Satu semester Kesekretariatan 2, dikerjakan sebagai pekerjaan sungguhan: mencari informasi untuk rapat pimpinan, menyiapkan perjalanan dinas, menutup kas kecil, memilih layanan bank, menata ruang kerja, mengusulkan mesin kantor, dan menentukan dokumen kegiatan bisnis. Bobot tiap tugas sama dengan bobot Sub-CPMK di RPS.</p>' +
+    '<div class="card"><h3>Isi identitas dulu</h3><p class="hint">Dipakai di rapor dan berkas yang kamu kumpulkan.</p>' +
+    '<label class="fl" for="pn">Nama</label><input type="text" id="pn" value="' + esc(S.nama) + '">' +
+    '<label class="fl" for="pp">NPM</label><input type="text" id="pp" value="' + esc(S.npm) + '"></div>' +
+    '<div class="note"><b>Cara kerja penilaiannya.</b> Setiap tugas diperiksa dengan aturan yang bisa kamu baca di halaman hasilnya \u2014 bukan kesan, bukan AI. Kamu boleh mengulang berapa kali pun, dan nilai tertinggi yang disimpan. Yang tidak dinilai di sini adalah kerapian dokumen yang kamu kumpulkan ke LMS; itu tetap tugas dosen.</div>' +
+    '<div class="btnrow"><button class="btn go" id="bGo">Mulai Tugas 1</button>' +
+    (Object.keys(S.m).length ? '<button class="btn ghost" id="bLanjut">Lanjutkan yang terakhir</button>' : "") + "</div>";
+  el("bGo").onclick = function () {
+    S.nama = el("pn").value; S.npm = el("pp").value; save();
+    go(MISSIONS[0].id);
+  };
+  if (el("bLanjut")) el("bLanjut").onclick = function () {
+    S.nama = el("pn").value; S.npm = el("pp").value; save();
+    go(S.cur || MISSIONS[0].id);
+  };
+}
+
+/* ---------------- init ---------------- */
+load();
+el("modal").addEventListener("click", function (e) { if (e.target === el("modal")) closeModal(); });
+document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
+document.addEventListener("click", function (e) {
+  var b = e.target.closest("button[data-go]");
+  if (b && !b.disabled) { go(b.getAttribute("data-go")); el("stage").focus(); }
+});
+el("btnRubrik").onclick = rubrik;
+el("btnPanduan").onclick = panduan;
+el("btnRapor").onclick = rapor;
+el("btnExport").onclick = exportDialog;
+el("btnImport").onclick = importDialog;
+el("btnReset").onclick = function () {
+  modal("<h2>Kosongkan semua?</h2><p>Seluruh jawaban, nilai, dan badge di browser ini akan dihapus dan tidak bisa dikembalikan. Export dulu kalau masih dibutuhkan.</p>" +
+    '<div class="btnrow"><button class="btn" id="rz">Ya, kosongkan</button><button class="btn ghost" onclick="closeModal()">Batal</button></div>');
+  el("rz").onclick = function () { S = fresh(); save(); closeModal(); pembuka(); };
+};
+if (S.nama || Object.keys(S.m).length) { paintRail(); go(S.cur || MISSIONS[0].id); } else pembuka();
+
+</script>
+</body>
+</html>

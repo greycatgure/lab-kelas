@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ruang Rancang — Perancangan Web</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%2317202B'/%3E%3Ctext x='16' y='22' font-family='Georgia,serif' font-size='14' font-weight='700' fill='%234FA3B8' text-anchor='middle'%3ERR%3C/text%3E%3C/svg%3E">
+<style>/* =========================================================
+   RUANG RANCANG — Perancangan Web (D3 Administrasi Bisnis)
+   Sekeluarga dengan Ruang Usaha dan Lab Tiga Engine: kertas
+   & tinta sama. Aksennya petrol karena lab ini soal layar,
+   bukan meja kerja. Nama variabel --amber sengaja dipertahankan
+   supaya blok CSS tetap bisa disalin antarlab.
+   ========================================================= */
+:root{
+  --paper:#F1F2EC; --card:#FBFBF7; --ink:#17202B; --ink-soft:#4A5563; --rule:#CDD1C2;
+  --amber:#1E5E73; --good:#2E6B45; --bad:#A32020; --info:#2547C8; --plum:#7B2D7A;
+  --sans:"Arial Narrow","Helvetica Neue Condensed","Liberation Sans Narrow",system-ui,sans-serif;
+  --serif:Georgia,"Iowan Old Style","Palatino Linotype",serif;
+  --mono:ui-monospace,"SFMono-Regular","Consolas","Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:17px; line-height:1.6; -webkit-text-size-adjust:100%}
+h1,h2,h3,h4,.u-sans{font-family:var(--sans); letter-spacing:-.01em; font-weight:700; line-height:1.1}
+h1{font-size:2.3rem;margin:0}
+h2{font-size:1.75rem;margin:0 0 6px}
+h3{font-size:1.15rem;margin:22px 0 6px}
+p{margin:0 0 .9em; max-width:68ch}
+button:focus{outline:2px solid var(--amber); outline-offset:2px}
+:focus-visible{outline:3px solid var(--amber); outline-offset:2px}
+
+.wrap{display:grid; grid-template-columns:258px minmax(0,1fr); min-height:100vh}
+.rail{background:var(--ink); color:#E7EAE2; padding:20px 16px 40px; position:sticky; top:0; align-self:start; height:100vh; overflow:auto; -webkit-overflow-scrolling:touch}
+.stage{padding:32px 36px 90px; max-width:940px; min-width:0}
+
+.wm{font-family:var(--sans); font-size:1.4rem; line-height:1}
+.wm span{display:block; font-family:var(--mono); font-size:.68rem; color:#9AA69B; margin-top:6px; letter-spacing:.02em}
+.who{margin:16px 0; padding:10px 12px; background:#22303F; border-radius:3px; font-family:var(--sans); font-size:.88rem}
+.who b{display:block; font-size:1.05rem}
+.who em{display:block; color:#9AA69B; font-style:normal; font-family:var(--mono); font-size:.72rem; margin-top:3px}
+.xp{height:7px; background:#0E151D; border-radius:99px; margin-top:8px; overflow:hidden}
+.xp i{display:block; height:100%; background:#4FA3B8; width:0; transition:width .6s ease}
+.blok{margin:16px 0 5px; font-family:var(--sans); font-size:.8rem; color:#8E9A8F}
+.mlist{list-style:none; margin:0; padding:0}
+.mlist button{width:100%; text-align:left; background:none; border:0; color:#D8DDD3; cursor:pointer; font-family:var(--sans); font-size:.94rem; padding:6px 8px 6px 26px; border-radius:3px; position:relative; line-height:1.25}
+.mlist button:hover{background:#22303F}
+.mlist button[aria-current="true"]{background:#2C3C4E; color:#fff}
+.mlist button:before{content:attr(data-n); position:absolute; left:6px; top:6px; font-family:var(--mono); font-size:.7rem; color:#7E8A80}
+.mlist button.done:before{content:"\2713"; color:#4FA3B8}
+.mlist button.locked{opacity:.42; cursor:not-allowed}
+.mlist .w{font-family:var(--mono); font-size:.68rem; opacity:.65}
+.tools{margin-top:20px; border-top:1px solid #2C3C4E; padding-top:12px; display:grid; gap:5px}
+.tools button{background:none; border:1px solid #3A4C60; color:#C9D0C6; font-family:var(--sans); font-size:.86rem; padding:5px 9px; border-radius:3px; cursor:pointer; text-align:left}
+.tools button:hover{background:#22303F; color:#fff}
+.badges{display:flex; gap:6px; flex-wrap:wrap; margin-top:8px}
+.badge{font-family:var(--sans); font-size:.76rem; border:1px solid #3A4C60; color:#9AA69B; padding:2px 7px; border-radius:99px}
+.badge.on{background:#4FA3B8; color:#17202B; border-color:#D98C6A}
+
+.tag{font-family:var(--sans); font-size:.9rem; color:var(--amber); display:flex; align-items:center; gap:8px; margin-bottom:8px}
+.tag:before{content:""; width:30px; height:4px; background:var(--amber)}
+.mt{display:flex; gap:11px; align-items:baseline; margin-bottom:5px}
+.mt .no{font-family:var(--mono); font-size:.95rem; color:var(--ink-soft)}
+.goal{font-family:var(--sans); font-size:1.04rem; color:var(--ink-soft); max-width:62ch; margin-bottom:20px}
+.brief{border-left:4px solid var(--rule); padding-left:18px; margin-bottom:22px}
+ol.steps{counter-reset:s; list-style:none; padding:0; margin:0 0 22px; max-width:68ch}
+ol.steps li{counter-increment:s; position:relative; padding-left:38px; margin-bottom:10px}
+ol.steps li:before{content:counter(s); position:absolute; left:0; top:2px; width:25px; height:25px; background:var(--amber); color:#fff; font-family:var(--mono); font-size:.8rem; display:grid; place-items:center; border-radius:50%}
+.note{background:#E6E9DC; border-radius:3px; padding:12px 16px; font-size:.94rem; margin-bottom:20px; max-width:70ch}
+.note b{font-family:var(--sans)}
+
+.card{background:var(--card); border:1px solid var(--rule); border-radius:4px; padding:16px 18px; margin-bottom:16px}
+.card>h3:first-child{margin-top:0}
+label.fl{display:block; font-family:var(--sans); font-size:.92rem; margin-bottom:3px}
+label.fl small{color:var(--ink-soft); font-family:var(--mono); font-size:.72rem; margin-left:5px}
+input[type=text],input[type=number],select,textarea{width:100%; font-family:var(--serif); font-size:1rem; color:var(--ink); background:#fff; border:1px solid var(--rule); border-radius:3px; padding:8px 10px; margin-bottom:12px}
+input[type=number]{font-family:var(--mono)}
+select{font-family:var(--sans)}
+textarea{min-height:80px; resize:vertical}
+.btn{font-family:var(--sans); font-size:1rem; background:var(--ink); color:#fff; border:0; padding:10px 20px; border-radius:3px; cursor:pointer}
+.btn:hover{background:#0E151D}
+.btn.go{background:var(--amber)} .btn.go:hover{background:#15444F}
+.btn.ghost{background:none; color:var(--ink); border:1px solid var(--ink)}
+.btn.ghost:hover{background:#E6E9DC}
+.btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:4px 0 22px}
+.hint{font-family:var(--mono); font-size:.74rem; color:var(--ink-soft); margin:-8px 0 12px}
+
+/* soal & pilihan */
+.q{border-bottom:1px solid var(--rule); padding:13px 0}
+.q:last-child{border-bottom:0}
+.q .stem{font-size:1.02rem; margin-bottom:7px; max-width:70ch}
+.q .stem b{font-family:var(--sans)}
+.opts{display:flex; gap:7px; flex-wrap:wrap}
+.opts button{font-family:var(--sans); font-size:.92rem; background:#fff; border:1px solid var(--rule); padding:6px 12px; border-radius:99px; cursor:pointer}
+.opts button[aria-pressed="true"]{background:var(--ink); color:#fff; border-color:var(--ink)}
+.opts button.right{background:#DCEBE0; border-color:var(--good); color:var(--good)}
+.opts button.part{background:#DCEAEE; border-color:var(--amber); color:var(--amber)}
+.opts button.wrong{background:#F4DCDC; border-color:var(--bad); color:var(--bad)}
+.why{font-size:.9rem; color:var(--ink-soft); margin-top:7px; max-width:72ch}
+
+/* checklist chip */
+.chips{display:flex; gap:7px; flex-wrap:wrap; margin-bottom:6px}
+.chip{font-family:var(--sans); font-size:.9rem; background:#fff; border:1px solid var(--rule); padding:6px 12px; border-radius:99px; cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink); color:#fff; border-color:var(--ink)}
+.chip.right{background:#DCEBE0; border-color:var(--good); color:var(--good)}
+.chip.wrong{background:#F4DCDC; border-color:var(--bad); color:var(--bad)}
+.chip.miss{background:#fff; border-color:var(--good); color:var(--good); border-style:dashed}
+
+/* urutan */
+.seq{list-style:none; padding:0; margin:0 0 10px}
+.seq li{background:#fff; border:1px solid var(--rule); border-radius:3px; padding:8px 12px; margin-bottom:6px; display:flex; gap:10px; align-items:center; font-size:.95rem}
+.seq li .n{font-family:var(--mono); font-size:.8rem; width:22px; color:var(--ink-soft)}
+.seq li .mv{margin-left:auto; display:flex; gap:4px}
+.seq li .mv button{font-family:var(--mono); background:#fff; border:1px solid var(--rule); width:28px; height:26px; border-radius:3px; cursor:pointer}
+.seq li.ok{border-color:var(--good); background:#F2F8F3}
+.seq li.no{border-color:var(--bad); background:#FBF3F3}
+
+/* tabel kas kecil */
+table.t{width:100%; border-collapse:collapse; font-size:.92rem; margin:10px 0 16px}
+table.t th,table.t td{border-bottom:1px solid var(--rule); padding:6px 7px; text-align:left; vertical-align:middle}
+table.t th{font-family:var(--sans); font-size:.88rem}
+table.t td.n,table.t th.n{font-family:var(--mono); text-align:right; white-space:nowrap}
+table.t select{margin:0; padding:4px 6px; font-size:.85rem}
+table.t tfoot td{font-family:var(--sans); border-top:2px solid var(--ink); border-bottom:0}
+.wrapx{overflow-x:auto}
+
+ul.find{list-style:none; padding:0; margin:0 0 16px}
+ul.find li{position:relative; padding:8px 0 8px 28px; border-bottom:1px solid var(--rule); max-width:74ch; font-size:.94rem}
+ul.find li:before{position:absolute; left:2px; top:8px; font-family:var(--mono); font-size:.88rem}
+ul.find li.ok:before{content:"\2713"; color:var(--good)}
+ul.find li.part:before{content:"~"; color:var(--amber)}
+ul.find li.no:before{content:"\00D7"; color:var(--bad)}
+ul.find li.info:before{content:"i"; color:var(--info)}
+ul.find li b{font-family:var(--sans)}
+
+.score{border:1px solid var(--ink); border-radius:4px; overflow:hidden; margin-bottom:20px}
+.score>header{background:var(--ink); color:#E7EAE2; font-family:var(--sans); font-size:.94rem; padding:8px 14px; display:flex; justify-content:space-between}
+.score .body{background:var(--card); padding:15px}
+.score .v{font-family:var(--sans); font-size:2.4rem; line-height:1}
+.score .track{height:8px; background:#E2E5DA; border-radius:99px; overflow:hidden; margin:8px 0 10px}
+.score .track i{display:block; height:100%; width:0; background:var(--amber); transition:width .6s ease}
+
+.modal{position:fixed; top:0; right:0; bottom:0; left:0; background:rgba(23,32,43,.72); display:grid; place-items:center; padding:18px; z-index:40}
+.modal[hidden]{display:none}
+.sheet{background:var(--paper); border-radius:5px; padding:24px; max-width:720px; width:100%; max-height:88vh; overflow:auto}
+.toast{position:fixed; left:50%; bottom:22px; transform:translateX(-50%); background:var(--ink); color:#fff; font-family:var(--sans); padding:10px 18px; border-radius:3px; z-index:50}
+.toast[hidden]{display:none}
+.rep{font-family:var(--mono); font-size:.78rem; line-height:1.5; white-space:pre; min-height:300px}
+
+
+
+/* ---- tambahan lab ini ---- */
+/* penggeser nilai (misi 4) — sama seperti di lab keluarga */
+.alloc{display:grid; gap:12px; margin-bottom:6px}
+.arow{display:grid; grid-template-columns:200px 1fr 60px; gap:12px; align-items:center}
+.arow .nm{font-family:var(--sans); font-size:.94rem}
+.arow .nm small{display:block; color:var(--ink-soft); font-family:var(--serif); font-size:.8rem; line-height:1.3}
+.arow output{font-family:var(--mono); font-size:.9rem; text-align:right}
+input[type=range]{width:100%; accent-color:var(--amber)}
+
+/* baris kode yang bisa ditandai (misi 3) */
+.lines{background:#17202B; border-radius:3px; overflow-x:auto; margin:0 0 14px}
+.lines button{display:flex; min-width:max-content; gap:11px; width:100%; text-align:left; background:none; border:0; border-left:3px solid transparent;
+  padding:2px 12px 2px 8px; font-family:var(--mono); font-size:.8rem; line-height:1.75; color:#E7EAE2; cursor:pointer}
+.lines button .n{color:#7E8A80; width:20px; flex:none; text-align:right}
+.lines button .s{white-space:pre; overflow-x:auto}
+.lines button:hover{background:#22303F}
+.lines button[aria-pressed="true"]{background:#1E5E73; border-left-color:#4FA3B8}
+.lines button.hit{background:#1B4634; border-left-color:#5FBF8A}
+.lines button.miss{background:#4A1F1F; border-left-color:#E08A84}
+.lines button .f{margin-left:auto; flex:none; padding-left:10px; font-size:.7rem; color:#A9B4AA; white-space:normal; text-align:right; max-width:20ch}
+
+/* pemilih warna (misi 2) */
+.sws{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px}
+.sws button{width:30px; height:30px; border:2px solid var(--rule); border-radius:3px; padding:0; cursor:pointer}
+.sws button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--ink); border-color:#fff}
+.ratio{font-family:var(--mono); font-size:.82rem; padding:7px 10px; border:1px solid var(--rule); border-radius:3px; background:#fff; margin-bottom:8px}
+.ratio.ya{border-color:var(--good); background:#F2F8F3; color:var(--good)}
+.ratio.tidak{border-color:var(--bad); background:#FBF3F3; color:var(--bad)}
+.mock{border:1px solid var(--rule); border-radius:3px; overflow:hidden; max-width:330px}
+.mock .bar{display:flex; gap:5px; padding:6px 8px; background:#E6E9DC; border-bottom:1px solid var(--rule)}
+.mock .bar i{width:8px; height:8px; border-radius:99px; background:var(--rule)}
+.mock .in{padding:16px 14px 18px}
+.mock .in h4{font-size:1.12rem; margin:0 0 5px}
+.mock .in p{font-size:.82rem; margin:0 0 11px; line-height:1.45}
+.mock .in span{display:inline-block; font-family:var(--sans); font-size:.8rem; padding:6px 12px; border-radius:3px}
+
+/* kotak model (misi 4) */
+.bxv{background:#fff; border:1px solid var(--rule); border-radius:3px; padding:14px; overflow-x:auto}
+.bxm{background:#EDEFE4; border:1px dashed var(--rule); display:inline-block}
+.bxb{background:#9CC0C8} .bxp{background:#DCEAEE}
+.bxc{background:#fff; border:1px solid var(--rule); height:38px; display:grid; place-items:center; font-family:var(--mono); font-size:.7rem; color:var(--ink-soft)}
+.readout{display:flex; gap:9px; flex-wrap:wrap; margin-top:11px; font-family:var(--mono); font-size:.78rem}
+.readout span{padding:4px 8px; border:1px solid var(--rule); border-radius:3px; background:#fff}
+.readout span.big{background:var(--ink); color:#fff; border-color:var(--ink)}
+
+/* bingkai peranti (misi 4) */
+.frames{display:flex; gap:12px; align-items:flex-end; overflow-x:auto; padding-bottom:6px; margin-bottom:6px}
+.frames > div{flex:none}
+.frames b{display:block; font-family:var(--mono); font-size:.68rem; color:var(--ink-soft); text-align:center; margin-bottom:4px}
+.scr{border:1px solid var(--rule); border-radius:3px; background:#E6E9DC; padding:6px}
+.scr .g{display:grid; gap:4px}
+.scr .p{background:#fff; border:1px solid var(--rule); border-radius:2px; padding:4px 3px; font-size:.5rem; line-height:1.25;
+  color:var(--ink-soft); text-align:center; overflow:hidden; white-space:nowrap; text-overflow:ellipsis}
+.scr .p i{display:block; height:12px; border-radius:2px; background:#E2E5DA; margin-bottom:3px}
+
+/* pratinjau hasil pencarian (misi 6) */
+.serp{background:#fff; border:1px solid var(--rule); border-radius:3px; padding:13px}
+.serp .u{font-family:var(--mono); font-size:.74rem; color:var(--ink-soft)}
+.serp .t{font-family:var(--sans); font-size:1.05rem; color:var(--info); margin:3px 0; line-height:1.3}
+.serp .d{font-size:.86rem; color:var(--ink-soft); line-height:1.5}
+.count{display:flex; justify-content:space-between; font-family:var(--mono); font-size:.72rem; color:var(--ink-soft); margin:-8px 0 12px}
+.count.ya{color:var(--good)}
+
+@media (max-width:700px){ .arow{grid-template-columns:1fr 56px} .arow input[type=range]{grid-column:1/-1} }
+
+@media (max-width:820px){
+  .wrap{grid-template-columns:1fr}
+  .rail{position:static; height:auto; padding-bottom:16px}
+  .stage{padding:22px 16px 70px}
+  h1{font-size:1.8rem} h2{font-size:1.4rem}
+  .room{max-width:100%}
+  .cell{font-size:.5rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{.rail,.btnrow,.tools,.modal{display:none!important} body{background:#fff} .stage{max-width:none;padding:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="rail" aria-label="Daftar misi">
+    <div class="wm">RUANG RANCANG<span>perancangan web &middot; d3 administrasi bisnis</span></div>
+    <div class="who" id="who"></div>
+    <div id="nav"></div>
+    <div class="tools">
+      <button id="btnRubrik">Bobot &amp; Sub-CPMK</button>
+      <button id="btnPanduan">Panduan istilah</button>
+      <button id="btnRapor">Rapor saya</button>
+      <button id="btnExport">Export jawaban</button>
+      <button id="btnImport">Import jawaban</button>
+      <button id="btnReset">Kosongkan</button>
+    </div>
+  </nav>
+  <main class="stage" id="stage" tabindex="-1"></main>
+</div>
+<div class="modal" id="modal" hidden><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast" hidden></div>
+<script>
+/* =======================================================================
+   RUANG RANCANG — Perancangan Web (AN232507)
+   Delapan misi mengikuti delapan Sub-CPMK pada RPS, dengan bobot yang
+   sama persis: 8, 10, 14, 18, 10, 14, 14, 12 — berjumlah 100.
+   Kasusnya memakai satu UMKM mitra, sama seperti tagihan tugas aslinya.
+   ======================================================================= */
+"use strict";
+
+var KEY = "ruangrancang.v1";
+var BLOK = { 1: "Sebelum UTS — pertemuan 1–7", 2: "Setelah UTS — pertemuan 9–15" };
+var LEVELS = [
+  { at: 0, t: "Anak Magang Studio" }, { at: 150, t: "Juru Gambar" },
+  { at: 320, t: "Perakit Halaman" }, { at: 500, t: "Perancang Situs" },
+  { at: 680, t: "Konsultan Web" }
+];
+var BADGES = [
+  { id: "konsep", t: "Paham Mekanisme" }, { id: "rancang", t: "Perancang Antarmuka" },
+  { id: "markah", t: "Markah Bersih" }, { id: "tampilan", t: "Penata Tampilan" },
+  { id: "alat", t: "Pemilih Alat" }, { id: "bangun", t: "Pembangun Situs" },
+  { id: "amanah", t: "Penjaga Amanah Mitra" }, { id: "serah", t: "Serah Terima Tuntas" },
+  { id: "lengkap", t: "Delapan Misi Tuntas" }
+];
+
+/* palet yang boleh dipilih di Misi 2 */
+var SWATCH = ["#FFFFFF", "#F1F2EC", "#EFE3C8", "#D9E7E8", "#C8A24B", "#9A6A18", "#1E5E73", "#2E6B45", "#7A2530", "#17202B"];
+
+var S = null;
+function fresh() { return { v: 1, nama: "", npm: "", mitra: "", xp: 0, badges: [], m: {}, cur: null }; }
+function load() {
+  try { var r = localStorage.getItem(KEY); S = r ? JSON.parse(r) : fresh(); }
+  catch (e) { S = fresh(); }
+  if (!S || S.v !== 1) S = fresh();
+  if (!S.m) S.m = {}; if (!S.badges) S.badges = [];
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) { toast("Browser menolak menyimpan. Pakai Export jawaban."); }
+}
+function award(id) {
+  if (S.badges.indexOf(id) < 0) {
+    S.badges.push(id);
+    for (var i = 0; i < BADGES.length; i++) if (BADGES[i].id === id) { toast("Badge baru: " + BADGES[i].t); return; }
+  }
+}
+function levelOf(xp) {
+  var out = LEVELS[0];
+  for (var i = 0; i < LEVELS.length; i++) if (xp >= LEVELS[i].at) out = LEVELS[i];
+  return out;
+}
+function finish(id, score, data) {
+  var prev = S.m[id] ? S.m[id].score : 0;
+  S.m[id] = { score: Math.max(prev, Math.round(score)), attempts: ((S.m[id] && S.m[id].attempts) || 0) + 1, data: data || {}, at: Date.now() };
+  S.xp = 0;
+  for (var k in S.m) S.xp += S.m[k].score;
+  var n = 0;
+  for (var j = 0; j < MISSIONS.length; j++) if (S.m[MISSIONS[j].id]) n++;
+  if (n === MISSIONS.length) award("lengkap");
+  save(); paintRail();
+}
+
+function el(id) { return document.getElementById(id); }
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
+var tt = null;
+function toast(m) { var t = el("toast"); t.textContent = m; t.hidden = false; clearTimeout(tt); tt = setTimeout(function () { t.hidden = true; }, 3400); }
+function modal(h) { el("sheet").innerHTML = h; el("modal").hidden = false; }
+function closeModal() { el("modal").hidden = true; }
+function mk(w, got, t, why) { return { w: w, got: Math.max(0, Math.min(1, got)), t: t, why: why || "" }; }
+function total(cs) {
+  var s = 0, m = 0;
+  for (var i = 0; i < cs.length; i++) { s += cs[i].w * cs[i].got; m += cs[i].w; }
+  return m ? Math.round(s / m * 100) : 0;
+}
+function checkList(cs) {
+  return '<ul class="find">' + cs.map(function (c) {
+    var cl = c.got >= .99 ? "ok" : (c.got > 0 ? "part" : "no");
+    return '<li class="' + cl + '"><b>' + esc(c.t) + "</b>" + (c.why ? " — " + esc(c.why) : "") + "</li>";
+  }).join("") + "</ul>";
+}
+function scoreBox(sc, cap, cs) {
+  return '<section class="score"><header><span>Penilaian</span><span>' + esc(cap || "") + "</span></header>" +
+    '<div class="body"><div class="v">' + sc + '<span style="font-size:1rem;color:var(--ink-soft)">/100</span></div>' +
+    '<div class="track"><i style="width:' + sc + '%"></i></div>' + (cs ? checkList(cs) : "") + "</div></section>";
+}
+function inArr(a, v) { return a && a.indexOf(v) >= 0; }
+function mitra() { return S.mitra ? S.mitra : "Kopi Kemuning"; }
+
+/* kontras WCAG — dipakai Misi 2, dan alasannya dijelaskan di sana */
+function lum(hex) {
+  var v = hex.replace("#", ""), c = [], i;
+  for (i = 0; i < 3; i++) {
+    var x = parseInt(v.substr(i * 2, 2), 16) / 255;
+    c.push(x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4));
+  }
+  return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+}
+function rasio(a, b) {
+  var l1 = lum(a), l2 = lum(b);
+  return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+}
+function r1(n) { return (Math.round(n * 10) / 10).toFixed(1); }
+/* =======================================================================
+   DAFTAR MISI — delapan Sub-CPMK, bobot persis seperti RPS
+   kind: match | antarmuka | markah | tampilan | bangun | proyek | serah
+   ======================================================================= */
+
+var MISSIONS = [
+{
+  id: "r1", blok: 1, no: 1, bobot: 8, sub: "1.1",
+  title: "Konsep dan mekanisme kerja website",
+  goal: "Pisahkan yang benar tentang website dari yang cuma sering diulang orang, lalu tentukan jenis yang tepat untuk mitra.",
+  brief:
+    "<p>Website adalah kumpulan halaman yang saling tertaut, disimpan di satu server, dan diakses lewat satu alamat domain. Yang membedakannya dari akun media sosial bukan tampilannya, melainkan <b>kepemilikannya</b>: alamat, isi, dan data pelanggan dikendalikan mitra, bukan platform.</p>" +
+    "<p>Empat komponen selalu ada: <b>domain</b> (alamat yang diketik), <b>hosting</b> (ruang server yang menyala 24 jam), <b>berkas</b> HTML, CSS, dan JavaScript, serta <b>basis data</b> — yang terakhir hanya diperlukan website dinamis.</p>" +
+    "<p>Menentukan jenis website adalah keputusan bisnis, bukan keputusan teknis. Yang menentukan adalah tujuan mitra dan siapa yang akan memperbarui isinya nanti.</p>",
+  steps: [
+    "Baca tiap pernyataan pelan-pelan; jangan memilih yang terdengar paling canggih.",
+    "Perhatikan kata mutlak seperti “selalu” dan “pasti” — biasanya penanda mitos.",
+    "Untuk soal jenis website dan pilihan alat, tanyakan dulu: apa tujuan mitra, dan siapa yang mengelolanya enam bulan lagi?"
+  ],
+  note: "<b>Yang perlu diluruskan sejak awal:</b> website UMKM tidak menggantikan media sosial maupun marketplace. Ia menjadi pusat yang dirujuk keduanya — media sosial menarik perhatian, website meyakinkan, marketplace memudahkan transaksi.",
+  kind: "match",
+  opts: ["Benar", "Mitos"],
+  items: [
+    { stem: "Website yang bagus pasti mahal, jadi UMKM kecil sebaiknya menunggu punya modal besar.", ans: 1, alt: -1,
+      why: "Hosting dan domain gratis atau murah sudah memadai untuk memulai. Yang mahal justru waktu menyusun isi — dan itu tidak bisa dibeli." },
+    { stem: "Menambah fitur berarti menambah pekerjaan harian mitra, bukan cuma menambah biaya.", ans: 0, alt: -1,
+      why: "Benar. Toko online penuh berarti ada yang harus memeriksa pesanan, stok, dan pembayaran setiap hari. Fitur yang tidak terurus lebih buruk daripada tidak ada." },
+    { stem: "Halaman terasa lambat hampir selalu karena servernya jelek.", ans: 1, alt: -1,
+      why: "Pada website UMKM penyebabnya hampir selalu berkas gambar yang terlalu besar. Itu sebabnya kompresi foto dibahas sejak awal dan diukur ulang di akhir." },
+    { stem: "Website statis tetap bisa menerima pesanan tanpa program di sisi server.", ans: 0, alt: -1,
+      why: "Benar. Layanan formulir daring, Google Forms, atau tautan WhatsApp menitipkan pekerjaan itu ke layanan lain — cukup memadai untuk UMKM." },
+    { stem: "Basis data diperlukan oleh setiap website.", ans: 1, alt: -1,
+      why: "Hanya website dinamis yang memerlukannya. Company profile dan landing page berjalan tanpa basis data sama sekali." },
+    { stem: "HTTPS hanya penting untuk website yang menerima pembayaran.", ans: 1, alt: -1,
+      why: "Formulir yang meminta nama, nomor, dan alamat pengiriman pun harus terenkripsi. Peramban modern juga menandai halaman HTTP sebagai tidak aman." },
+    { stem: "Mitra punya delapan produk yang harganya berubah tiap pekan dan ingin menyuntingnya sendiri. Jenis website yang paling tepat?",
+      opts: ["Landing page satu halaman", "Katalog produk dengan pemesanan dasar", "Portal banyak layanan"], ans: 1, alt: -1,
+      why: "Produk banyak dan berubah menuntut katalog. Transaksinya masih ditutup lewat percakapan, jadi toko online penuh belum sepadan." },
+    { stem: "Mitra tidak punya tim teknis dan ingin memperbarui isi sendiri. Anda menawarkan apa?",
+      opts: ["Web editor — tulis kode sendiri", "Website builder — antarmuka visual"], ans: 1, alt: -1,
+      why: "Kendali penuh tidak berguna bila pemegang website tidak mampu memakainya. Inilah sebab paling umum website UMKM berhenti diperbarui setelah proyek selesai." }
+  ],
+  badge: "konsep"
+},
+{
+  id: "r2", blok: 1, no: 2, bobot: 10, sub: "1.2",
+  title: "Merancang antarmuka yang terbaca",
+  goal: "Susun urutan beranda, tetapkan palet yang lolos ambang kontras, lalu tulis kalimat pertama yang dibaca pengunjung.",
+  brief:
+    "<p>Struktur informasi disusun lebih dahulu; tampilan mengikuti. Urutan blok pada beranda sebaiknya mengikuti percakapan penjualan yang wajar: <b>apa ini → apa yang dijual → kenapa saya percaya → bagaimana saya membeli → ke mana saya menghubungi</b>.</p>" +
+    "<p>Warna bukan soal selera. Kontras teks terhadap latar minimal <b>4,5 : 1</b> agar terbaca di layar ponsel di bawah sinar matahari — ini ambang WCAG, bukan pendapat. Warna aksen cukup 3 : 1 karena dipakai pada tombol berukuran besar.</p>" +
+    "<p>Naskah hero yang bekerja menyebut apa yang dijual, untuk siapa, satu alasan mempercayainya, dan satu ajakan bertindak. Menampilkan harga sejak awal mengurangi pesan “berapa?” secara drastis.</p>",
+  steps: [
+    "Susun blok beranda dengan tombol panah, bukan dengan menebak mana yang paling menarik.",
+    "Pilih latar dan teks lebih dahulu sampai angka kontrasnya lolos, baru pilih warna aksen.",
+    "Bandingkan ketiga naskah hero dari sisi pembeli yang baru pertama kali membuka halaman."
+  ],
+  note: "<b>Uji cepat untuk palet:</b> kalau angka kontrasnya di bawah 4,5 kamu belum boleh lanjut, walau warnanya terlihat bagus di layar laptopmu. Mahasiswa sering lupa bahwa pembeli membaca dari ponsel, sering di luar ruangan.",
+  kind: "antarmuka",
+  blok_urut: [
+    { id: "h", t: "Hero — nama usaha, satu kalimat nilai jual, satu tombol" },
+    { id: "s", t: "Sorotan produk — tiga item unggulan" },
+    { id: "b", t: "Bukti — testimoni, foto proses, legalitas" },
+    { id: "c", t: "Cara memesan — langkah, ongkos kirim, pembayaran" },
+    { id: "k", t: "Kontak dan penutup — ajakan bertindak diulang" }
+  ],
+  kunci_urut: ["h", "s", "b", "c", "k"],
+  hero: [
+    { t: "Kopi Robusta Pagaralam, Disangrai Setiap Pekan — dikirim 24 jam ke seluruh Palembang. [ Pesan lewat WhatsApp ] Mulai Rp 45.000 / 250 g", ok: 1,
+      why: "Menyebut produk, asal, kesegaran, jangkauan kirim, harga, dan satu ajakan bertindak. Enam informasi dalam dua baris." },
+    { t: "Selamat Datang di Website Kami — kami adalah usaha terbaik dan terpercaya yang berdiri sejak lama dengan pelayanan memuaskan. [ Selengkapnya ]", ok: 0,
+      why: "Tidak ada satu pun informasi baru. Pengunjung tidak tahu apa yang dijual, untuk siapa, dan berapa harganya." },
+    { t: "Kualitas Terbaik, Termurah, Nomor Satu, Amanah, Bergaransi. [ Hubungi Kami ] [ Tentang Kami ] [ Galeri ] [ Blog ]", ok: 0,
+      why: "Tumpukan kata sifat yang tidak bisa diperiksa siapa pun, dan empat tombol setara yang membuat pengunjung tidak tahu harus menekan yang mana." }
+  ],
+  badge: "rancang"
+},
+{
+  id: "r3", blok: 1, no: 3, bobot: 14, sub: "2.1",
+  title: "Menulis markah yang bersih",
+  goal: "Temukan kesalahan yang diloloskan peramban tetapi ditolak validator, lalu benahi tabel dan formulirnya.",
+  brief:
+    "<p>Peramban memaafkan banyak kesalahan dan tetap menampilkan halaman. Justru karena itu kesalahan sulit ditemukan — dan yang tidak memaafkan adalah pembaca layar serta mesin pencari.</p>" +
+    "<p>Tiga hal yang paling sering terlewat: <b>atribut lang</b> pada tag html, <b>alt</b> pada gambar, dan <b>meta viewport</b> tanpa mana halaman tampil mengecil di ponsel. Tingkat heading juga tidak boleh melompat: setelah h1 datang h2, bukan h3.</p>" +
+    "<p>Pada tabel, pembeda tabel rapi dari tabel yang sekadar tampil ada tiga: <b>caption</b>, <b>th</b>, dan <b>scope</b>. Pada formulir, setiap input wajib berpasangan dengan label lewat <b>for</b> dan <b>id</b> — placeholder bukan pengganti label.</p>",
+  steps: [
+    "Baca kode baris demi baris, lalu ketuk baris yang menurutmu bermasalah.",
+    "Menandai baris yang sehat akan mengurangi nilai, jadi jangan menandai semuanya.",
+    "Setelah itu jawab empat soal tabel dan formulir di bawahnya."
+  ],
+  note: "<b>Satu kesalahan tidak bisa ditandai</b> karena bentuknya baris yang hilang, bukan baris yang salah. Setelah memeriksa, tanyakan pada dirimu: apa yang seharusnya ada di dalam <i>head</i> tetapi tidak tertulis di sana?",
+  kind: "markah",
+  lines: [
+    "<!DOCTYPE html>",
+    "<html>",
+    "<head>",
+    "  <meta charset=\"UTF-8\">",
+    "  <title>Beranda</title>",
+    "</head>",
+    "<body>",
+    "  <h1>Kopi Kemuning</h1>",
+    "  <h3>Produk Unggulan</h3>",
+    "  <p>Robusta pilihan dari kebun sendiri.",
+    "  <img src=\"robusta.jpg\">",
+    "  <a href=produk.html>Lihat katalog</a>",
+    "</body>",
+    "</html>"
+  ],
+  bad: [1, 8, 9, 10, 11],
+  notes: {
+    1: "atribut lang hilang",
+    8: "melompat dari h1 ke h3",
+    9: "tag <p> tidak ditutup",
+    10: "gambar tanpa atribut alt",
+    11: "nilai atribut tanpa tanda kutip"
+  },
+  opts: ["Benar", "Salah"],
+  items: [
+    { stem: "Sel kepala tabel boleh ditulis <td><b>Produk</b></td> asalkan terlihat tebal.", ans: 1, alt: -1,
+      why: "Pembaca layar membacanya sebagai sel data biasa. Kepala tabel ditulis <th> dan diberi scope agar arah penjelasannya jelas." },
+    { stem: "Nomor WhatsApp sebaiknya memakai input type apa?",
+      opts: ["text", "tel", "number"], ans: 1, alt: -1,
+      why: "tel memunculkan papan ketik angka besar. number membuang angka nol di depan dan menampilkan tombol naik-turun yang tidak ada gunanya." },
+    { stem: "Atribut alt terbaik untuk foto kemasan produk?",
+      opts: ["alt=\"gambar produk\"", "alt=\"Kemasan robusta 250 gram tampak depan\"", "alt=\"kopi murah terbaik palembang\""], ans: 1, alt: -1,
+      why: "alt menjelaskan isi gambar dalam satu frasa wajar. Menumpuk kata kunci dinilai kecurangan, dan “gambar produk” tidak membedakan apa pun." },
+    { stem: "Mitra minta formulir dengan 12 kolom wajib termasuk tanggal lahir pembeli. Sikap Anda?",
+      opts: ["Ikuti saja, mitra yang paling tahu usahanya", "Kurangi ke kolom yang benar-benar dipakai memproses pesanan"], ans: 1, alt: -1,
+      why: "Setiap kolom tambahan mengurangi jumlah pengisi, dan data yang tidak dipakai menjadi beban menjaga data pribadi. Enam kolom biasanya cukup." }
+  ],
+  badge: "markah"
+},
+{
+  id: "r4", blok: 1, no: 4, bobot: 18, sub: "2.2",
+  title: "Menata tampilan dan perilaku",
+  goal: "Selesaikan tabrakan aturan CSS, kunci lebar kartu, atur kolom katalog di tiga lebar layar, lalu pasang peristiwa pada tindakannya.",
+  brief:
+    "<p>Misi terberat di semester ini — bobotnya 18% karena mencakup CSS, tata letak responsif, dan JavaScript sekaligus.</p>" +
+    "<p><b>Cascade:</b> bila dua aturan mengatur properti yang sama, yang menang adalah yang bobot selektornya lebih tinggi — id 100, kelas 10, tipe elemen 1. Bila seri, aturan yang ditulis paling akhir menang.</p>" +
+    "<p><b>Box model:</b> tanpa <code>box-sizing: border-box</code>, lebar yang kamu tulis adalah lebar isi saja; padding dan border ditambahkan di luarnya sehingga kolom yang seharusnya pas justru meluber.</p>" +
+    "<p><b>Mobile-first:</b> aturan dasar ditulis untuk layar terkecil, lalu media query <code>min-width</code> menambah untuk layar lebar. Arah sebaliknya membuat CSS lebih panjang dan lebih mudah keliru.</p>",
+  steps: [
+    "Jawab dulu soal cascade — bacanya dari bobot selektor, bukan dari urutan di HTML.",
+    "Geser padding dan border sampai lebar total tepat 300 px dengan padding minimal 16 px.",
+    "Atur kolom katalog di tiga lebar, lalu perhatikan nama produk yang mulai terpotong.",
+    "Terakhir, pasangkan tiap peristiwa dengan tindakan yang masuk akal."
+  ],
+  note: "<b>Perhatikan pembagian tugasnya:</b> yang diubah JavaScript hanyalah kelas CSS, bukan warna atau ukuran secara langsung. Dengan begitu tampilan tetap urusan CSS, dan JavaScript hanya mengurus keadaan — terbuka atau tertutup.",
+  kind: "tampilan",
+  cascade: {
+    code: "/* style.css */\np            { color: abu-abu; }   /* bobot 1   */\n.penting     { color: biru;     }   /* bobot 10  */\n#pengumuman  { color: merah;    }   /* bobot 100 */\n\n<!-- index.html -->\n<p class=\"penting\" id=\"pengumuman\">Diskon berakhir hari ini.</p>",
+    stem: "Warna apa yang benar-benar tampil pada paragraf itu?",
+    opts: ["Abu-abu", "Biru", "Merah"],
+    ans: 2,
+    why: "Id berbobot 100, mengalahkan kelas dan tipe elemen. Urutan atribut pada HTML tidak berpengaruh sama sekali."
+  },
+  produk: ["Robusta Medium 250 g", "Robusta Dark 250 g", "Arabika Semendo 250 g", "Bubuk Halus 200 g", "Kopi Susu Botol", "Cold Brew 500 ml"],
+  peristiwa: {
+    left: [
+      { id: "click", t: "\"click\" pada tombol menu" },
+      { id: "submit", t: "\"submit\" pada formulir pesanan" },
+      { id: "scroll", t: "\"scroll\" pada jendela" }
+    ],
+    right: [
+      { id: "toggle", t: "menu.classList.toggle(\"terbuka\")" },
+      { id: "prevent", t: "e.preventDefault() lalu periksa isi kolom" },
+      { id: "show", t: "tampilkan tombol kembali ke atas setelah 400 px" }
+    ],
+    kunci: { click: "toggle", submit: "prevent", scroll: "show" }
+  },
+  badge: "tampilan"
+},
+{
+  id: "r5", blok: 2, no: 5, bobot: 10, sub: "3.1",
+  title: "Memilih alat yang tepat",
+  goal: "Cocokkan kebutuhan calon klien dengan alatnya, lalu kenali kesalahan izin akses yang paling sering terjadi.",
+  brief:
+    "<p>Paruh kedua semester bergeser dari menulis kode ke memakai website builder. Tetapi keputusan yang dinilai tetap sama: memilih alat yang cocok, lalu menjelaskan alasannya.</p>" +
+    "<p><b>Canva</b> tercepat untuk satu halaman yang rapi, tanpa blog dan tanpa katalog dinamis. <b>Google Sites</b> menang pada keterpaduan — Forms yang tersambung ke Sheets memberi rekap pesanan tanpa biaya berulang. <b>Wix</b> paling lengkap: banyak halaman, blog, formulir, dan CMS, dengan fitur lanjutan berbayar.</p>" +
+    "<p>Pertanyaan penentunya bukan “mana yang terbaik”, melainkan <b>siapa yang akan memperbarui website ini enam bulan lagi</b>.</p>",
+  steps: [
+    "Untuk tiap calon klien, tanyakan dulu apa masalah nyatanya — bukan fitur apa yang ia sebut.",
+    "Perhatikan anggaran dan siapa yang akan mengelola isinya.",
+    "Pada soal izin akses, ingat bahwa izin penyunting dan izin pengunjung adalah dua pengaturan berbeda."
+  ],
+  note: "<b>Cara memastikan situs benar-benar terbuka untuk umum:</b> buka dari jendela penyamaran, bukan dari akun sendiri. Dua kesalahan paling sering adalah situs terbit yang izinnya masih terbatas, dan berkas sisipan yang belum dibuka untuk publik.",
+  kind: "match",
+  opts: ["Canva", "Google Sites", "Wix", "Kode sendiri"],
+  items: [
+    { stem: "Satu halaman promo pameran yang cantik dan harus jadi besok.", ans: 0, alt: -1,
+      why: "Canva tercepat menghasilkan halaman rapi secara visual. Keterbatasan strukturnya tidak menjadi masalah untuk satu halaman." },
+    { stem: "Katering harian, pesanan masuk tiap hari, butuh rekap rapi, anggaran nol.", ans: 1, alt: -1,
+      why: "Google Forms yang tersambung ke Sheets memberi rekap yang dapat disaring dan dihitung — gratis, dan itulah masalah nyata mitra ini." },
+    { stem: "Delapan produk yang harganya sering berubah, plus blog agar ditemukan di pencarian.", ans: 2, alt: -1,
+      why: "Katalog dinamis dan blog hanya ada pada Wix. Koleksi CMS membuat mitra cukup menyunting satu baris data." },
+    { stem: "Perusahaan yang sudah punya tim pengembang dan ingin kendali penuh.", ans: 3, alt: -1,
+      why: "Kendali penuh baru bermanfaat kalau ada yang mampu memakainya. Di situlah kode sendiri masuk akal." },
+    { stem: "Mitra ingin menyunting harga produk sendiri tanpa menyentuh desain halaman.", ans: 2, alt: 1,
+      why: "Koleksi CMS Wix memisahkan data dari tampilan. Google Sites bisa mendekati lewat Sheets yang disematkan, tetapi kurang rapi untuk katalog." },
+    { stem: "Situs sudah terbit, tetapi pengunjung diminta masuk akun Google dulu. Penyebabnya?",
+      opts: ["Belum terindeks Google", "Izin situs terbit masih terbatas", "Domain kedaluwarsa"], ans: 1, alt: -1,
+      why: "Pengindeksan hanya memengaruhi hasil pencarian. Domain kedaluwarsa membuat halaman tidak terbuka sama sekali, bukan meminta login." },
+    { stem: "Formulir yang disematkan tampil sebagai kotak kosong bagi pengunjung lain. Penyebabnya?",
+      opts: ["Formulir rusak dan harus dibuat ulang", "Izin berkas belum dibuka untuk publik"], ans: 1, alt: -1,
+      why: "Formulirnya baik-baik saja. Berkas yang masih berizin terbatas tampil kosong bagi siapa pun selain pemiliknya." },
+    { stem: "Mitra menelepon: nomor telepon sudah diperbaiki pagi tadi, tapi di halaman masih yang lama.",
+      opts: ["Perubahan belum diterbitkan ulang", "Perlu menunggu Google memperbarui"], ans: 0, alt: -1,
+      why: "Menyunting dan menerbitkan adalah dua langkah, bukan satu. Tuliskan hal ini di panduan pengelolaan — ini kebingungan mitra yang paling sering." }
+  ],
+  badge: "alat"
+},
+{
+  id: "r6", blok: 2, no: 6, bobot: 14, sub: "3.2",
+  title: "Membangun situs multi-halaman",
+  goal: "Tumpuk lapisan hero agar judulnya terbaca, tahan diri soal animasi, lalu tulis title tag dan meta description.",
+  brief:
+    "<p>Menumpuk teks di atas foto adalah tempat paling sering judul menjadi tidak terbaca. Urutannya selalu sama: foto paling bawah, lapisan peredam di tengah, teks dan tombol di atas. Ini persoalan kontras yang sama dengan Misi 2, hanya muncul dalam bentuk berbeda.</p>" +
+    "<p>Animasi dipakai untuk mengarahkan perhatian, bukan memamerkan efek. Tiga aturan sederhana: satu efek per bagian, durasi sekitar 0,3 detik, dan tidak ada animasi pada teks panjang. Halaman juga harus tetap dipahami sepenuhnya tanpa animasi — sebagian pengguna menyalakan pengaturan “kurangi gerakan”.</p>" +
+    "<p><b>Title tag</b> muncul sebagai judul biru di hasil pencarian dan sebagai nama tab; <b>meta description</b> adalah cuplikan di bawahnya. Letakkan kata kunci di depan, nama merek di belakang, dan satu ajakan bertindak pada deskripsi.</p>",
+  steps: [
+    "Susun lapisan hero dari yang paling bawah ke paling atas.",
+    "Pilih efek animasi yang menunjang keterbacaan; memilih yang berlebihan mengurangi nilai.",
+    "Tulis title dan deskripsi sambil melihat penghitung karakter dan pratinjau hasil pencarian."
+  ],
+  note: "<b>Kata kunci utama untuk latihan ini:</b> <span class=\"u-sans\">kopi robusta pagaralam</span>. Sebutkan juga nama kota pada judul — untuk UMKM yang melayani wilayah tertentu, itu salah satu hal paling berpengaruh yang bisa dilakukan dengan gratis.",
+  kind: "bangun",
+  lapisan: [
+    { id: "foto", t: "Foto latar — memenuhi seluruh bagian" },
+    { id: "redam", t: "Kotak peredam semi-transparan" },
+    { id: "judul", t: "Teks judul dan kalimat pendukung" },
+    { id: "tombol", t: "Tombol ajakan bertindak" }
+  ],
+  kunci_lapis: ["foto", "redam", "judul", "tombol"],
+  efek: [
+    { t: "Fade in lembut pada hero", ok: 1, why: "Halus, sekali jalan, dan tidak menunda pembacaan." },
+    { t: "Hover effect pada tombol dan kartu produk", ok: 1, why: "Memberi tahu bahwa elemen itu dapat diklik." },
+    { t: "Kemunculan bertahap pada tiga kartu keunggulan", ok: 1, why: "Mengarahkan urutan baca tanpa mengganggu." },
+    { t: "Parallax pada setiap bagian halaman", ok: 0, why: "Membuat halaman terasa goyah dan memicu rasa tidak nyaman pada sebagian pengguna." },
+    { t: "Teks harga yang muncul huruf demi huruf", ok: 0, why: "Informasi penting tidak boleh ditunda. Harga adalah hal pertama yang dicari pengunjung." },
+    { t: "Logo berputar terus-menerus di header", ok: 0, why: "Gerak tanpa henti menarik perhatian dari isi, dan tidak membawa informasi apa pun." }
+  ],
+  kunci: "kopi robusta pagaralam",
+  badge: "bangun"
+},
+{
+  id: "r7", blok: 2, no: 7, bobot: 14, sub: "4.1",
+  title: "Mengerjakan proyek website mitra",
+  goal: "Pilih deskripsi produk yang menjual, ambil dua keputusan yang tidak ada jawaban teknisnya, lalu tetapkan fitur wajibnya.",
+  brief:
+    "<p>Bobot pertemuan ini paling besar di RPS. Yang dinilai bukan kerapian tampilan, melainkan kesesuaian dengan brief yang sudah disepakati bersama mitra.</p>" +
+    "<p>Deskripsi produk yang menjual punya pola yang mudah diikuti: <b>nama yang spesifik, satu kalimat manfaat bagi pembeli, satu kalimat bukti yang dapat diperiksa, lalu ketentuan harga dan ketersediaan</b>. Empat baris sudah cukup untuk hampir semua produk UMKM.</p>" +
+    "<p>Di tengah pengerjaan akan datang dua keputusan yang tidak ada di daftar tugas, dan keduanya bukan soal teknis. Foto, logo, naskah, dan data pesanan adalah milik mitra — dipakai dengan izin, dikembalikan saat selesai.</p>",
+  steps: [
+    "Bandingkan tiga deskripsi produk dari sisi pembeli yang belum pernah mencoba produknya.",
+    "Pada dua skenario berikutnya, pilih jawaban yang bisa kamu pertanggungjawabkan kepada mitra maupun kepada pembelinya.",
+    "Terakhir, tandai fitur yang benar-benar wajib ada sebelum website diserahkan."
+  ],
+  note: "<b>Kenapa dua soal etika ikut dinilai:</b> kamu sedang berlatih menjadi pihak ketiga yang dipercaya memegang aset dan data usaha orang lain. Kebiasaan yang dibangun sekarang akan terbawa ke tempat kerja nanti.",
+  kind: "proyek",
+  deskripsi: [
+    { t: "Robusta Pagaralam sangrai medium, 250 g. Pahit lembut dengan sisa rasa cokelat — cocok untuk kopi susu. Disangrai setiap Senin, dikirim hari yang sama bila pesan sebelum pukul 14.00.", ok: 1,
+      why: "Nama spesifik, manfaat yang bisa dibayangkan, bukti yang dapat diperiksa, dan ketentuan pengiriman yang jelas." },
+    { t: "Kopi robusta kualitas terbaik dengan harga terjangkau dan pelayanan memuaskan.", ok: 0,
+      why: "Seluruh kalimatnya kata sifat yang tidak dapat diperiksa siapa pun. Pembeli tidak mendapat keterangan yang membantunya memutuskan." },
+    { t: "Kopi Robusta 250 g. Enak. Stok ada. Silakan order.", ok: 0,
+      why: "Terlalu ringkas sampai kehilangan informasi yang justru dicari: rasa, asal, dan waktu pengiriman." }
+  ],
+  etika: [
+    { stem: "Foto produk dari mitra kurang tajam dan pencahayaannya berbeda-beda, tenggat dua hari lagi. Di internet ada foto kopi yang jauh lebih bagus.",
+      opts: [
+        "Atur satu sesi pemotretan ulang bersama mitra — satu latar polos, satu arah cahaya, cukup dengan ponsel",
+        "Pakai foto dari internet dulu, nanti diganti setelah tenggat",
+        "Pakai foto dari internet dan cantumkan sumbernya di footer"
+      ], ans: 0,
+      why: "“Nanti diganti” hampir tidak pernah terjadi, dan mencantumkan sumber tidak mengubah kenyataan bahwa pembeli melihat produk yang bukan milik mitra. Keseragaman foto tidak menuntut kamera mahal, hanya konsistensi." },
+    { stem: "Mitra minta label “Halal” dan “Terdaftar BPOM” di setiap kartu produk. Ia belum mengurus keduanya, tetapi berkata produknya memang halal.",
+      opts: [
+        "Jelaskan bahwa label itu merujuk sertifikat resmi, tuliskan legalitas yang benar-benar dimiliki, dan bantu catat langkah pengurusannya",
+        "Pasang saja, itu tanggung jawab mitra bukan tanggung jawab Anda",
+        "Pasang tulisan Halal tanpa logo resmi supaya lebih aman"
+      ], ans: 0,
+      why: "Anda yang memasang klaimnya di halaman, jadi tanggung jawab tidak berpindah. Legalitas yang sudah terbit justru layak ditonjolkan; yang belum ada dicatat sebagai pekerjaan lanjutan mitra." }
+  ],
+  fitur: [
+    { t: "Formulir pemesanan yang hasilnya terekap di satu tempat", ok: 1, why: "Tanpa ini pesanan tercecer di banyak kanal." },
+    { t: "Tombol WhatsApp dengan teks pesan terisi otomatis", ok: 1, why: "Menghapus hambatan terbesar pembeli: mengarang kalimat pembuka." },
+    { t: "Wilayah layanan, perkiraan ongkos kirim, dan lama pengiriman", ok: 1, why: "Pertanyaan yang paling sering diajukan sebelum membeli." },
+    { t: "Metode pembayaran dan cara mengirim bukti bayar", ok: 1, why: "Menutup langkah terakhir agar pesanan benar-benar selesai." },
+    { t: "Gerbang pembayaran daring dengan kartu kredit", ok: 0, why: "Di luar lingkup mata kuliah, dan menambah kewajiban hukum serta biaya yang belum sepadan." },
+    { t: "Sistem akun pelanggan dengan kata sandi", ok: 0, why: "Menambah data pribadi yang harus dijaga tanpa manfaat yang jelas pada volume pesanan seperti ini." }
+  ],
+  badge: "amanah"
+},
+{
+  id: "r8", blok: 2, no: 8, bobot: 12, sub: "4.2",
+  title: "Menguji, mengoptimasi, menyerahkan",
+  goal: "Tetapkan tingkat tiap temuan pengujian, pilih optimasi yang benar-benar berdampak, lalu susun langkah serah terima.",
+  brief:
+    "<p>Lima penguji sudah cukup untuk menemukan sebagian besar masalah kebergunaan. Dasar penentuan prioritas adalah <b>berapa banyak penguji yang mengalaminya dan seberapa besar dampaknya terhadap pesanan</b> — bukan seberapa mudah diperbaiki.</p>" +
+    "<p>Saat menguji, tugasmu mengamati dan mencatat, bukan menjelaskan atau membela rancangan. Sesi yang seluruhnya mulus dan berakhir dengan “bagus, kok” biasanya berarti tugas yang diberikan terlalu mudah.</p>" +
+    "<p>Proyek dianggap selesai bukan saat situs terbit, melainkan <b>saat mitra mampu mengelolanya sendiri</b>. Karena itu panduan pengelolaan dan berita acara sama pentingnya dengan websitenya.</p>",
+  steps: [
+    "Tetapkan tingkat tiap temuan dari jumlah penguji dan dampaknya terhadap pesanan.",
+    "Pilih satu tindakan optimasi yang paling berdampak untuk website UMKM.",
+    "Susun langkah serah terima dalam urutan yang benar."
+  ],
+  note: "<b>Dua pertanyaan yang wajib terjawab di berita acara:</b> siapa yang memperpanjang domain tahun depan, dan siapa yang dihubungi bila formulir tiba-tiba berhenti bekerja. Keduanya paling sering terlupa, dan keduanya muncul persis ketika kamu sudah tidak lagi terlibat.",
+  kind: "serah",
+  temuan: [
+    { t: "Tidak menemukan informasi ongkos kirim", n: "4 dari 5", sev: "Tinggi", why: "Dialami hampir semua penguji dan langsung menghentikan pesanan." },
+    { t: "Foto produk lambat muncul di jaringan seluler", n: "4 dari 5", sev: "Tinggi", why: "Sebagian besar pengunjung pergi sebelum halaman selesai dimuat." },
+    { t: "Ragu menekan tombol bertuliskan “Kirim”", n: "2 dari 5", sev: "Sedang", why: "Menghambat sebagian pengunjung; diperbaiki dengan mengganti teks tombol." },
+    { t: "Kurang menyukai warna latar halaman tentang", n: "1 dari 5", sev: "Rendah", why: "Pendapat satu orang tentang selera. Dicatat, tetapi tidak menggeser prioritas." }
+  ],
+  sev: ["Tinggi", "Sedang", "Rendah"],
+  optimasi: {
+    stem: "PageSpeed Insights memberi skor rendah pada mode Mobile. Tindakan mana yang paling berdampak?",
+    opts: [
+      "Kompres seluruh foto, sesuaikan ukurannya, aktifkan pemuatan tertunda",
+      "Hapus semua gambar agar skornya 100",
+      "Pindah ke penyedia hosting yang lebih mahal",
+      "Kurangi jumlah halaman agar situsnya lebih ringan"
+    ],
+    ans: 0,
+    why: "Pada website UMKM penyebab kelambatan hampir selalu foto yang terlalu besar. Kecepatan juga diukur per halaman, jadi mengurangi jumlah halaman tidak membantu."
+  },
+  langkah: [
+    { id: "uji", t: "Perbaiki temuan pengujian dan ukur ulang kecepatan" },
+    { id: "seo", t: "Lengkapi SEO on-page, daftarkan ke Search Console, kirim sitemap" },
+    { id: "terbit", t: "Terbitkan situs, sambungkan domain, pastikan HTTPS aktif" },
+    { id: "panduan", t: "Susun panduan pengelolaan bergambar untuk mitra" },
+    { id: "acara", t: "Alihkan kepemilikan akun dan tanda tangani berita acara" }
+  ],
+  kunci_langkah: ["uji", "seo", "terbit", "panduan", "acara"],
+  badge: "serah"
+}
+];
+
+function missionById(id) {
+  for (var i = 0; i < MISSIONS.length; i++) if (MISSIONS[i].id === id) return MISSIONS[i];
+  return null;
+}
+function unlocked(i) { return i === 0 ? true : !!S.m[MISSIONS[i - 1].id]; }
+/* =======================================================================
+   TAMPILAN MISI
+   ======================================================================= */
+var cur = null;
+var tmp = {};   /* keadaan sementara sebelum jawaban dikirim */
+
+function paintRail() {
+  var lv = levelOf(S.xp), nx = null;
+  for (var i = 0; i < LEVELS.length; i++) if (LEVELS[i].at > S.xp) { nx = LEVELS[i]; break; }
+  var pct = nx ? Math.round((S.xp - lv.at) / (nx.at - lv.at) * 100) : 100;
+  el("who").innerHTML = "<b>" + esc(lv.t) + "</b><em>" + S.xp + " poin" +
+    (nx ? " · " + (nx.at - S.xp) + " lagi ke " + nx.t : " · tertinggi") + "</em>" +
+    (S.nama ? "<em>" + esc(S.nama) + (S.npm ? " · " + esc(S.npm) : "") + "</em>" : "") +
+    '<div class="xp"><i style="width:' + pct + '%"></i></div>' +
+    '<div class="badges">' + BADGES.map(function (b) {
+      return '<span class="badge' + (inArr(S.badges, b.id) ? " on" : "") + '">' + esc(b.t) + "</span>";
+    }).join("") + "</div>";
+
+  var html = "", blok = 0;
+  for (var j = 0; j < MISSIONS.length; j++) {
+    var m = MISSIONS[j];
+    if (m.blok !== blok) {
+      if (blok) html += "</ul>";
+      blok = m.blok;
+      html += '<div class="blok">' + esc(BLOK[blok]) + '</div><ul class="mlist">';
+    }
+    var dn = !!S.m[m.id], open = unlocked(j);
+    html += '<li><button data-go="' + m.id + '" data-n="' + m.no + '" class="' + (dn ? "done" : "") +
+      (open ? "" : " locked") + '"' + (open ? "" : " disabled") + (cur === m.id ? ' aria-current="true"' : "") + ">" +
+      esc(m.title) + ' <span class="w">Sub-CPMK ' + m.sub + (dn ? " · " + S.m[m.id].score : "") + "</span></button></li>";
+  }
+  html += "</ul>";
+  el("nav").innerHTML = html;
+}
+
+function shell(m, task) {
+  return '<div class="tag">' + esc(BLOK[m.blok]) + " · Sub-CPMK " + m.sub + " · bobot " + m.bobot + "%</div>" +
+    '<div class="mt"><span class="no">Misi ' + m.no + "</span><h2>" + esc(m.title) + "</h2></div>" +
+    '<p class="goal">' + esc(m.goal) + "</p>" +
+    '<div class="brief">' + m.brief + "</div>" +
+    "<h3>Langkah kerja</h3><ol class=\"steps\">" + m.steps.map(function (s) { return "<li>" + s + "</li>"; }).join("") + "</ol>" +
+    '<div class="note">' + m.note + "</div>" + task;
+}
+function nextBtn(m) {
+  var i = MISSIONS.indexOf(m), n = MISSIONS[i + 1];
+  return '<div class="btnrow" id="after" hidden>' +
+    (n ? '<button class="btn ghost" id="bNext">Misi ' + n.no + ": " + esc(n.title) + "</button>"
+       : '<button class="btn ghost" id="bRapor">Lihat rapor akhir</button>') + "</div>";
+}
+function wireNext(m) {
+  var i = MISSIONS.indexOf(m), n = MISSIONS[i + 1];
+  if (el("bNext") && n) el("bNext").onclick = function () { go(n.id); };
+  if (el("bRapor")) el("bRapor").onclick = rapor;
+}
+function done(m, sc, data, at) {
+  finish(m.id, sc, data);
+  if (m.badge && sc >= (at || 75)) award(m.badge);
+  save(); paintRail();
+  el("after").hidden = false; wireNext(m);
+}
+function go(id) {
+  cur = id; S.cur = id; save();
+  var m = missionById(id); if (!m) return;
+  var f = { match: vMatch, antarmuka: vAnt, markah: vMar, tampilan: vTam, bangun: vBgn, proyek: vPro, serah: vSer }[m.kind];
+  tmp = {};
+  el("stage").innerHTML = shell(m, f.view(m));
+  paintRail(); window.scrollTo(0, 0);
+  f.wire(m);
+}
+
+/* ---------------- potongan yang dipakai beberapa misi ---------------- */
+function optsHtml(q, opts, picked) {
+  return '<div class="opts">' + opts.map(function (o, j) {
+    return '<button data-q="' + q + '" data-o="' + j + '" aria-pressed="' + (picked === j ? "true" : "false") + '">' + esc(o) + "</button>";
+  }).join("") + "</div>";
+}
+function wireOpts(root, onPick) {
+  root.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-o]"); if (!b || b.disabled) return;
+    var q = b.getAttribute("data-q"), o = +b.getAttribute("data-o");
+    var box = b.parentNode.querySelectorAll("button[data-o]");
+    for (var i = 0; i < box.length; i++) box[i].setAttribute("aria-pressed", "false");
+    b.setAttribute("aria-pressed", "true");
+    onPick(q, o);
+  });
+}
+function markOpts(root, q, benar, dipilih) {
+  var bs = root.querySelectorAll('button[data-q="' + q + '"]');
+  for (var i = 0; i < bs.length; i++) {
+    var j = +bs[i].getAttribute("data-o");
+    bs[i].disabled = true;
+    if (j === benar) bs[i].className = "right";
+    else if (j === dipilih) bs[i].className = "wrong";
+  }
+}
+function chipsHtml(list, picked) {
+  return '<div class="chips">' + list.map(function (c, i) {
+    return '<button class="chip" data-c="' + i + '" aria-pressed="' + (inArr(picked, i) ? "true" : "false") + '">' + esc(c.t) + "</button>";
+  }).join("") + "</div>";
+}
+function wireChips(root, arr, after) {
+  root.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-c]"); if (!b || b.disabled) return;
+    var i = +b.getAttribute("data-c"), k = arr.indexOf(i);
+    if (k < 0) arr.push(i); else arr.splice(k, 1);
+    b.setAttribute("aria-pressed", k < 0 ? "true" : "false");
+    if (after) after();
+  });
+}
+function markChips(root, list, picked) {
+  var bs = root.querySelectorAll("button[data-c]");
+  for (var i = 0; i < bs.length; i++) {
+    var j = +bs[i].getAttribute("data-c"), benar = !!list[j].ok, amb = inArr(picked, j);
+    bs[i].disabled = true;
+    bs[i].className = "chip " + (benar && amb ? "right" : (!benar && amb ? "wrong" : (benar ? "miss" : "")));
+  }
+}
+function seqHtml(id, items, order) {
+  return '<ul class="seq" id="' + id + '">' + order.map(function (k, i) {
+    var it = null;
+    for (var x = 0; x < items.length; x++) if (items[x].id === k) it = items[x];
+    return '<li data-i="' + i + '"><span class="n">' + (i + 1) + '</span><span>' + esc(it.t) + '</span>' +
+      '<span class="mv"><button data-mv="u" data-i="' + i + '" aria-label="Naikkan">▲</button>' +
+      '<button data-mv="d" data-i="' + i + '" aria-label="Turunkan">▼</button></span></li>';
+  }).join("") + "</ul>";
+}
+function wireSeq(id, arr, redraw) {
+  var root = el(id);
+  root.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-mv]"); if (!b || b.disabled) return;
+    var i = +b.getAttribute("data-i"), d = b.getAttribute("data-mv") === "u" ? -1 : 1, j = i + d;
+    if (j < 0 || j >= arr.length) return;
+    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    redraw();
+  });
+}
+function markSeq(id, kunci, arr) {
+  var lis = el(id).querySelectorAll("li");
+  for (var i = 0; i < lis.length; i++) {
+    lis[i].className = arr[i] === kunci[i] ? "ok" : "no";
+    var bs = lis[i].querySelectorAll("button"); for (var j = 0; j < bs.length; j++) bs[j].disabled = true;
+  }
+}
+function seqSkor(kunci, arr) {
+  var hit = 0;
+  for (var i = 0; i < kunci.length; i++) if (arr[i] === kunci[i]) hit++;
+  return hit === kunci.length ? 1 : Math.max(0, (hit - 1) / kunci.length);
+}
+function acak(ids) {
+  var a = ids.slice();
+  for (var i = a.length - 1; i > 0; i--) { var j = (i * 7 + 3) % (i + 1), t = a[i]; a[i] = a[j]; a[j] = t; }
+  return a;
+}
+
+/* =========================== MATCH (misi 1 dan 5) =========================== */
+var vMatch = {
+  view: function (m) {
+    var d = (S.m[m.id] && S.m[m.id].data && S.m[m.id].data.pick) || [];
+    return '<section class="card" id="qs">' + m.items.map(function (it, i) {
+      var opts = it.opts || m.opts;
+      return '<div class="q" data-i="' + i + '"><p class="stem"><b>' + (i + 1) + ".</b> " + esc(it.stem) + "</p>" +
+        optsHtml(i, opts, d[i]) + '<p class="why" hidden></p></div>';
+    }).join("") + "</section>" +
+      '<div class="btnrow"><button class="btn go" id="bCek">Periksa jawaban</button></div><div id="out"></div>' + nextBtn(m);
+  },
+  wire: function (m) {
+    var pick = ((S.m[m.id] && S.m[m.id].data && S.m[m.id].data.pick) || []).slice();
+    wireOpts(el("qs"), function (q, o) { pick[+q] = o; });
+    el("bCek").onclick = function () {
+      var cs = [], i;
+      for (i = 0; i < m.items.length; i++) {
+        var it = m.items[i], p = pick[i];
+        var got = p === it.ans ? 1 : (it.alt >= 0 && p === it.alt ? 0.5 : 0);
+        cs.push(mk(1, got, "Butir " + (i + 1), got >= 1 ? "" : it.why));
+        markOpts(el("qs"), i, it.ans, p);
+        var w = el("qs").querySelectorAll(".q")[i].querySelector(".why");
+        w.innerHTML = esc(it.why); w.hidden = false;
+      }
+      var sc = total(cs);
+      el("out").innerHTML = scoreBox(sc, m.items.length + " butir", cs);
+      el("bCek").disabled = true;
+      done(m, sc, { pick: pick });
+    };
+  }
+};
+
+/* =========================== MISI 2 — ANTARMUKA =========================== */
+var vAnt = {
+  view: function (m) {
+    var d = (S.m[m.id] && S.m[m.id].data) || {};
+    tmp.urut = (d.urut || acak(m.kunci_urut)).slice();
+    tmp.pal = d.pal || { bg: "#FFFFFF", fg: "#17202B", ak: "#1E5E73" };
+    tmp.hero = d.hero;
+    return '<section class="card"><h3>a. Urutan blok beranda</h3>' +
+      '<p class="hint">Susun dari atas ke bawah seperti percakapan penjualan.</p>' + seqHtml("sq", m.blok_urut, tmp.urut) + "</section>" +
+      '<section class="card" id="palc"><h3>b. Palet merek</h3>' +
+      '<p class="hint">Kontras teks minimal 4,5 : 1; aksen minimal 3 : 1.</p><div id="palbody"></div></section>' +
+      '<section class="card" id="heroc"><h3>c. Naskah hero</h3>' +
+      m.hero.map(function (h, i) {
+        return '<div class="q"><p class="stem">' + esc(h.t) + "</p>" +
+          '<div class="opts"><button data-q="h" data-o="' + i + '" aria-pressed="' + (tmp.hero === i ? "true" : "false") + '">Pilih naskah ini</button></div>' +
+          '<p class="why" hidden></p></div>';
+      }).join("") + "</section>" +
+      '<div class="btnrow"><button class="btn go" id="bCek">Periksa jawaban</button></div><div id="out"></div>' + nextBtn(m);
+  },
+  wire: function (m) {
+    var self = this;
+    function drawSeq() { el("sq").outerHTML = seqHtml("sq", m.blok_urut, tmp.urut); wireSeq("sq", tmp.urut, drawSeq); }
+    wireSeq("sq", tmp.urut, drawSeq);
+    function drawPal() {
+      var p = tmp.pal, rf = rasio(p.fg, p.bg), ra = rasio(p.ak, p.bg);
+      var baris = [["bg", "Latar (60%)"], ["fg", "Teks isi (30%)"], ["ak", "Aksen tombol (10%)"]].map(function (x) {
+        return '<label class="fl">' + x[1] + '</label><div class="sws" data-k="' + x[0] + '">' + SWATCH.map(function (h) {
+          return '<button style="background:' + h + '" data-h="' + h + '" aria-pressed="' + (p[x[0]] === h ? "true" : "false") + '" aria-label="' + x[1] + " " + h + '"></button>';
+        }).join("") + "</div>";
+      }).join("");
+      el("palbody").innerHTML = baris +
+        '<div class="ratio ' + (rf >= 4.5 ? "ya" : "tidak") + '">Teks / latar &nbsp;' + r1(rf) + " : 1 — " +
+        (rf >= 4.5 ? "lolos ambang 4,5" : rf >= 3 ? "hanya cukup untuk judul besar" : "terlalu rendah, tidak terbaca") + "</div>" +
+        '<div class="ratio ' + (ra >= 3 ? "ya" : "tidak") + '">Aksen / latar &nbsp;' + r1(ra) + " : 1 — " +
+        (ra >= 3 ? "cukup untuk tombol" : "tombol akan tenggelam") + "</div>" +
+        '<div class="mock"><div class="bar"><i></i><i></i><i></i></div>' +
+        '<div class="in" style="background:' + p.bg + ";color:" + p.fg + '"><h4>' + esc(mitra()) + "</h4>" +
+        "<p>Katalog produk dan pemesanan. Palembang dan sekitarnya.</p>" +
+        '<span style="background:' + p.ak + ";color:" + (rasio("#FFFFFF", p.ak) >= 3 ? "#fff" : "#17202B") + '">Pesan lewat WhatsApp</span></div></div>';
+      var sws = el("palbody").querySelectorAll(".sws button");
+      for (var i = 0; i < sws.length; i++) sws[i].onclick = function () {
+        tmp.pal[this.parentNode.getAttribute("data-k")] = this.getAttribute("data-h"); drawPal();
+      };
+    }
+    drawPal();
+    wireOpts(el("heroc"), function (q, o) { tmp.hero = o; });
+    el("bCek").onclick = function () {
+      var cs = [];
+      cs.push(mk(3, seqSkor(m.kunci_urut, tmp.urut), "Urutan blok beranda",
+        seqSkor(m.kunci_urut, tmp.urut) >= 1 ? "" : "Urutan yang bekerja: hero, sorotan produk, bukti, cara memesan, kontak."));
+      markSeq("sq", m.kunci_urut, tmp.urut);
+
+      var rf = rasio(tmp.pal.fg, tmp.pal.bg), ra = rasio(tmp.pal.ak, tmp.pal.bg);
+      var gp = (rf >= 4.5 ? 0.7 : rf >= 3 ? 0.3 : 0) + (ra >= 3 ? 0.3 : 0);
+      cs.push(mk(3, gp, "Palet dan kontras", gp >= 1 ? "" : "Teks " + r1(rf) + " : 1 dan aksen " + r1(ra) + " : 1. Ambangnya 4,5 dan 3."));
+
+      var hOk = -1, i;
+      for (i = 0; i < m.hero.length; i++) if (m.hero[i].ok) hOk = i;
+      cs.push(mk(2, tmp.hero === hOk ? 1 : 0, "Naskah hero", tmp.hero === hOk ? "" : m.hero[hOk].why));
+      var hb = el("heroc").querySelectorAll("button[data-o]");
+      for (i = 0; i < hb.length; i++) {
+        hb[i].disabled = true;
+        hb[i].className = m.hero[i].ok ? "right" : (tmp.hero === i ? "wrong" : "");
+        var w = el("heroc").querySelectorAll(".why")[i];
+        w.innerHTML = esc(m.hero[i].why); w.hidden = false;
+      }
+      var sc = total(cs);
+      el("out").innerHTML = scoreBox(sc, "tiga bagian", cs);
+      el("bCek").disabled = true;
+      done(m, sc, { urut: tmp.urut, pal: tmp.pal, hero: tmp.hero });
+    };
+  }
+};
+
+/* =========================== MISI 3 — MARKAH =========================== */
+var vMar = {
+  view: function (m) {
+    var d = (S.m[m.id] && S.m[m.id].data) || {};
+    tmp.tandai = (d.tandai || []).slice();
+    var pick = d.pick || [];
+    return '<section class="card"><h3>a. Tandai baris yang bermasalah</h3>' +
+      '<p class="hint">Ada lima. Menandai baris yang sehat mengurangi nilai.</p>' +
+      '<div class="lines" id="ln">' + m.lines.map(function (s, i) {
+        return '<button data-l="' + i + '" aria-pressed="' + (inArr(tmp.tandai, i) ? "true" : "false") + '">' +
+          '<span class="n">' + (i + 1) + '</span><span class="s">' + esc(s) + "</span></button>";
+      }).join("") + "</div><p class=\"hint\" id=\"lnc\"></p></section>" +
+      '<section class="card" id="qs"><h3>b. Tabel dan formulir</h3>' + m.items.map(function (it, i) {
+        return '<div class="q" data-i="' + i + '"><p class="stem"><b>' + (i + 1) + ".</b> " + esc(it.stem) + "</p>" +
+          optsHtml(i, it.opts || m.opts, pick[i]) + '<p class="why" hidden></p></div>';
+      }).join("") + "</section>" +
+      '<div class="btnrow"><button class="btn go" id="bCek">Periksa jawaban</button></div><div id="out"></div>' + nextBtn(m);
+  },
+  wire: function (m) {
+    var pick = ((S.m[m.id] && S.m[m.id].data && S.m[m.id].data.pick) || []).slice();
+    function hitung() { el("lnc").textContent = "Ditandai: " + tmp.tandai.length + " baris."; }
+    hitung();
+    el("ln").addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-l]"); if (!b || b.disabled) return;
+      var i = +b.getAttribute("data-l"), k = tmp.tandai.indexOf(i);
+      if (k < 0) tmp.tandai.push(i); else tmp.tandai.splice(k, 1);
+      b.setAttribute("aria-pressed", k < 0 ? "true" : "false");
+      hitung();
+    });
+    wireOpts(el("qs"), function (q, o) { pick[+q] = o; });
+    el("bCek").onclick = function () {
+      var cs = [], i, hit = 0, salah = 0;
+      for (i = 0; i < m.lines.length; i++) {
+        var bad = inArr(m.bad, i), amb = inArr(tmp.tandai, i);
+        if (bad && amb) hit++; else if (!bad && amb) salah++;
+      }
+      var g = Math.max(0, Math.min(1, (hit - salah) / m.bad.length));
+      cs.push(mk(4, g, "Temuan pada kode", g >= 1 ? "" : hit + " dari " + m.bad.length + " ditemukan" + (salah ? ", " + salah + " baris sehat ikut ditandai" : "")));
+      var bs = el("ln").querySelectorAll("button[data-l]");
+      for (i = 0; i < bs.length; i++) {
+        var j = +bs[i].getAttribute("data-l"), isBad = inArr(m.bad, j), amb2 = inArr(tmp.tandai, j);
+        bs[i].disabled = true;
+        if (isBad) { bs[i].className = amb2 ? "hit" : "miss"; bs[i].innerHTML += '<span class="f">' + esc(m.notes[j]) + "</span>"; }
+        else if (amb2) bs[i].className = "miss";
+      }
+      el("lnc").innerHTML = "Yang tidak bisa ditandai: <b>meta viewport</b> tidak ada di dalam head — tanpa itu halaman tampil mengecil di ponsel.";
+      for (i = 0; i < m.items.length; i++) {
+        var it = m.items[i], p = pick[i];
+        var got = p === it.ans ? 1 : (it.alt >= 0 && p === it.alt ? 0.5 : 0);
+        cs.push(mk(1.5, got, "Butir " + (i + 1), got >= 1 ? "" : it.why));
+        markOpts(el("qs"), i, it.ans, p);
+        var w = el("qs").querySelectorAll(".q")[i].querySelector(".why");
+        w.innerHTML = esc(it.why); w.hidden = false;
+      }
+      var sc = total(cs);
+      el("out").innerHTML = scoreBox(sc, "kode + empat butir", cs);
+      el("bCek").disabled = true;
+      done(m, sc, { tandai: tmp.tandai, pick: pick });
+    };
+  }
+};
+
+/* =========================== MISI 4 — TAMPILAN =========================== */
+var vTam = {
+  view: function (m) {
+    var d = (S.m[m.id] && S.m[m.id].data) || {};
+    tmp.cas = d.cas;
+    tmp.box = d.box || { p: 0, b: 0, bb: false };
+    tmp.grid = d.grid || { a: 2, b: 2, c: 2, dir: "max" };
+    tmp.pas = d.pas || {};
+    tmp.sel = null;
+    return '<section class="card" id="casc"><h3>a. Duel cascade</h3>' +
+      '<pre style="background:#17202B;color:#E7EAE2;border-radius:3px;padding:12px 14px;overflow-x:auto;font-family:var(--mono);font-size:.78rem;line-height:1.6">' + esc(m.cascade.code) + "</pre>" +
+      '<div class="q"><p class="stem">' + esc(m.cascade.stem) + "</p>" + optsHtml("c", m.cascade.opts, tmp.cas) +
+      '<p class="why" hidden></p></div></section>' +
+      '<section class="card"><h3>b. Kunci lebar kartu produk</h3>' +
+      '<p class="hint">Sasaran: lebar total tepat 300 px, padding minimal 16 px.</p><div id="boxbody"></div></section>' +
+      '<section class="card"><h3>c. Kolom katalog di tiga lebar</h3><div id="gridbody"></div></section>' +
+      '<section class="card" id="pasc"><h3>d. Pasangkan peristiwa dengan tindakan</h3>' +
+      '<p class="hint">Tekan satu peristiwa di kiri, lalu tindakannya di kanan.</p><div id="pasbody"></div></section>' +
+      '<div class="btnrow"><button class="btn go" id="bCek">Periksa jawaban</button></div><div id="out"></div>' + nextBtn(m);
+  },
+  wire: function (m) {
+    wireOpts(el("casc"), function (q, o) { tmp.cas = o; });
+
+    function drawBox() {
+      var a = tmp.box, luar = a.bb ? 300 : 300 + 2 * a.p + 2 * a.b, dalam = a.bb ? Math.max(0, 300 - 2 * a.p - 2 * a.b) : 300;
+      el("boxbody").innerHTML =
+        '<div class="alloc">' +
+        '<div class="arow"><div class="nm">padding<small>jarak isi ke tepi</small></div><input type="range" id="rp" min="0" max="40" value="' + a.p + '"><output>' + a.p + "px</output></div>" +
+        '<div class="arow"><div class="nm">border<small>tebal garis tepi</small></div><input type="range" id="rb" min="0" max="8" value="' + a.b + '"><output>' + a.b + "px</output></div>" +
+        "</div>" +
+        '<label class="fl" style="margin:6px 0 10px"><input type="checkbox" id="cb" ' + (a.bb ? "checked" : "") + ' style="width:auto;margin-right:7px"><span class="u-sans">box-sizing: border-box</span></label>' +
+        '<div class="bxv"><div class="bxm" style="padding:12px"><div class="bxb" style="padding:' + a.b + 'px"><div class="bxp" style="padding:' + a.p + 'px">' +
+        '<div class="bxc" style="width:' + dalam + 'px">isi ' + dalam + "px</div></div></div></div>" +
+        '<div class="readout"><span>isi ' + dalam + "px</span><span>padding 2×" + a.p + "</span><span>border 2×" + a.b + '</span><span class="big">lebar total ' + luar + "px</span></div></div>";
+      el("rp").oninput = function () { tmp.box.p = +this.value; drawBox(); };
+      el("rb").oninput = function () { tmp.box.b = +this.value; drawBox(); };
+      el("cb").onchange = function () { tmp.box.bb = this.checked; drawBox(); };
+    }
+    drawBox();
+
+    function drawGrid() {
+      var g = tmp.grid;
+      var sel = function (id, v, max, label) {
+        var o = "";
+        for (var i = 1; i <= max; i++) o += '<option value="' + i + '"' + (v === i ? " selected" : "") + ">" + i + " kolom</option>";
+        return '<div><label class="fl" for="' + id + '">' + label + "</label><select id=\"" + id + "\">" + o + "</select></div>";
+      };
+      el("gridbody").innerHTML =
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">' +
+        sel("g1", g.a, 3, "Pada 360 px (ponsel)") + sel("g2", g.b, 3, "Pada 768 px (tablet)") + sel("g3", g.c, 4, "Pada 1280 px (komputer)") + "</div>" +
+        '<label class="fl" for="gd" style="margin-top:4px">Arah media query</label><select id="gd">' +
+        '<option value="min"' + (g.dir === "min" ? " selected" : "") + ">min-width (mobile-first)</option>" +
+        '<option value="max"' + (g.dir === "max" ? " selected" : "") + ">max-width (desktop-first)</option></select>" +
+        '<div class="frames">' + [["360 px", g.a, 112], ["768 px", g.b, 180], ["1280 px", g.c, 264]].map(function (f) {
+          return "<div><b>" + f[0] + " · " + f[1] + ' kolom</b><div class="scr" style="width:' + f[2] + 'px"><div class="g" style="grid-template-columns:repeat(' + f[1] + ',minmax(0,1fr))">' +
+            m.produk.map(function (p) { return '<div class="p"><i></i>' + esc(p) + "</div>"; }).join("") + "</div></div></div>";
+        }).join("") + "</div>" +
+        '<p class="hint">Perhatikan nama produk pada 360 px: makin banyak kolom, makin cepat teks terpotong.</p>';
+      el("g1").onchange = function () { tmp.grid.a = +this.value; drawGrid(); };
+      el("g2").onchange = function () { tmp.grid.b = +this.value; drawGrid(); };
+      el("g3").onchange = function () { tmp.grid.c = +this.value; drawGrid(); };
+      el("gd").onchange = function () { tmp.grid.dir = this.value; drawGrid(); };
+    }
+    drawGrid();
+
+    function drawPas(kunci) {
+      var pk = m.peristiwa, pakai = {};
+      for (var k in tmp.pas) pakai[tmp.pas[k]] = k;
+      el("pasbody").innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">' +
+        "<div>" + pk.left.map(function (L, i) {
+          var cl = "chip" + (tmp.sel === L.id ? " right" : "") + (kunci ? (tmp.pas[L.id] === pk.kunci[L.id] ? " right" : " wrong") : "");
+          return '<button class="' + cl + '" data-p="' + L.id + '" style="display:block;width:100%;text-align:left;margin-bottom:6px"' + (kunci ? " disabled" : "") + ">" +
+            (tmp.pas[L.id] ? (i + 1) + ". " : "") + esc(L.t) + "</button>";
+        }).join("") + "</div><div>" + pk.right.map(function (R) {
+          var own = pakai[R.id], idx = own ? pk.left.map(function (x) { return x.id; }).indexOf(own) + 1 : 0;
+          return '<button class="chip" data-r="' + R.id + '" style="display:block;width:100%;text-align:left;margin-bottom:6px"' + (kunci ? " disabled" : "") + ">" +
+            (idx ? idx + ". " : "") + esc(R.t) + "</button>";
+        }).join("") + "</div></div>";
+      if (kunci) return;
+      var bs = el("pasbody").querySelectorAll("button");
+      for (var i = 0; i < bs.length; i++) bs[i].onclick = function () {
+        var p = this.getAttribute("data-p"), r = this.getAttribute("data-r");
+        if (p) { tmp.sel = tmp.sel === p ? null : p; }
+        else if (r) {
+          for (var k in tmp.pas) if (tmp.pas[k] === r) delete tmp.pas[k];
+          if (tmp.sel) { tmp.pas[tmp.sel] = r; tmp.sel = null; }
+        }
+        drawPas(false);
+      };
+    }
+    drawPas(false);
+
+    el("bCek").onclick = function () {
+      var cs = [], c = m.cascade;
+      cs.push(mk(3, tmp.cas === c.ans ? 1 : 0, "Duel cascade", tmp.cas === c.ans ? "" : c.why));
+      markOpts(el("casc"), "c", c.ans, tmp.cas);
+      var w = el("casc").querySelector(".why"); w.innerHTML = esc(c.why); w.hidden = false;
+
+      var a = tmp.box, luar = a.bb ? 300 : 300 + 2 * a.p + 2 * a.b;
+      var gb = (luar === 300 ? 0.6 : 0) + (a.p >= 16 ? 0.4 : 0);
+      cs.push(mk(3, gb, "Lebar kartu produk", gb >= 1 ? "" :
+        (luar !== 300 ? "Lebar total masih " + luar + " px. Nyalakan border-box agar padding dan border dihitung ke dalam." : "Lebar sudah tepat, tetapi padding di bawah 16 px membuat teks menempel di tepi.")));
+
+      var g = tmp.grid, gg = (g.a === 1 ? .3 : 0) + (g.b === 2 ? .25 : 0) + (g.c >= 3 ? .2 : 0) + (g.dir === "min" ? .25 : 0);
+      cs.push(mk(4, gg, "Kolom katalog dan arah media query", gg >= 1 ? "" :
+        "Satu kolom di 360 px, dua di 768 px, tiga di 1280 px, ditulis mobile-first dengan min-width."));
+
+      var pk = m.peristiwa, hit = 0, n = 0;
+      for (var k in pk.kunci) { n++; if (tmp.pas[k] === pk.kunci[k]) hit++; }
+      cs.push(mk(3, hit / n, "Peristiwa dan tindakan", hit === n ? "" : "click membuka-tutup kelas, submit menahan pengiriman lalu memeriksa, scroll memunculkan tombol ke atas."));
+      drawPas(true);
+
+      var sc = total(cs);
+      el("out").innerHTML = scoreBox(sc, "empat bagian", cs);
+      el("bCek").disabled = true;
+      done(m, sc, { cas: tmp.cas, box: tmp.box, grid: tmp.grid, pas: tmp.pas });
+    };
+  }
+};
+/* =========================== MISI 6 — BANGUN =========================== */
+var vBgn = {
+  view: function (m) {
+    var d = (S.m[m.id] && S.m[m.id].data) || {};
+    tmp.lapis = (d.lapis || acak(m.kunci_lapis)).slice();
+    tmp.efek = (d.efek || []).slice();
+    tmp.seo = d.seo || { t: "", d: "" };
+    return '<section class="card"><h3>a. Lapisan hero</h3>' +
+      '<p class="hint">Susun dari paling bawah ke paling atas.</p>' + seqHtml("sq", m.lapisan, tmp.lapis) + "</section>" +
+      '<section class="card" id="efc"><h3>b. Anggaran animasi</h3>' +
+      '<p class="hint">Pilih yang menunjang keterbacaan. Memilih yang berlebihan mengurangi nilai.</p>' +
+      chipsHtml(m.efek, tmp.efek) + '<div id="efw"></div></section>' +
+      '<section class="card"><h3>c. Title tag dan meta description</h3>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px">' +
+      '<div><label class="fl" for="st">Title tag <small>ideal 50–60</small></label>' +
+      '<input type="text" id="st" maxlength="90" value="' + esc(tmp.seo.t) + '"><div class="count" id="ct"></div>' +
+      '<label class="fl" for="sd">Meta description <small>ideal 140–160</small></label>' +
+      '<textarea id="sd" rows="3" maxlength="220">' + esc(tmp.seo.d) + "</textarea><div class=\"count\" id=\"cd\"></div></div>" +
+      '<div><label class="fl">Pratinjau hasil pencarian</label><div class="serp" id="sv"></div></div></div></section>' +
+      '<div class="btnrow"><button class="btn go" id="bCek">Periksa jawaban</button></div><div id="out"></div>' + nextBtn(m);
+  },
+  wire: function (m) {
+    function drawSeq() { el("sq").outerHTML = seqHtml("sq", m.lapisan, tmp.lapis); wireSeq("sq", tmp.lapis, drawSeq); }
+    wireSeq("sq", tmp.lapis, drawSeq);
+    wireChips(el("efc"), tmp.efek, null);
+
+    var kw = m.kunci.split(" ")[0];
+    function paintSeo() {
+      var t = el("st").value, d = el("sd").value;
+      var okT = t.length >= 40 && t.length <= 65, okD = d.length >= 120 && d.length <= 170;
+      el("ct").className = "count" + (okT ? " ya" : "");
+      el("ct").innerHTML = "<span>" + t.length + " karakter</span><span>" + (t.toLowerCase().indexOf(kw) >= 0 ? "kata kunci ✓" : "kata kunci belum ada") + "</span>";
+      el("cd").className = "count" + (okD ? " ya" : "");
+      el("cd").innerHTML = "<span>" + d.length + " karakter</span><span>" + (d.toLowerCase().indexOf(kw) >= 0 ? "kata kunci ✓" : "kata kunci belum ada") + "</span>";
+      el("sv").innerHTML = '<div class="u">kopikemuning.com › beranda</div><div class="t">' +
+        esc(t || "Judul halaman akan tampil di sini") + '</div><div class="d">' +
+        esc(d || "Cuplikan deskripsi akan tampil di sini, terpotong bila terlalu panjang.") + "</div>";
+      tmp.seo = { t: t, d: d };
+    }
+    el("st").oninput = paintSeo; el("sd").oninput = paintSeo; paintSeo();
+
+    el("bCek").onclick = function () {
+      var cs = [], g1 = seqSkor(m.kunci_lapis, tmp.lapis);
+      cs.push(mk(3, g1, "Lapisan hero", g1 >= 1 ? "" : "Foto paling bawah, lalu kotak peredam, teks, dan tombol paling atas."));
+      markSeq("sq", m.kunci_lapis, tmp.lapis);
+
+      var hit = 0, salah = 0, benarN = 0, i;
+      for (i = 0; i < m.efek.length; i++) {
+        if (m.efek[i].ok) benarN++;
+        if (inArr(tmp.efek, i)) { if (m.efek[i].ok) hit++; else salah++; }
+      }
+      var g2 = Math.max(0, Math.min(1, (hit - salah) / benarN));
+      cs.push(mk(3, g2, "Anggaran animasi", g2 >= 1 ? "" : "Satu efek per bagian, durasi sekitar 0,3 detik, tidak ada animasi pada teks panjang."));
+      markChips(el("efc"), m.efek, tmp.efek);
+      el("efw").innerHTML = '<ul class="find">' + m.efek.map(function (e2) {
+        return '<li class="' + (e2.ok ? "ok" : "no") + '"><b>' + esc(e2.t) + "</b> — " + esc(e2.why) + "</li>";
+      }).join("") + "</ul>";
+
+      var t = tmp.seo.t.trim(), d = tmp.seo.d.trim(), g3 = 0;
+      if (t.length >= 40 && t.length <= 65) g3 += .3; else if (t.length >= 25) g3 += .12;
+      if (t.toLowerCase().indexOf(kw) >= 0) g3 += .2;
+      if (d.length >= 120 && d.length <= 170) g3 += .3; else if (d.length >= 70) g3 += .12;
+      if (d.toLowerCase().indexOf(kw) >= 0) g3 += .2;
+      cs.push(mk(4, g3, "Title tag dan meta description", g3 >= 1 ? "" :
+        "Title 50–60 karakter dan deskripsi 140–160, keduanya memuat kata kunci “" + m.kunci + "”."));
+      el("st").disabled = true; el("sd").disabled = true;
+
+      var sc = total(cs);
+      el("out").innerHTML = scoreBox(sc, "tiga bagian", cs);
+      el("bCek").disabled = true;
+      done(m, sc, { lapis: tmp.lapis, efek: tmp.efek, seo: tmp.seo });
+    };
+  }
+};
+
+/* =========================== MISI 7 — PROYEK =========================== */
+var vPro = {
+  view: function (m) {
+    var d = (S.m[m.id] && S.m[m.id].data) || {};
+    tmp.desk = d.desk; tmp.et = (d.et || []).slice(); tmp.fitur = (d.fitur || []).slice();
+    return '<section class="card" id="dkc"><h3>a. Deskripsi produk</h3>' + m.deskripsi.map(function (x, i) {
+      return '<div class="q"><p class="stem">' + esc(x.t) + "</p>" +
+        '<div class="opts"><button data-q="d" data-o="' + i + '" aria-pressed="' + (tmp.desk === i ? "true" : "false") + '">Pilih deskripsi ini</button></div>' +
+        '<p class="why" hidden></p></div>';
+    }).join("") + "</section>" +
+      '<section class="card" id="etc"><h3>b. Dua keputusan di luar teknis</h3>' + m.etika.map(function (e2, i) {
+        return '<div class="q" data-i="' + i + '"><p class="stem"><b>' + (i + 1) + ".</b> " + esc(e2.stem) + "</p>" +
+          optsHtml(i, e2.opts, tmp.et[i]) + '<p class="why" hidden></p></div>';
+      }).join("") + "</section>" +
+      '<section class="card" id="ftc"><h3>c. Fitur wajib sebelum diserahkan</h3>' +
+      '<p class="hint">Tandai semua yang wajib ada. Yang berlebihan mengurangi nilai.</p>' +
+      chipsHtml(m.fitur, tmp.fitur) + '<div id="ftw"></div></section>' +
+      '<div class="btnrow"><button class="btn go" id="bCek">Periksa jawaban</button></div><div id="out"></div>' + nextBtn(m);
+  },
+  wire: function (m) {
+    wireOpts(el("dkc"), function (q, o) { tmp.desk = o; });
+    wireOpts(el("etc"), function (q, o) { tmp.et[+q] = o; });
+    wireChips(el("ftc"), tmp.fitur, null);
+    el("bCek").onclick = function () {
+      var cs = [], i, dOk = -1;
+      for (i = 0; i < m.deskripsi.length; i++) if (m.deskripsi[i].ok) dOk = i;
+      cs.push(mk(3, tmp.desk === dOk ? 1 : 0, "Deskripsi produk", tmp.desk === dOk ? "" : m.deskripsi[dOk].why));
+      var db = el("dkc").querySelectorAll("button[data-o]");
+      for (i = 0; i < db.length; i++) {
+        db[i].disabled = true;
+        db[i].className = m.deskripsi[i].ok ? "right" : (tmp.desk === i ? "wrong" : "");
+        var w0 = el("dkc").querySelectorAll(".why")[i]; w0.innerHTML = esc(m.deskripsi[i].why); w0.hidden = false;
+      }
+      for (i = 0; i < m.etika.length; i++) {
+        var e2 = m.etika[i], got = tmp.et[i] === e2.ans ? 1 : 0;
+        cs.push(mk(3, got, "Keputusan " + (i + 1), got ? "" : e2.why));
+        markOpts(el("etc"), i, e2.ans, tmp.et[i]);
+        var w = el("etc").querySelectorAll(".q")[i].querySelector(".why");
+        w.innerHTML = esc(e2.why); w.hidden = false;
+      }
+      var hit = 0, salah = 0, benarN = 0;
+      for (i = 0; i < m.fitur.length; i++) {
+        if (m.fitur[i].ok) benarN++;
+        if (inArr(tmp.fitur, i)) { if (m.fitur[i].ok) hit++; else salah++; }
+      }
+      var gf = Math.max(0, Math.min(1, (hit - salah) / benarN));
+      cs.push(mk(3, gf, "Fitur toko online dasar", gf >= 1 ? "" : "Empat fitur dasar membuat pesanan masuk dan diproses rapi tanpa pembayaran daring."));
+      markChips(el("ftc"), m.fitur, tmp.fitur);
+      el("ftw").innerHTML = '<ul class="find">' + m.fitur.map(function (f) {
+        return '<li class="' + (f.ok ? "ok" : "no") + '"><b>' + esc(f.t) + "</b> — " + esc(f.why) + "</li>";
+      }).join("") + "</ul>";
+      var sc = total(cs);
+      el("out").innerHTML = scoreBox(sc, "tiga bagian", cs);
+      el("bCek").disabled = true;
+      done(m, sc, { desk: tmp.desk, et: tmp.et, fitur: tmp.fitur });
+    };
+  }
+};
+
+/* =========================== MISI 8 — SERAH TERIMA =========================== */
+var vSer = {
+  view: function (m) {
+    var d = (S.m[m.id] && S.m[m.id].data) || {};
+    tmp.tri = d.tri || {}; tmp.opt = d.opt;
+    tmp.lang = (d.lang || acak(m.kunci_langkah)).slice();
+    return '<section class="card"><h3>a. Triase temuan pengujian</h3>' +
+      '<p class="hint">Dasarnya jumlah penguji dan dampaknya terhadap pesanan, bukan kemudahan memperbaiki.</p>' +
+      '<div class="wrapx"><table class="t" id="tri"><tr><th>Temuan</th><th class="n">Penguji</th><th>Tingkat</th></tr>' +
+      m.temuan.map(function (t, i) {
+        return "<tr data-i=\"" + i + "\"><td>" + esc(t.t) + '</td><td class="n">' + esc(t.n) + "</td><td><select data-t=\"" + i + "\">" +
+          '<option value="">tingkat…</option>' + m.sev.map(function (s) {
+            return '<option value="' + s + '"' + (tmp.tri[i] === s ? " selected" : "") + ">" + s + "</option>";
+          }).join("") + "</select></td></tr>";
+      }).join("") + "</table></div></section>" +
+      '<section class="card" id="opc"><h3>b. Optimasi kecepatan</h3>' +
+      '<div class="q"><p class="stem">' + esc(m.optimasi.stem) + "</p>" + optsHtml("o", m.optimasi.opts, tmp.opt) +
+      '<p class="why" hidden></p></div></section>' +
+      '<section class="card"><h3>c. Langkah serah terima</h3>' + seqHtml("sq", m.langkah, tmp.lang) + "</section>" +
+      '<div class="btnrow"><button class="btn go" id="bCek">Periksa jawaban</button></div><div id="out"></div>' + nextBtn(m);
+  },
+  wire: function (m) {
+    var sels = el("tri").querySelectorAll("select");
+    for (var i = 0; i < sels.length; i++) sels[i].onchange = function () { tmp.tri[this.getAttribute("data-t")] = this.value; };
+    wireOpts(el("opc"), function (q, o) { tmp.opt = o; });
+    function drawSeq() { el("sq").outerHTML = seqHtml("sq", m.langkah, tmp.lang); wireSeq("sq", tmp.lang, drawSeq); }
+    wireSeq("sq", tmp.lang, drawSeq);
+
+    el("bCek").onclick = function () {
+      var cs = [], i, hit = 0;
+      for (i = 0; i < m.temuan.length; i++) if (tmp.tri[i] === m.temuan[i].sev) hit++;
+      var g1 = hit / m.temuan.length;
+      cs.push(mk(4, g1, "Triase temuan", g1 >= 1 ? "" : "Temuan yang dialami empat dari lima penguji hampir pasti dialami pembeli sungguhan."));
+      var rows = el("tri").querySelectorAll("tr[data-i]");
+      for (i = 0; i < rows.length; i++) {
+        var benar = tmp.tri[i] === m.temuan[i].sev;
+        rows[i].querySelector("select").disabled = true;
+        rows[i].lastElementChild.innerHTML = (benar ? "<b>" + esc(m.temuan[i].sev) + "</b> · tepat" : esc(tmp.tri[i] || "—") + " → <b>" + esc(m.temuan[i].sev) + "</b>") +
+          '<br><span style="font-size:.8rem;color:var(--ink-soft)">' + esc(m.temuan[i].why) + "</span>";
+      }
+      var o = m.optimasi;
+      cs.push(mk(3, tmp.opt === o.ans ? 1 : 0, "Optimasi kecepatan", tmp.opt === o.ans ? "" : o.why));
+      markOpts(el("opc"), "o", o.ans, tmp.opt);
+      var w = el("opc").querySelector(".why"); w.innerHTML = esc(o.why); w.hidden = false;
+
+      var g3 = seqSkor(m.kunci_langkah, tmp.lang);
+      cs.push(mk(3, g3, "Langkah serah terima", g3 >= 1 ? "" : "Perbaiki dan ukur ulang, lengkapi SEO, terbitkan, susun panduan, baru alihkan kepemilikan."));
+      markSeq("sq", m.kunci_langkah, tmp.lang);
+
+      var sc = total(cs);
+      el("out").innerHTML = scoreBox(sc, "tiga bagian", cs);
+      el("bCek").disabled = true;
+      done(m, sc, { tri: tmp.tri, opt: tmp.opt, lang: tmp.lang });
+    };
+  }
+};
+/* =======================================================================
+   PERKAKAS
+   ======================================================================= */
+function nilaiAkhir() {
+  var t = 0;
+  for (var i = 0; i < MISSIONS.length; i++) {
+    var m = MISSIONS[i], r = S.m[m.id];
+    if (r) t += r.score * m.bobot / 100;
+  }
+  return Math.round(t * 10) / 10;
+}
+function pad(s, n) { s = String(s); while (s.length < n) s += " "; return s; }
+
+function laporan() {
+  var L = [];
+  L.push("LAPORAN HASIL LATIHAN — RUANG RANCANG");
+  L.push("Mata kuliah Perancangan Web (AN232507) · D3 Administrasi Bisnis");
+  L.push("");
+  L.push("Nama      : " + (S.nama || "-"));
+  L.push("NPM       : " + (S.npm || "-"));
+  L.push("UMKM mitra: " + (S.mitra || "-"));
+  L.push("");
+  L.push(pad("Misi", 40) + pad("Sub-CPMK", 10) + pad("Bobot", 8) + pad("Nilai", 8) + "Percobaan");
+  L.push(new Array(80).join("-"));
+  for (var i = 0; i < MISSIONS.length; i++) {
+    var m = MISSIONS[i], r = S.m[m.id];
+    var t = m.no + ". " + m.title;
+    if (t.length > 38) t = t.slice(0, 37) + "…";
+    L.push(pad(t, 40) + pad(m.sub, 10) + pad(m.bobot + "%", 8) + pad(r ? r.score : "-", 8) + (r ? r.attempts + "×" : "-"));
+  }
+  L.push(new Array(80).join("-"));
+  L.push(pad("Nilai akhir terbobot", 40) + pad("", 10) + pad("100%", 8) + nilaiAkhir());
+  L.push("");
+  var got = [];
+  for (var b = 0; b < BADGES.length; b++) if (inArr(S.badges, BADGES[b].id)) got.push(BADGES[b].t);
+  L.push("Badge: " + (got.length ? got.join(", ") : "belum ada"));
+  L.push("");
+  L.push("Catatan: nilai di latihan ini bukan nilai mata kuliah. Angkanya");
+  L.push("menunjukkan seberapa sesuai keputusanmu dengan prosedur yang");
+  L.push("diajarkan, dan dipakai untuk berlatih sebelum proyek website");
+  L.push("mitra yang sesungguhnya.");
+  return L.join("\n");
+}
+function rapor() {
+  var rows = MISSIONS.map(function (m) {
+    var r = S.m[m.id];
+    return "<tr><td>" + m.no + "</td><td>" + esc(m.title) + '</td><td class="n">' + m.bobot + '%</td><td class="n">' +
+      (r ? r.score : "—") + '</td><td class="n">' + (r ? (r.score * m.bobot / 100).toFixed(1) : "—") + "</td></tr>";
+  }).join("");
+  modal("<h2>Rapor saya</h2>" +
+    '<div class="card"><label class="fl" for="rn">Nama</label><input type="text" id="rn" value="' + esc(S.nama) + '">' +
+    '<label class="fl" for="rp">NPM</label><input type="text" id="rp" value="' + esc(S.npm) + '">' +
+    '<label class="fl" for="rm">UMKM mitra <small>opsional</small></label><input type="text" id="rm" value="' + esc(S.mitra) + '"></div>' +
+    '<div class="wrapx"><table class="t"><tr><th>#</th><th>Misi</th><th class="n">Bobot</th><th class="n">Nilai</th><th class="n">Kontribusi</th></tr>' + rows +
+    '<tfoot><tr><td colspan="4">Nilai akhir terbobot</td><td class="n">' + nilaiAkhir() + "</td></tr></tfoot></table></div>" +
+    '<textarea class="rep" id="repT" rows="16"></textarea>' +
+    '<div class="btnrow"><button class="btn go" id="rC">Copy laporan</button>' +
+    '<button class="btn ghost" onclick="window.print()">Cetak / PDF</button>' +
+    '<button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+  el("repT").value = laporan();
+  function sync() { save(); paintRail(); el("repT").value = laporan(); }
+  el("rn").oninput = function () { S.nama = this.value; sync(); };
+  el("rp").oninput = function () { S.npm = this.value; sync(); };
+  el("rm").oninput = function () { S.mitra = this.value; sync(); };
+  el("rC").onclick = function () { copyBox("repT"); };
+}
+
+function rubrik() {
+  var rows = MISSIONS.map(function (m) {
+    var r = S.m[m.id];
+    return "<tr><td>" + m.no + "</td><td>" + esc(m.title) + '</td><td class="n">' + m.sub + '</td><td class="n">' + m.bobot + '%</td><td class="n">' + (r ? r.score : "—") + "</td></tr>";
+  }).join("");
+  modal("<h2>Bobot dan Sub-CPMK</h2>" +
+    "<p>Delapan misi ini mengikuti delapan Sub-CPMK pada RPS, dan bobotnya diambil persis dari sana — 8, 10, 14, 18, 10, 14, 14, dan 12, berjumlah 100. Misi 4 paling berat karena satu Sub-CPMK itu memang mencakup CSS, tata letak responsif, dan JavaScript sekaligus.</p>" +
+    '<div class="wrapx"><table class="t"><tr><th>#</th><th>Misi</th><th class="n">Sub-CPMK</th><th class="n">Bobot</th><th class="n">Nilai</th></tr>' + rows + "</table></div>" +
+    "<h3>Yang dinilai otomatis dan yang tidak</h3>" +
+    "<p>Latihan ini menilai ketepatan keputusan: jenis website, urutan blok halaman, ambang kontras, kebersihan markah, cascade dan box model, kolom responsif, pemilihan alat, SEO on-page, dan triase temuan pengujian. Yang tidak bisa dinilai di sini adalah website yang benar-benar dibangun, laporan pengujian, dan presentasi proyek — tiga hal yang justru menjadi tagihan utama Tugas 7 dan 8.</p>" +
+    "<h3>Cara memakainya di kelas</h3>" +
+    "<p>Misi 1 dan 2 cocok dikerjakan sebelum pertemuan ke-3 sebagai pemanasan. Misi 3 dan 4 paling berguna sesudah praktikum HTML dan CSS, karena mahasiswa bisa mengulang sampai terbiasa membaca cascade dan box model. Misi 5 sampai 8 dikerjakan setelah UTS, dan Misi 7 paling baik dibahas bersama di kelas: dua soal etikanya sengaja tidak punya jalan pintas teknis, dan jawabannya bahan diskusi yang bagus.</p>" +
+    '<div class="btnrow"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+}
+function panduan() {
+  modal("<h2>Panduan istilah</h2>" +
+    "<h3>Konsep dan mekanisme</h3>" +
+    "<p><b>Domain</b> — alamat yang diketik pengunjung, disewa tahunan.<br>" +
+    "<b>Hosting</b> — ruang di server yang menyala 24 jam agar berkas dapat diakses.<br>" +
+    "<b>Statis dan dinamis</b> — statis menyajikan berkas tetap; dinamis merakit halaman dari basis data.<br>" +
+    "<b>HTTPS</b> — HTTP yang dienkripsi; wajib pada halaman yang memuat formulir.</p>" +
+    "<h3>Perancangan antarmuka</h3>" +
+    "<p><b>Struktur informasi</b> — keputusan tentang apa saja yang ada di website dan bagaimana dikelompokkan.<br>" +
+    "<b>Wireframe</b> — rangka halaman tanpa warna dan tanpa foto akhir.<br>" +
+    "<b>Rasio kontras</b> — perbandingan terang teks dan latar; ambang WCAG 4,5 : 1 untuk teks isi.<br>" +
+    "<b>Hero</b> — bagian teratas halaman: nilai jual, satu tombol, dan biasanya harga.</p>" +
+    "<h3>Markah dan tampilan</h3>" +
+    "<p><b>Tag semantik</b> — header, nav, main, section, article, aside, footer; menyatakan perannya sendiri.<br>" +
+    "<b>scope</b> — atribut pada sel kepala tabel yang menyatakan arah penjelasannya.<br>" +
+    "<b>Cascade dan specificity</b> — aturan mana yang menang: id 100, kelas 10, tipe elemen 1.<br>" +
+    "<b>Box model</b> — content, padding, border, margin; border-box menghitung padding dan border ke dalam lebar.<br>" +
+    "<b>Mobile-first</b> — aturan dasar ditulis untuk layar terkecil, media query min-width menambah untuk layar lebar.<br>" +
+    "<b>DOM</b> — pohon objek halaman di memori peramban; yang diubah JavaScript, bukan berkasnya.</p>" +
+    "<h3>Builder, SEO, dan serah terima</h3>" +
+    "<p><b>CMS</b> — tempat isi disimpan sebagai data, terpisah dari tampilannya.<br>" +
+    "<b>Repeater</b> — satu rancangan kartu yang diulang untuk setiap baris data.<br>" +
+    "<b>Title tag</b> — judul halaman di hasil pencarian dan di tab peramban; ideal 50–60 karakter.<br>" +
+    "<b>Meta description</b> — cuplikan di bawah judul pada hasil pencarian; ideal 140–160 karakter.<br>" +
+    "<b>Uji kebergunaan</b> — mengamati orang memakai website tanpa dibantu; lima penguji sudah memadai.<br>" +
+    "<b>Berita acara serah terima</b> — catatan tertulis tentang apa yang diserahkan, kepada siapa, dan kapan akses lama dicabut.</p>" +
+    '<div class="btnrow"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+}
+
+/* ---------------- ekspor / impor ---------------- */
+function copyBox(id) {
+  var ta = el(id);
+  ta.focus(); ta.select();
+  try { ta.setSelectionRange(0, ta.value.length); } catch (e) {}
+  var ok = false;
+  try { ok = document.execCommand("copy"); } catch (e2) { ok = false; }
+  if (!ok && navigator.clipboard) {
+    navigator.clipboard.writeText(ta.value).then(function () { toast("Tersalin."); },
+      function () { toast("Tekan lama di kotak teks, lalu Select All → Copy."); });
+    return;
+  }
+  toast(ok ? "Tersalin. Tempel ke dokumen atau LMS." : "Tekan lama di kotak teks, lalu Select All → Copy.");
+}
+function exportDialog() {
+  var json = JSON.stringify(S, null, 2);
+  var name = "ruangrancang-" + (S.npm || "siswa").replace(/[^a-zA-Z0-9]+/g, "") + "-" + new Date().toISOString().slice(0, 10) + ".json";
+  modal("<h2>Export jawaban</h2><p>Di iPhone dan iPad tombol download biasanya tidak berfungsi — pakai Copy, lalu tempel ke WhatsApp, email, atau kolom tugas di LMS.</p>" +
+    '<div class="btnrow"><button class="btn go" id="eC">Copy semua teks</button><button class="btn ghost" id="eD">Download .json</button></div>' +
+    '<textarea id="eT" rows="8">' + esc(json) + "</textarea>" +
+    '<p class="hint">Nama berkas: ' + esc(name) + "</p>" +
+    '<div class="btnrow"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+  el("eC").onclick = function () { copyBox("eT"); };
+  el("eD").onclick = function () {
+    try {
+      var b = new Blob([json], { type: "application/json" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(b); a.download = name;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+      toast("Berkas " + name + " diunduh.");
+    } catch (e) { toast("Download tidak didukung di browser ini. Pakai Copy."); }
+  };
+}
+function applyImport(txt) {
+  try {
+    var o = JSON.parse(txt);
+    if (!o || o.v !== 1) throw 0;
+    S = o; if (!S.m) S.m = {}; if (!S.badges) S.badges = [];
+    save(); closeModal(); paintRail(); go(S.cur || MISSIONS[0].id); toast("Jawaban dimuat.");
+  } catch (e) { toast("Teks tidak dikenali. Pastikan seluruh isi berkas .json tersalin."); }
+}
+function importDialog() {
+  modal("<h2>Import jawaban</h2><p>Pilih berkas .json, atau tempel isinya ke kotak di bawah.</p>" +
+    '<input type="file" id="iF" accept="application/json,text/plain,.json" style="margin-bottom:12px">' +
+    '<textarea id="iT" rows="6" placeholder="Tempel isi berkas .json di sini."></textarea>' +
+    '<div class="btnrow"><button class="btn go" id="iG">Muat</button><button class="btn ghost" onclick="closeModal()">Batal</button></div>');
+  el("iF").onchange = function () {
+    if (!this.files || !this.files[0]) return;
+    var r = new FileReader();
+    r.onload = function () { applyImport(r.result); };
+    r.onerror = function () { toast("Berkas tidak bisa dibaca. Pakai cara tempel teks."); };
+    r.readAsText(this.files[0]);
+  };
+  el("iG").onclick = function () {
+    var v = el("iT").value.trim();
+    if (!v) { toast("Kotaknya masih kosong."); return; }
+    applyImport(v);
+  };
+}
+
+/* ---------------- pembuka ---------------- */
+function pembuka() {
+  cur = null; paintRail();
+  el("stage").innerHTML =
+    '<div class="tag">Sebelum mulai</div><h1>Delapan keputusan membangun website mitra</h1>' +
+    '<p class="goal" style="font-size:1.12rem">Satu semester Perancangan Web, dikerjakan sebagai rangkaian keputusan: menentukan jenis website yang tepat, menyusun antarmuka yang terbaca, menulis markah yang bersih, menata tampilan dan perilaku, memilih alat yang sesuai kemampuan mitra, membangun situs multi-halaman, menjaga amanah atas aset mitra, lalu menyerahkannya dengan benar.</p>' +
+    '<div class="card"><h3>Isi identitas dulu</h3><p class="hint">Dipakai di rapor dan berkas yang kamu kumpulkan.</p>' +
+    '<label class="fl" for="pn">Nama</label><input type="text" id="pn" value="' + esc(S.nama) + '">' +
+    '<label class="fl" for="pp">NPM</label><input type="text" id="pp" value="' + esc(S.npm) + '">' +
+    '<label class="fl" for="pm">UMKM mitra <small>opsional — kalau sudah ada</small></label><input type="text" id="pm" value="' + esc(S.mitra) + '"></div>' +
+    '<div class="note"><b>Satu hal yang perlu disepakati dulu.</b> Beberapa misi tidak punya satu jawaban paling benar — palet warna pada Misi 2 misalnya punya banyak kombinasi yang sama-sama lolos ambang kontras. Yang dinilai adalah apakah keputusanmu memenuhi syarat yang bisa diperiksa dan bisa kamu pertahankan alasannya. Nilai di sini juga bukan nilai mata kuliah.</div>' +
+    '<div class="btnrow"><button class="btn go" id="bGo">Mulai Misi 1</button>' +
+    (Object.keys(S.m).length ? '<button class="btn ghost" id="bLanjut">Lanjutkan yang terakhir</button>' : "") + "</div>";
+  function ambil() { S.nama = el("pn").value; S.npm = el("pp").value; S.mitra = el("pm").value; save(); }
+  el("bGo").onclick = function () { ambil(); go(MISSIONS[0].id); };
+  if (el("bLanjut")) el("bLanjut").onclick = function () { ambil(); go(S.cur || MISSIONS[0].id); };
+}
+
+/* ---------------- init ---------------- */
+load();
+el("modal").addEventListener("click", function (e) { if (e.target === el("modal")) closeModal(); });
+document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
+document.addEventListener("click", function (e) {
+  var b = e.target.closest("button[data-go]");
+  if (b && !b.disabled) { go(b.getAttribute("data-go")); el("stage").focus(); }
+});
+el("btnRubrik").onclick = rubrik;
+el("btnPanduan").onclick = panduan;
+el("btnRapor").onclick = rapor;
+el("btnExport").onclick = exportDialog;
+el("btnImport").onclick = importDialog;
+el("btnReset").onclick = function () {
+  modal("<h2>Kosongkan semua?</h2><p>Seluruh jawaban, nilai, dan badge di browser ini akan dihapus dan tidak bisa dikembalikan. Export dulu kalau masih dibutuhkan.</p>" +
+    '<div class="btnrow"><button class="btn" id="rz">Ya, kosongkan</button><button class="btn ghost" onclick="closeModal()">Batal</button></div>');
+  el("rz").onclick = function () { S = fresh(); save(); closeModal(); pembuka(); };
+};
+if (S.nama || Object.keys(S.m).length) { paintRail(); go(S.cur || MISSIONS[0].id); } else pembuka();
+</script>
+</body>
+</html>

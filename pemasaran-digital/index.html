@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studio UMKM — Simulasi Pemasaran Digital 16 Minggu</title>
+<style>
+:root{
+  --tinta:#131A33; --panel:#1B2447; --panel2:#222C55; --garis:#33406F;
+  --emas:#E3B23C; --emas-l:#F3D488; --coral:#D8455F; --hijau:#46B58A;
+  --teks:#EDEAE0; --redup:#A7ADC9;
+  --r:10px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--tinta);
+  color:var(--teks);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  font-size:16px; line-height:1.55;
+  -webkit-text-size-adjust:100%;
+}
+h1,h2,h3,.angka{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-weight:600}
+h1{font-size:1.55rem;line-height:1.2;margin:0}
+h2{font-size:1.25rem;margin:0 0 .35rem}
+h3{font-size:1.02rem;margin:0 0 .3rem}
+p{margin:0 0 .7rem;max-width:66ch}
+small{color:var(--redup)}
+a{color:var(--emas-l)}
+button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--emas);outline-offset:2px}
+
+.songket{height:8px;background:
+  repeating-linear-gradient(135deg,var(--emas) 0 6px,transparent 6px 12px),
+  repeating-linear-gradient(45deg,rgba(227,178,60,.45) 0 6px,transparent 6px 12px);
+  opacity:.85}
+header.bar{display:flex;gap:.8rem;align-items:center;justify-content:space-between;
+  padding:.7rem 1rem;background:var(--panel);border-bottom:1px solid var(--garis);flex-wrap:wrap}
+.mitra-chip{display:flex;align-items:center;gap:.5rem;font-size:.9rem;color:var(--redup)}
+.mitra-chip b{color:var(--teks)}
+.bar-aksi{display:flex;gap:.4rem;flex-wrap:wrap}
+.btn{background:var(--panel2);color:var(--teks);border:1px solid var(--garis);
+  border-radius:var(--r);padding:.5rem .85rem}
+.btn:hover{border-color:var(--emas)}
+.btn-utama{background:var(--emas);color:#20160A;border-color:var(--emas);font-weight:700}
+.btn-utama:hover{background:var(--emas-l)}
+.btn-kecil{padding:.3rem .55rem;font-size:.85rem}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+
+.wrap{max-width:1080px;margin:0 auto;padding:1rem}
+.layout{display:grid;grid-template-columns:220px 1fr;gap:1rem;align-items:start}
+@media (max-width:820px){.layout{grid-template-columns:1fr}}
+
+/* timeline */
+.jadwal{background:var(--panel);border:1px solid var(--garis);border-radius:var(--r);padding:.6rem}
+.jadwal ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.25rem}
+@media (max-width:820px){
+  .jadwal ol{flex-direction:row;overflow-x:auto;padding-bottom:.3rem}
+  .jadwal li{flex:0 0 auto}
+}
+.jadwal button{display:flex;gap:.5rem;align-items:center;width:100%;text-align:left;
+  background:transparent;border:1px solid transparent;border-radius:8px;color:var(--redup);padding:.35rem .45rem;font-size:.87rem}
+.jadwal .no{font-family:Georgia,serif;font-size:.78rem;background:var(--panel2);border:1px solid var(--garis);
+  border-radius:6px;min-width:2.1rem;text-align:center;padding:.05rem .2rem;color:var(--teks)}
+.jadwal button.kini{background:var(--panel2);border-color:var(--emas);color:var(--teks)}
+.jadwal button.usai{color:var(--teks)}
+.jadwal button.usai .no{background:rgba(70,181,138,.18);border-color:var(--hijau);color:#BDF0DB}
+.jadwal button:disabled{opacity:.5;cursor:not-allowed}
+
+/* metric strip */
+.metrik{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;margin-bottom:1rem}
+@media (max-width:700px){.metrik{grid-template-columns:repeat(2,1fr)}}
+.m{background:var(--panel);border:1px solid var(--garis);border-radius:var(--r);padding:.5rem .6rem}
+.m .angka{font-size:1.3rem;display:block;line-height:1.15}
+.m span.lbl{font-size:.72rem;color:var(--redup);display:block}
+.m .delta{font-size:.72rem;color:var(--hijau)}
+.m .delta.turun{color:var(--coral)}
+
+.kartu{background:var(--panel);border:1px solid var(--garis);border-radius:var(--r);padding:1rem;margin-bottom:1rem}
+.kartu.terang{background:var(--panel2)}
+.pill{display:inline-block;font-size:.73rem;border:1px solid var(--garis);border-radius:999px;
+  padding:.1rem .55rem;color:var(--redup);background:var(--tinta)}
+.pill.emas{border-color:var(--emas);color:var(--emas-l)}
+
+/* WA brief */
+.wa{background:#0E1530;border:1px solid var(--garis);border-radius:var(--r);padding:.7rem;max-width:44ch}
+.wa .bubble{background:#20305C;border-radius:12px 12px 12px 3px;padding:.45rem .6rem;margin-bottom:.35rem;font-size:.92rem}
+.wa .nama{font-size:.78rem;color:var(--emas-l);margin-bottom:.3rem}
+
+/* choices */
+.opsi{display:flex;flex-direction:column;gap:.45rem;margin:.6rem 0}
+.opsi label{display:flex;gap:.6rem;align-items:flex-start;background:var(--panel2);
+  border:1px solid var(--garis);border-radius:var(--r);padding:.6rem .7rem;cursor:pointer}
+.opsi label:hover{border-color:var(--emas)}
+.opsi input{margin-top:.28rem;accent-color:var(--emas);flex:0 0 auto}
+.opsi label.benar{border-color:var(--hijau);background:rgba(70,181,138,.12)}
+.opsi label.salah{border-color:var(--coral);background:rgba(216,69,95,.1)}
+
+.urut{display:flex;flex-direction:column;gap:.4rem;margin:.6rem 0}
+.urut .row{display:flex;gap:.5rem;align-items:center;background:var(--panel2);border:1px solid var(--garis);
+  border-radius:var(--r);padding:.45rem .6rem}
+.urut .row span.t{flex:1;font-size:.93rem}
+.pasangan{display:flex;flex-direction:column;gap:.5rem;margin:.6rem 0}
+.pasangan .row{background:var(--panel2);border:1px solid var(--garis);border-radius:var(--r);padding:.55rem .65rem}
+.pasangan .row .q{font-size:.92rem;margin-bottom:.3rem}
+select,input[type=text],input[type=number]{background:var(--tinta);color:var(--teks);
+  border:1px solid var(--garis);border-radius:8px;padding:.4rem .5rem;font:inherit;max-width:100%}
+.slider{margin:.5rem 0}
+.slider .head{display:flex;justify-content:space-between;font-size:.9rem}
+input[type=range]{width:100%;accent-color:var(--emas)}
+.total-alok{font-family:Georgia,serif;font-size:1.05rem}
+
+.umpan{border-left:3px solid var(--emas);background:var(--panel2);border-radius:0 var(--r) var(--r) 0;
+  padding:.7rem .85rem;margin:.8rem 0}
+.umpan.baik{border-left-color:var(--hijau)}
+.umpan.kurang{border-left-color:var(--coral)}
+.umpan ul{margin:.4rem 0 0;padding-left:1.1rem}
+.umpan li{font-size:.92rem;margin-bottom:.25rem}
+.skor{font-family:Georgia,serif;font-size:1.05rem;color:var(--emas-l)}
+
+.bar-cpmk{display:flex;flex-direction:column;gap:.4rem}
+.bar-cpmk .row{font-size:.87rem}
+.bar-cpmk .trek{height:9px;background:var(--tinta);border:1px solid var(--garis);border-radius:99px;overflow:hidden}
+.bar-cpmk .isi{height:100%;background:linear-gradient(90deg,var(--emas),var(--emas-l))}
+.bar-cpmk .lbl{display:flex;justify-content:space-between;margin-bottom:.15rem}
+
+.grafik{display:flex;align-items:flex-end;gap:3px;height:90px;margin:.6rem 0}
+.grafik div{flex:1;background:linear-gradient(180deg,var(--emas),#8A6A1C);border-radius:3px 3px 0 0;position:relative}
+.grafik-lbl{display:flex;gap:3px;font-size:.62rem;color:var(--redup)}
+.grafik-lbl div{flex:1;text-align:center}
+
+.feed{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;max-width:300px}
+.feed .sel{aspect-ratio:1;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;
+  background:var(--panel2);border:1px solid var(--garis)}
+
+table.tbl{width:100%;border-collapse:collapse;font-size:.88rem;margin:.5rem 0}
+table.tbl th,table.tbl td{border:1px solid var(--garis);padding:.35rem .45rem;text-align:left}
+table.tbl th{background:var(--panel2);font-weight:600}
+
+.pilih-mitra{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem}
+@media (max-width:760px){.pilih-mitra{grid-template-columns:1fr}}
+.mitra{background:var(--panel);border:1px solid var(--garis);border-radius:var(--r);padding:.8rem;text-align:left;color:var(--teks)}
+.mitra:hover,.mitra.aktif{border-color:var(--emas)}
+.mitra .ikon{font-size:1.8rem}
+.mitra h3{margin:.3rem 0 .1rem}
+.mitra p{font-size:.87rem;color:var(--redup);margin:0}
+
+.lencana{display:flex;flex-wrap:wrap;gap:.35rem}
+.lencana span{font-size:.78rem;border:1px solid var(--emas);color:var(--emas-l);border-radius:999px;padding:.1rem .5rem}
+.langkah-info{font-size:.8rem;color:var(--redup);margin-bottom:.2rem}
+.sr{position:absolute;left:-9999px}
+.dosen{display:none}
+.dosen.buka{display:block}
+@media print{body{background:#fff;color:#000}.bar,.jadwal,.bar-aksi{display:none}.kartu{border-color:#999}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="songket"></div>
+<header class="bar">
+  <div>
+    <h1>Studio UMKM</h1>
+    <small>Simulasi Pemasaran Digital · 16 minggu · Politeknik Negeri Sriwijaya</small>
+  </div>
+  <div class="mitra-chip" id="chipMitra"></div>
+  <div class="bar-aksi">
+    <button class="btn btn-kecil" id="btnDosen">Panel dosen</button>
+    <button class="btn btn-kecil" id="btnSimpan">Simpan progres</button>
+    <button class="btn btn-kecil" id="btnMuat">Muat progres</button>
+    <input type="file" id="fileMuat" accept="application/json" class="sr">
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="kartu dosen" id="panelDosen"></div>
+  <div id="app"></div>
+</div>
+
+<script>
+/* ============================================================
+   STUDIO UMKM — simulasi pemasaran digital 16 minggu
+   Selaras RPS Pemasaran Digital, D3 Administrasi Bisnis, Polsri
+   Berjalan 100% offline. Tanpa pustaka luar.
+   ============================================================ */
+
+const BOBOT = {"1.1":11,"1.2":11,"2.1":14,"2.2":14,"3.1":17,"3.2":17,"4.1":8,"4.2":8};
+
+const MITRA = [
+  {
+    id:"pempek", nama:"Pempek Nyonya Ratu", ikon:"🍥", kategori:"Kuliner rumahan",
+    wa:["Assalamualaikum, saya Bu Ratu. Pempek saya laris kalau ada yang cerita dari mulut ke mulut, tapi Instagram saya isinya cuma foto seadanya.",
+        "Anak saya bilang harus main TikTok. Saya tidak paham. Tolong bantu ya, Nak."],
+    modal:"Rp 800.000/bulan", ikut:"IG 210 pengikut, WA Business",
+    stp:[
+      {t:"Ibu muda 25–40 di Palembang yang butuh lauk praktis untuk keluarga dan biasa pesan lewat WhatsApp",pts:6,fb:"Tepat. Segmen ini punya daya beli, frekuensi beli tinggi, dan kanalnya sudah dipakai mitra."},
+      {t:"Semua orang yang suka makan pempek",pts:1,fb:"Ini bukan targeting, ini menghindari keputusan. Segmen tanpa batas membuat pesan jadi hambar."},
+      {t:"Wisatawan asing yang berkunjung ke Eropa",pts:0,fb:"Tidak terjangkau kanal maupun logistik mitra. Targeting harus realistis terhadap sumber daya."},
+      {t:"Anak SD di sekitar sekolah",pts:2,fb:"Pengguna mungkin, tapi bukan pengambil keputusan pembelian. Bedakan consumer dan buyer."}
+    ],
+    usp:[
+      {t:"Ikan tenggiri segar tanpa pengawet, digiling setiap pagi",ok:true,fb:"Relevan dengan kekhawatiran ibu-ibu soal keamanan pangan, dan bisa dibuktikan lewat konten proses."},
+      {t:"Cuko tiga tingkat kepedasan dan kemasan aman untuk kirim luar kota",ok:true,fb:"Pembeda nyata yang langsung menyelesaikan hambatan pembelian jarak jauh."},
+      {t:"Harga paling murah di Palembang",ok:false,fb:"Klaim harga termurah mudah ditiru dan menggerus margin UMKM. Hindari perang harga sebagai USP."},
+      {t:"Pempek enak dan berkualitas",ok:false,fb:"Semua penjual mengklaim ini. Tanpa bukti spesifik, klaim generik tidak membedakan."},
+      {t:"Sudah punya akun Instagram",ok:false,fb:"Itu kanal, bukan keunggulan. Jangan campur aset dengan USP."},
+      {t:"Buka setiap hari",ok:false,fb:"Paritas kategori: hampir semua pesaing juga buka setiap hari."}
+    ],
+    persona:[
+      {t:"Ibu dua anak, kerja kantoran, hambatan utamanya: takut jajan luar tidak higienis dan repot kalau pesan mendadak",pts:7,fb:"Cocok dengan data riset: keluhan tersering di kolom komentar adalah kebersihan dan kepastian stok."},
+      {t:"Remaja pencari makanan viral termurah",pts:2,fb:"Loyalitas rendah dan sensitif harga. Bukan inti bisnis mitra."},
+      {t:"Kolektor kuliner premium yang mencari edisi terbatas",pts:1,fb:"Tidak selaras dengan kapasitas produksi rumahan."}
+    ],
+    pilar:{edukasi:[15,30],hiburan:[10,25],inspirasi:[5,20],promosi:[15,30],interaksi:[10,25]},
+    jam:[3,4,5,6,9,7,6,12,20,18,10,9,16,24,14,6],
+    jamBenar:"16.00–18.00 dan 20.00–21.00 (sebelum jam makan dan jam santai malam)",
+    jamOpsi:[
+      {t:"16.00–18.00 lalu ulang 20.00–21.00",pts:6,fb:"Sesuai grafik audiens: puncak sebelum jam makan malam dan saat santai. Unggah sebelum puncak, bukan saat puncak."},
+      {t:"02.00–04.00 karena sepi pesaing",pts:0,fb:"Sepi pesaing karena audiens juga tidur. Jangan mengoptimalkan hal yang salah."},
+      {t:"Kapan saja, algoritma yang mengatur",pts:1,fb:"Algoritma memakai sinyal awal; jam unggah memengaruhi seberapa cepat sinyal itu terkumpul."},
+      {t:"Setiap dua jam sekali sepanjang hari",pts:2,fb:"Frekuensi berlebihan tanpa kapasitas produksi menurunkan mutu dan melelahkan mitra."}
+    ],
+    hook:[
+      {t:"“Ini alasan cuko Bu Ratu tidak pernah dibikin semalam sebelumnya.”",pts:6,fb:"Menjanjikan informasi spesifik dan menyentuh USP dalam tiga detik pertama."},
+      {t:"“Hai semuanya, selamat pagi, hari ini kita mau bahas sedikit tentang usaha kami...”",pts:1,fb:"Pembuka basa-basi membuang detik paling mahal. Mulai dari inti."},
+      {t:"“Diskon! Diskon! Diskon!”",pts:2,fb:"Menarik perhatian sesaat tapi melatih audiens hanya beli saat diskon."}
+    ],
+    warna:"#D8455F", emoji:["🍥","🥣","🐟","🧑‍🍳","📦","🌶️","🥢","🏷️","⭐"]
+  },
+  {
+    id:"songket", nama:"Songket Ayu Kenanga", ikon:"🧵", kategori:"Kriya & fesyen",
+    wa:["Selamat sore, saya Ayu. Songket kami tenun tangan, satu lembar bisa dua bulan.",
+        "Masalahnya orang online selalu tanya “kok mahal?”. Saya bingung menjelaskannya."],
+    modal:"Rp 1.500.000/bulan", ikut:"IG 640 pengikut, marketplace pasif",
+    stp:[
+      {t:"Perempuan 30–50 berpenghasilan menengah-atas untuk acara adat dan pernikahan, di dalam maupun luar Sumsel",pts:6,fb:"Tepat. Momen adat menciptakan urgensi, dan segmen ini tidak sensitif harga bila nilai dijelaskan."},
+      {t:"Mahasiswa yang mencari kain murah untuk tugas",pts:1,fb:"Daya beli tidak cocok dengan struktur biaya tenun tangan."},
+      {t:"Siapa pun yang suka kain",pts:1,fb:"Terlalu luas; pesan jadi tidak menyentuh siapa pun."},
+      {t:"Pembeli grosir yang mencari harga pabrik",pts:2,fb:"Mendorong mitra bersaing dengan songket cetak mesin. Ini melawan keunggulannya sendiri."}
+    ],
+    usp:[
+      {t:"Tenun tangan 100%, satu motif hanya dibuat satu lembar, dengan sertifikat penenun",ok:true,fb:"Kelangkaan dan asal-usul adalah jawaban langsung atas pertanyaan “kok mahal”."},
+      {t:"Motif pusaka keluarga yang direkam ceritanya dalam video pendek",ok:true,fb:"Mengubah harga menjadi nilai budaya, dan sangat cocok untuk konten naratif."},
+      {t:"Bisa nego sampai harga pabrik",ok:false,fb:"Menghancurkan posisi premium yang justru jadi kekuatan mitra."},
+      {t:"Kain bagus dan awet",ok:false,fb:"Klaim generik tanpa bukti, dipakai semua penjual kain."},
+      {t:"Ada banyak warna",ok:false,fb:"Fitur, bukan keunggulan yang membedakan."},
+      {t:"Gratis ongkir seluruh Indonesia",ok:false,fb:"Promosi taktis, mudah ditiru, dan membebani margin. Bukan fondasi posisi merek."}
+    ],
+    persona:[
+      {t:"Perempuan 38, panitia pernikahan keluarga, hambatan utamanya: takut tertipu songket cetak yang dijual sebagai tenun tangan",pts:7,fb:"Sesuai temuan riset: pertanyaan berulang di DM adalah soal keaslian, bukan harga."},
+      {t:"Pemburu diskon akhir tahun",pts:1,fb:"Segmen ini datang dan pergi mengikuti potongan harga."},
+      {t:"Turis yang mencari suvenir di bawah Rp 50.000",pts:2,fb:"Tidak cocok dengan produk utama, meski bisa jadi lini suvenir terpisah."}
+    ],
+    pilar:{edukasi:[25,40],hiburan:[5,20],inspirasi:[15,30],promosi:[10,25],interaksi:[5,20]},
+    jam:[2,3,4,5,7,6,5,7,9,10,12,14,20,24,18,8],
+    jamBenar:"19.00–21.00 (audiens membuka ponsel setelah urusan rumah selesai)",
+    jamOpsi:[
+      {t:"19.00–21.00, dengan Story pengingat pukul 12.00",pts:6,fb:"Sesuai grafik: puncak malam. Story siang berfungsi sebagai pemanasan, bukan unggahan utama."},
+      {t:"07.00–08.00 saat orang berangkat kerja",pts:2,fb:"Waktu perhatian pendek; konten naratif panjang tidak dikonsumsi utuh."},
+      {t:"Tengah malam agar tampil paling atas besok pagi",pts:1,fb:"Urutan linimasa tidak bekerja begitu; sinyal awal yang lemah menekan distribusi."},
+      {t:"Tidak perlu diatur",pts:0,fb:"Membiarkan variabel yang bisa dikendalikan berarti membuang data audiens yang sudah ada."}
+    ],
+    hook:[
+      {t:"“Dua bulan, satu lembar, satu penenun. Ini yang Anda bayar.”",pts:6,fb:"Menjawab keberatan harga di detik pertama dengan angka konkret."},
+      {t:"“Songket cantik nih kak, minat?”",pts:1,fb:"Menjual sebelum membangun nilai. Untuk produk premium ini melemahkan posisi."},
+      {t:"“Jangan lupa follow, like, dan share ya!”",pts:0,fb:"Meminta sebelum memberi. Tidak ada alasan bagi audiens untuk berhenti menggulir."}
+    ],
+    warna:"#E3B23C", emoji:["🧵","🪡","👗","✨","🏺","📜","🧶","💛","⭐"]
+  },
+  {
+    id:"kopi", nama:"Kopi Sepuluh Ulu", ikon:"☕", kategori:"Kedai kopi",
+    wa:["Halo, saya Ridho, pemilik kedai. Tempat kami kecil tapi nyaman buat nugas.",
+        "Pesaing di sekitar ramai karena rajin bikin konten. Kami belum punya arah."],
+    modal:"Rp 1.000.000/bulan", ikut:"IG 430 pengikut, TikTok kosong",
+    stp:[
+      {t:"Mahasiswa dan pekerja muda 18–28 dalam radius 3 km yang mencari tempat mengerjakan tugas dan berbincang",pts:6,fb:"Tepat. Radius, usia, dan kebutuhan ruang kerja selaras dengan kapasitas kedai."},
+      {t:"Pencinta kopi spesialti tingkat nasional",pts:2,fb:"Kedai kecil sulit memenangkan segmen ini; biaya edukasi dan gengsi terlalu tinggi."},
+      {t:"Semua orang yang minum kopi",pts:1,fb:"Terlalu luas untuk anggaran Rp 1 juta per bulan."},
+      {t:"Keluarga dengan anak balita",pts:2,fb:"Tidak cocok dengan ruang kecil dan suasana kerja yang tenang."}
+    ],
+    usp:[
+      {t:"Colokan di setiap meja, Wi-Fi stabil, dan jaminan tempat tenang sampai pukul 23.00",ok:true,fb:"Menyelesaikan masalah nyata audiens sasaran, dan mudah dibuktikan lewat konten."},
+      {t:"Biji dari petani Semende dengan profil rasa yang dijelaskan di menu",ok:true,fb:"Asal-usul yang konkret memberi alasan memilih selain harga."},
+      {t:"Kopi enak",ok:false,fb:"Klaim generik. Semua kedai mengatakannya."},
+      {t:"Harga termurah di kota",ok:false,fb:"Margin kedai kecil tidak kuat menopang perang harga."},
+      {t:"Tempat parkir luas",ok:false,fb:"Ini fasilitas umum kategori, dan tidak relevan bagi mahasiswa yang berjalan kaki."},
+      {t:"Buka setiap hari",ok:false,fb:"Paritas kategori, bukan pembeda."}
+    ],
+    persona:[
+      {t:"Mahasiswa semester 5, hambatan utamanya: sulit menemukan tempat yang tidak mengusir saat nugas lama dan colokannya cukup",pts:7,fb:"Sesuai temuan riset: pencarian terbanyak dari audiens lokal memuat kata “colokan” dan “nyaman nugas”."},
+      {t:"Pekerja kantoran yang butuh ruang rapat formal",pts:2,fb:"Kapasitas ruang tidak mendukung; salah alokasi sumber daya."},
+      {t:"Wisatawan sekali datang",pts:2,fb:"Frekuensi kunjungan rendah, sulit membangun pendapatan berulang."}
+    ],
+    pilar:{edukasi:[15,30],hiburan:[20,35],inspirasi:[5,20],promosi:[10,25],interaksi:[15,30]},
+    jam:[4,5,7,9,14,12,8,9,12,15,20,22,18,14,10,6],
+    jamBenar:"18.00–20.00 (menjelang jam belajar malam) dan 12.00–13.00",
+    jamOpsi:[
+      {t:"18.00–20.00 sebagai utama, 12.00–13.00 sebagai pendukung",pts:6,fb:"Sesuai grafik audiens dan momen keputusan “nugas di mana malam ini”."},
+      {t:"04.00 subuh untuk menyasar pekerja pagi",pts:0,fb:"Bukan audiens sasaran mitra dan bertabrakan dengan jam operasional."},
+      {t:"Setiap jam agar selalu tampil",pts:1,fb:"Mutu turun, audiens jenuh, dan mitra kehabisan tenaga."},
+      {t:"Hanya akhir pekan",pts:2,fb:"Kehilangan hari kerja, padahal kebutuhan nugas justru muncul Senin–Kamis."}
+    ],
+    hook:[
+      {t:"“Colokan penuh, Wi-Fi kencang, dan tidak ada yang mengusir sampai jam 11 malam.”",pts:6,fb:"Menyebut manfaat spesifik audiens dalam tiga detik pertama."},
+      {t:"“Kopi kami enak banget, cobain deh!”",pts:1,fb:"Klaim tanpa bukti dan tanpa relevansi kebutuhan."},
+      {t:"“Kedai kami sudah berdiri sejak 2019 dan berlokasi di...”",pts:2,fb:"Riwayat usaha penting di company profile, bukan di detik pertama video pendek."}
+    ],
+    warna:"#46B58A", emoji:["☕","🔌","💻","📖","🫘","🎧","🥐","📍","⭐"]
+  }
+];
+
+/* ---------- definisi misi ---------- */
+const MISI = [
+  {
+    minggu:"1", sub:"1.1", judul:"Brief usaha dan merek",
+    tugas:"Tugas 1 — Business & Brand Brief (individu)",
+    bahan:"Ekosistem pemasaran digital, analisis peluang usaha, STP, USP, anatomi company profile",
+    langkah:[
+      {tipe:"single", key:"stp", tanya:"Setelah membaca brief mitra, segmen mana yang paling layak dijadikan target utama semester ini?",
+       petunjuk:"Targeting yang baik memenuhi empat syarat: cukup besar, punya daya beli, terjangkau kanal mitra, dan sesuai kapasitas produksi."},
+      {tipe:"multi", key:"usp", tanya:"Pilih dua pernyataan yang layak menjadi unique selling proposition mitra.", jml:2,
+       petunjuk:"USP harus relevan bagi audiens, dapat dibuktikan, dan sulit ditiru pesaing."},
+      {tipe:"multi", tanya:"Elemen mana saja yang wajib ada dalam company profile mitra?", jml:6,
+       petunjuk:"Company profile adalah dokumen identitas untuk pihak luar, bukan dokumen internal.",
+       opsi:[
+        {t:"Visi dan misi",ok:true,fb:"Menjadi arah dan dasar narasi seluruh konten."},
+        {t:"Profil usaha dan riwayat singkat",ok:true,fb:"Membangun kredibilitas dan konteks."},
+        {t:"Produk atau jasa utama",ok:true,fb:"Inti penawaran; wajib jelas dan terbaca."},
+        {t:"Keunggulan atau USP",ok:true,fb:"Alasan memilih mitra dibanding pesaing."},
+        {t:"Legalitas dan bukti sosial",ok:true,fb:"Izin usaha, sertifikat, atau testimoni menurunkan keraguan pembeli."},
+        {t:"Kontak dan ajakan bertindak",ok:true,fb:"Dokumen tanpa jalur kontak memutus perjalanan pelanggan."},
+        {t:"Daftar gaji karyawan",ok:false,fb:"Data internal dan sensitif; tidak pernah masuk dokumen publik."},
+        {t:"Nomor rekening pribadi pemilik",ok:false,fb:"Risiko penyalahgunaan data. Gunakan kanal transaksi resmi usaha."},
+        {t:"Daftar harga pesaing",ok:false,fb:"Bahan analisis internal, bukan isi company profile."}
+       ]}
+    ]
+  },
+  {
+    minggu:"2–3", sub:"1.2", judul:"Menyusun dan mendesain company profile",
+    tugas:"Tugas 2 — Dokumen company profile profesional (kelompok)",
+    bahan:"Struktur dokumen, prinsip komunikasi bisnis, tipografi, palet warna, ekspor berkas",
+    langkah:[
+      {tipe:"urut", tanya:"Urutkan alur dokumen company profile dari halaman pertama ke halaman terakhir.",
+       petunjuk:"Pembaca luar butuh identitas dan konteks lebih dulu, bukti di tengah, ajakan bertindak di akhir.",
+       urutan:["Sampul: nama, logo, dan satu kalimat penjelas usaha",
+               "Tentang usaha: riwayat singkat dan kondisi hari ini",
+               "Visi dan misi",
+               "Produk atau jasa unggulan",
+               "Keunggulan dan USP",
+               "Bukti: legalitas, sertifikat, testimoni",
+               "Kontak dan ajakan bertindak"],
+       fb:"Urutan ini mengikuti logika keputusan pembaca: kenali, percaya, lalu bertindak."},
+      {tipe:"single", tanya:"Mitra mengirim tiga draf pernyataan visi. Mana yang paling layak dipakai?",
+       petunjuk:"Visi yang baik singkat, punya arah waktu, dan bisa diuji ketercapaiannya.",
+       opsi:[
+        {t:"Menjadi usaha pilihan utama pelanggan di Sumatera Selatan pada 2030 melalui mutu produk dan pelayanan yang konsisten",pts:7,fb:"Ada arah, cakupan, tenggat, dan dasar penilaian. Cukup ringkas untuk dikutip di konten."},
+        {t:"Menjadi usaha terbaik, terhebat, dan terdepan yang memberikan kepuasan maksimal kepada seluruh lapisan masyarakat dunia dalam segala bidang",pts:2,fb:"Superlatif menumpuk tanpa batas cakupan. Tidak bisa diuji dan sulit dipercaya."},
+        {t:"Menjual produk sebanyak-banyaknya supaya untung besar",pts:1,fb:"Ini target penjualan internal, bukan visi yang bisa diceritakan ke publik."}
+       ]},
+      {tipe:"pasangan", tanya:"Tentukan keputusan desain untuk dokumen mitra.",
+       petunjuk:"Konsistensi lebih penting daripada variasi. Setiap keputusan desain harus punya alasan fungsional.",
+       baris:[
+        {q:"Tipografi dokumen", opsi:["Satu font judul dan satu font isi, maksimal dua keluarga","Lima font berbeda agar tidak membosankan","Semua teks memakai font dekoratif bersambung"], benar:0,
+         fb:"Dua keluarga font cukup untuk membangun hierarki tanpa mengacaukan keterbacaan."},
+        {q:"Palet warna", opsi:["Dua warna utama dan satu aksen, diambil dari logo mitra","Warna acak per halaman","Sebanyak mungkin warna cerah"], benar:0,
+         fb:"Palet terbatas yang bersumber dari logo menjaga identitas visual tetap dikenali."},
+        {q:"Hierarki halaman", opsi:["Judul jauh lebih besar dari isi, ada ruang kosong yang cukup","Semua teks satu ukuran agar rata","Isi halaman penuh sampai tepi tanpa jarak"], benar:0,
+         fb:"Ruang kosong bukan kekosongan; ia mengarahkan mata pembaca."},
+        {q:"Ekspor berkas untuk dicetak percetakan", opsi:["PDF dengan font tertanam dan gambar 300 dpi","Tangkapan layar PowerPoint dalam format JPG","Berkas Canva dibagikan lewat tautan"], benar:0,
+         fb:"PDF menjaga tata letak dan mutu cetak; tautan atau tangkapan layar berisiko berubah dan pecah."}
+       ]}
+    ]
+  },
+  {
+    minggu:"4–5", sub:"2.1", judul:"Buyer persona dan content pillar",
+    tugas:"Tugas 3 — Dokumen content plan (kelompok)",
+    bahan:"Perilaku audiens digital, buyer persona, customer journey, riset tren dan kata kunci, content mix, SMART dan KPI",
+    langkah:[
+      {tipe:"multi", tanya:"Anda punya waktu untuk tiga kegiatan riset. Pilih tiga yang benar-benar menghasilkan data audiens.", jml:3,
+       petunjuk:"Data audiens berasal dari perilaku nyata: apa yang mereka cari, tanyakan, dan keluhkan.",
+       opsi:[
+        {t:"Membaca Insight akun mitra: umur, lokasi, dan jam aktif pengikut",ok:true,fb:"Data langsung dari audiens yang sudah ada. Titik awal paling murah dan paling akurat."},
+        {t:"Mewawancarai lima pembeli terakhir soal alasan membeli dan keraguan sebelum membeli",ok:true,fb:"Menghasilkan bahasa asli pelanggan yang nanti dipakai untuk copywriting."},
+        {t:"Membaca kolom komentar dan DM pesaing terdekat",ok:true,fb:"Keluhan dan pertanyaan berulang di sana adalah peluang konten yang belum terjawab."},
+        {t:"Menebak berdasarkan selera pribadi anggota kelompok",ok:false,fb:"Kelompok Anda bukan audiens mitra. Ini sumber kesalahan paling umum di tugas."},
+        {t:"Menyalin persona dari contoh tugas kakak tingkat",ok:false,fb:"Persona milik usaha lain, pasar lain, dan waktu lain."},
+        {t:"Mengikuti tren global tanpa memeriksa relevansi lokal",ok:false,fb:"Tren tanpa konteks menghasilkan konten ramai tetapi tidak menjual."}
+       ], sesudah:"riset"},
+      {tipe:"single", key:"persona", tanya:"Berdasarkan temuan riset, persona mana yang paling tepat dijadikan persona utama?",
+       petunjuk:"Persona utama adalah orang yang paling mungkin membeli berulang, bukan yang paling banyak jumlahnya."},
+      {tipe:"alokasi", key:"pilar", tanya:"Bagikan 100% porsi konten ke lima pilar. Total harus tepat 100.",
+       petunjuk:"Porsi promosi yang terlalu besar menurunkan jangkauan organik; porsi promosi nol membuat audiens tidak pernah diajak membeli.",
+       kunci:["edukasi","hiburan","inspirasi","promosi","interaksi"],
+       label:{edukasi:"Edukasi",hiburan:"Hiburan",inspirasi:"Inspirasi",promosi:"Promosi",interaksi:"Interaksi"}},
+      {tipe:"single", tanya:"Mana tujuan konten yang sudah memenuhi kaidah SMART?",
+       petunjuk:"Periksa lima unsur: spesifik, terukur, dapat dicapai, relevan, dan ada tenggat.",
+       opsi:[
+        {t:"Menaikkan engagement rate Instagram mitra dari 1,2% menjadi 3% dalam 8 minggu dengan 3 unggahan per minggu",pts:7,fb:"Spesifik, terukur, ada dasar, dan bertenggat. Bisa dievaluasi di minggu ke-13."},
+        {t:"Membuat akun mitra viral",pts:1,fb:"Tidak terukur dan tidak dalam kendali Anda. Viral adalah hasil, bukan tujuan yang bisa direncanakan."},
+        {t:"Mengunggah konten sebanyak mungkin",pts:2,fb:"Terukur tapi tidak relevan dengan tujuan bisnis, dan mengabaikan kapasitas mitra."}
+       ]}
+    ]
+  },
+  {
+    minggu:"6–7", sub:"2.2", judul:"Content editorial dan content calendar",
+    tugas:"Tugas 4 — Jadwal publikasi lintas kanal (kelompok)",
+    bahan:"Brand voice, copywriting caption, pedoman editorial, content calendar, etika dan hak cipta",
+    langkah:[
+      {tipe:"single", tanya:"Mitra ingin tone of voice yang konsisten. Mana rumusan yang paling bisa dipakai tim produksi?",
+       petunjuk:"Tone of voice yang berguna memberi instruksi yang bisa dipatuhi, bukan kata sifat yang kabur.",
+       opsi:[
+        {t:"Hangat dan jelas: sapa dengan “Anda”, satu gagasan per kalimat, hindari istilah asing tanpa penjelasan, tidak pernah merendahkan pesaing",pts:7,fb:"Bisa langsung diterapkan dan diperiksa saat kontrol mutu konten."},
+        {t:"Pokoknya asik, gaul, dan kekinian",pts:2,fb:"Tiga orang akan menafsirkannya menjadi tiga gaya berbeda. Tidak bisa dijadikan pedoman."},
+        {t:"Formal dan baku seperti surat dinas",pts:3,fb:"Konsisten, tetapi menjauhkan diri dari kanal sosial yang bersifat percakapan."}
+       ]},
+      {tipe:"gabung", tanya:"Susun satu caption Instagram untuk unggahan pertama mitra.",
+       petunjuk:"Struktur caption: hook di baris pertama, isi yang menjawab kebutuhan, lalu satu ajakan bertindak yang jelas.",
+       grup:[
+         {label:"Baris pertama (hook)", opsi:[
+           {t:"Satu pertanyaan yang persis jadi keraguan pelanggan sebelum membeli",pts:5,fb:"Hook terbaik memakai kalimat yang sudah ada di kepala audiens."},
+           {t:"Sapaan panjang dan ucapan terima kasih kepada semua pihak",pts:1,fb:"Dua baris pertama menentukan apakah caption dibuka. Jangan diisi basa-basi."},
+           {t:"Deretan tanda seru dan emoji",pts:2,fb:"Menarik mata sekejap, tetapi tidak memberi alasan membaca lanjut."}
+         ]},
+         {label:"Isi", opsi:[
+           {t:"Jawaban ringkas dengan satu bukti konkret: bahan, proses, angka, atau testimoni",pts:5,fb:"Bukti mengubah klaim menjadi alasan membeli."},
+           {t:"Daftar semua produk beserta harga seluruhnya",pts:2,fb:"Katalog utuh lebih tepat di website atau tautan, bukan di caption."},
+           {t:"Kutipan motivasi tanpa kaitan dengan produk",pts:1,fb:"Tidak menggerakkan audiens ke mana pun."}
+         ]},
+         {label:"Ajakan bertindak", opsi:[
+           {t:"Satu ajakan spesifik: “Tulis SONGKET di kolom komentar, kami kirim katalognya”",pts:5,fb:"Satu ajakan, satu jalur, mudah diukur."},
+           {t:"Tiga ajakan sekaligus: DM, komentar, dan klik tautan",pts:2,fb:"Pilihan berlebihan menurunkan tindakan. Satu unggahan, satu tujuan."},
+           {t:"Tidak ada ajakan bertindak",pts:1,fb:"Audiens tidak tahu langkah berikutnya, dan konversi hilang di titik ini."}
+         ]},
+         {label:"Tagar", opsi:[
+           {t:"5–10 tagar: campuran lokal, kategori, dan niche",pts:4,fb:"Cukup untuk membantu penemuan tanpa terlihat seperti spam."},
+           {t:"30 tagar populer apa saja",pts:1,fb:"Tagar tidak relevan mendatangkan audiens yang tidak akan membeli dan merusak sinyal."},
+           {t:"Tanpa tagar sama sekali",pts:2,fb:"Kehilangan jalur penemuan gratis, terutama untuk akun kecil."}
+         ]}
+       ]},
+      {tipe:"pasangan", tanya:"Tempatkan lima ide konten pada format yang paling sesuai.",
+       petunjuk:"Format mengikuti tujuan konten dan kebiasaan konsumsi di setiap kanal.",
+       baris:[
+        {q:"Proses produksi dari bahan mentah sampai siap kirim", opsi:["Reels atau TikTok 20–40 detik","Artikel website 800 kata","Story polling"], benar:0, fb:"Proses bersifat visual dan berirama; video pendek paling kuat."},
+        {q:"Perbandingan tiga varian produk beserta alasan memilih", opsi:["Carousel feed 5–7 slide","Satu foto tunggal","Live 2 jam"], benar:0, fb:"Carousel memberi ruang membaca bertahap dan disimpan pengguna."},
+        {q:"Menguji minat audiens terhadap varian baru", opsi:["Story dengan polling atau kuis","Unggahan feed permanen","Email blast"], benar:0, fb:"Story murah, cepat, dan datanya langsung terbaca."},
+        {q:"Penjelasan cara merawat produk agar tahan lama", opsi:["Artikel website dengan SEO on-page","Komentar balasan","Tagar"], benar:0, fb:"Konten pencarian bertahan lama di website dan mendatangkan trafik berulang."},
+        {q:"Menjawab keberatan harga secara mendalam", opsi:["YouTube 5–8 menit atau carousel panjang","Story 15 detik","Satu tagar"], benar:0, fb:"Keberatan yang kompleks butuh format panjang dan bukti bertahap."}
+       ]},
+      {tipe:"single", tanya:"Tim hendak memakai lagu populer dan foto dari akun pesaing untuk konten mitra. Apa keputusan Anda?",
+       petunjuk:"Etika konten bukan sekadar sopan santun; ia melindungi akun mitra dari penghapusan konten dan sengketa hukum.",
+       opsi:[
+        {t:"Pakai audio dari pustaka resmi platform dan foto hasil produksi sendiri; aset pihak ketiga hanya bila berlisensi dan dikreditkan",pts:7,fb:"Aman secara hak cipta, dan membangun aset visual milik mitra sendiri."},
+        {t:"Pakai saja, akun kecil tidak akan ditegur",pts:0,fb:"Risiko penghapusan konten, pembatasan akun, bahkan tuntutan. Mitra yang menanggung akibatnya."},
+        {t:"Pakai tetapi hapus tanda air dan ubah warnanya sedikit",pts:0,fb:"Menghapus atribusi memperberat pelanggaran, bukan menyelesaikannya."}
+       ]}
+    ]
+  },
+  {
+    minggu:"8", sub:"UTS", judul:"Evaluasi tengah semester",
+    tugas:"Soal UTS berbasis studi kasus — mengukur Sub-CPMK 1.1 sampai 2.2",
+    bahan:"Seluruh materi minggu 1–7", ujian:true,
+    langkah:[
+      {tipe:"single", sub:"1.1", tanya:"Sebuah UMKM mengklaim target pasarnya “semua kalangan”. Apa akibat paling langsung pada strategi kontennya?",
+       opsi:[
+        {t:"Pesan menjadi umum sehingga tidak menyentuh kebutuhan spesifik siapa pun, dan biaya per konversi naik",pts:8,fb:"Targeting yang kabur membuat pesan kabur. Inilah sebab tersering konten ramai tapi tidak menjual."},
+        {t:"Jangkauan otomatis meningkat karena audiensnya lebih banyak",pts:1,fb:"Jangkauan besar tanpa relevansi tidak menghasilkan pembelian."},
+        {t:"Tidak berpengaruh selama konten menarik",pts:0,fb:"Konten menarik tetap membutuhkan penerima yang tepat."}
+       ]},
+      {tipe:"single", sub:"1.2", tanya:"Dokumen company profile sudah lengkap isinya, tetapi setiap halaman memakai font dan warna berbeda. Apa penilaian Anda?",
+       opsi:[
+        {t:"Isi lengkap tidak menutupi inkonsistensi identitas visual; dokumen terbaca amatir dan menurunkan kepercayaan",pts:8,fb:"Konsistensi visual adalah bagian dari kredibilitas, bukan sekadar selera."},
+        {t:"Tidak masalah, yang penting informasinya ada",pts:1,fb:"Dalam komunikasi bisnis, bentuk ikut menyampaikan pesan."},
+        {t:"Justru bagus karena terlihat kreatif dan tidak monoton",pts:2,fb:"Variasi tanpa sistem berbeda dari kreativitas yang terarah."}
+       ]},
+      {tipe:"single", sub:"2.1", tanya:"Data Insight menunjukkan 70% pengikut berusia 18–24, sedangkan pembeli terbanyak berusia 35–45. Apa langkah paling tepat?",
+       opsi:[
+        {t:"Pertahankan pilar untuk pembeli 35–45 sebagai prioritas pendapatan, dan kaji apakah pengikut muda datang dari konten yang salah sasaran",pts:8,fb:"Pengikut bukan pelanggan. Prioritaskan segmen yang membeli, lalu perbaiki sumber ketidaksesuaiannya."},
+        {t:"Ubah seluruh konten mengikuti pengikut 18–24 karena jumlahnya lebih besar",pts:2,fb:"Mengejar jumlah pengikut sambil kehilangan pembeli adalah kesalahan klasik."},
+        {t:"Abaikan datanya karena Insight sering tidak akurat",pts:0,fb:"Menolak data tanpa alasan menghilangkan satu-satunya dasar evaluasi yang dimiliki mitra."}
+       ]},
+      {tipe:"single", sub:"2.2", tanya:"Content calendar mitra menjadwalkan 14 unggahan per minggu, tetapi yang mengerjakan hanya satu orang. Apa perbaikan yang Anda usulkan?",
+       opsi:[
+        {t:"Turunkan frekuensi ke tingkat yang berkelanjutan, misalnya 3 unggahan per minggu, dan cantumkan penanggung jawab untuk setiap slot",pts:8,fb:"Konsistensi mengalahkan volume. Jadwal yang tidak bisa dijalankan sama nilainya dengan tidak punya jadwal."},
+        {t:"Pertahankan, algoritma menyukai akun yang sering mengunggah",pts:1,fb:"Frekuensi tinggi yang gugur di tengah jalan justru merusak konsistensi sinyal."},
+        {t:"Hapus jadwal, unggah saja saat ada ide",pts:0,fb:"Tanpa jadwal, publikasi bergantung suasana hati dan konsistensi merek hilang."}
+       ]}
+    ]
+  },
+  {
+    minggu:"9–11", sub:"3.1", judul:"Produksi konten visual dan video pendek",
+    tugas:"Tugas 5 — Portofolio konten siap unggah (kelompok)",
+    bahan:"Fotografi produk, penyuntingan, storyboard, spesifikasi video antarplatform, YouTube dan thumbnail",
+    langkah:[
+      {tipe:"pasangan", tanya:"Tentukan pengaturan pemotretan produk di studio praktikum.",
+       petunjuk:"Semua keputusan teknis mengabdi pada satu hal: produk terbaca jelas dan konsisten dengan identitas merek.",
+       baris:[
+        {q:"Sumber cahaya", opsi:["Cahaya jendela pagi yang dilembutkan kain putih","Lampu kilat ponsel langsung ke produk","Lampu ruangan kuning dari belakang"], benar:0, fb:"Cahaya lembut dari samping menjaga tekstur dan warna asli produk."},
+        {q:"Latar", opsi:["Polos dengan kontras cukup terhadap produk","Bermotif ramai agar tidak sepi","Meja penuh barang lain"], benar:0, fb:"Latar polos mengarahkan perhatian ke produk dan mempermudah konsistensi feed."},
+        {q:"Sudut pengambilan", opsi:["45 derajat untuk volume, tegak lurus atas untuk tata letak menu","Selalu dari bawah agar terlihat besar","Acak setiap foto"], benar:0, fb:"Dua sudut baku cukup untuk membangun gaya yang dikenali."},
+        {q:"Properti pendukung", opsi:["Sedikit, relevan dengan cerita, dan tidak menutupi produk","Sebanyak mungkin agar meriah","Properti merek lain yang sedang tren"], benar:0, fb:"Properti bertugas memberi konteks, bukan bersaing dengan produk."},
+        {q:"Penyuntingan warna", opsi:["Satu preset yang dipakai ulang untuk semua foto","Filter berbeda setiap unggahan","Kejenuhan warna maksimal"], benar:0, fb:"Preset tetap adalah cara termurah menjaga identitas visual."}
+       ]},
+      {tipe:"urut", tanya:"Urutkan storyboard video pendek 30 detik.",
+       petunjuk:"Tiga detik pertama menentukan apakah sisa video ditonton.",
+       urutan:["Hook 3 detik: pernyataan atau gambar yang menghentikan gulir",
+               "Konteks: masalah atau keinginan audiens",
+               "Solusi: produk mitra beserta buktinya",
+               "Ajakan bertindak: satu langkah yang jelas"],
+       fb:"Pola ini bekerja karena mengikuti urutan perhatian, bukan urutan cerita perusahaan."},
+      {tipe:"single", key:"hook", tanya:"Pilih kalimat hook tiga detik untuk video pertama mitra.",
+       petunjuk:"Hook yang kuat menjanjikan informasi, bukan meminta perhatian."},
+      {tipe:"pasangan", tanya:"Cocokkan spesifikasi teknis dengan kanalnya.",
+       petunjuk:"Salah rasio atau durasi membuat konten terpotong atau ditekan distribusinya.",
+       baris:[
+        {q:"Reels dan TikTok", opsi:["Vertikal 9:16, 15–60 detik, teks aman dari tepi","Mendatar 16:9, 10 menit","Persegi 1:1, tanpa suara"], benar:0, fb:"Vertikal penuh layar; jaga teks tidak tertutup antarmuka platform."},
+        {q:"YouTube long-form", opsi:["Mendatar 16:9, 5–10 menit, ada bab dan deskripsi","Vertikal 9:16, 10 detik","Persegi 1:1, tanpa judul"], benar:0, fb:"Format panjang mendatar cocok untuk penjelasan mendalam dan pencarian."},
+        {q:"YouTube Shorts", opsi:["Vertikal 9:16, maksimal 60 detik","Mendatar 16:9, 30 menit","Vertikal 9:16, 10 menit"], benar:0, fb:"Shorts adalah jalur penemuan cepat, bukan tempat video panjang."},
+        {q:"Foto katalog website", opsi:["Persegi atau 4:5 dengan resolusi tinggi dan latar konsisten","Tangkapan layar dari Story","Foto vertikal berformat video"], benar:0, fb:"Katalog butuh keseragaman agar tata letak halaman rapi dan cepat dimuat."}
+       ]},
+      {tipe:"single", tanya:"Untuk video YouTube “Kenapa harga produk kami segini?”, mana kombinasi judul dan thumbnail terbaik?",
+       petunjuk:"Judul dan thumbnail bekerja sepasang: satu memberi janji, satu memberi bukti visual.",
+       opsi:[
+        {t:"Judul: “Kenapa harganya segini? Ini rincian biayanya” — Thumbnail: wajah pemilik, produk, dan tiga kata besar yang terbaca di ponsel",pts:7,fb:"Janji jelas, ada wajah manusia, teks pendek yang terbaca di layar kecil."},
+        {t:"Judul: “WAJIB TONTON!!! SHOCKING!!!” — Thumbnail: tanda panah merah dan wajah kaget",pts:1,fb:"Klik naik sesaat, tapi waktu tonton jatuh dan kepercayaan merek ikut turun."},
+        {t:"Judul: “Video 3” — Thumbnail: tangkapan layar acak dari video",pts:0,fb:"Tidak memberi alasan mengklik dan tidak terbaca dalam hasil pencarian."}
+       ]}
+    ]
+  },
+  {
+    minggu:"12–13", sub:"3.2", judul:"Strategi publikasi dan analitik",
+    tugas:"Tugas 6 — Caption dan jadwal unggah siap publikasi (kelompok)",
+    bahan:"Jadwal unggah berbasis data, tagar, metrik platform, engagement rate, benchmarking, A/B testing",
+    langkah:[
+      {tipe:"single", key:"jamOpsi", tanya:"Perhatikan grafik jam aktif pengikut mitra di bawah. Kapan jadwal unggah utama sebaiknya ditetapkan?",
+       petunjuk:"Unggah sedikit sebelum puncak aktivitas, agar konten sudah terdistribusi saat audiens membuka aplikasi.", grafik:true},
+      {tipe:"multi", tanya:"Pilih tiga prinsip penyusunan tagar yang benar.", jml:3,
+       petunjuk:"Tagar adalah alat penemuan, bukan hiasan.",
+       opsi:[
+        {t:"Campur tagar besar, sedang, dan niche agar ada peluang tampil di kolam yang tidak terlalu padat",ok:true,fb:"Akun kecil menang di tagar niche, bukan di tagar berjuta unggahan."},
+        {t:"Sertakan tagar lokasi dan komunitas lokal",ok:true,fb:"Untuk UMKM, audiens terdekat adalah yang paling mungkin membeli."},
+        {t:"Pantau tagar mana yang benar-benar mendatangkan jangkauan lewat Insight, lalu sisakan yang berkinerja",ok:true,fb:"Tagar diperlakukan sebagai eksperimen, bukan kebiasaan."},
+        {t:"Pakai tagar populer apa pun meski tidak relevan",ok:false,fb:"Mendatangkan audiens salah dan mengaburkan sinyal minat ke platform."},
+        {t:"Salin blok 30 tagar yang sama untuk semua unggahan",ok:false,fb:"Pola berulang identik berisiko dianggap spam dan tidak bisa dievaluasi."},
+        {t:"Gunakan tagar yang sedang dibatasi platform karena ramai",ok:false,fb:"Unggahan bisa disembunyikan seluruhnya dari penemuan."}
+       ]},
+      {tipe:"angka", tanya:"Satu unggahan mitra memperoleh jangkauan 3.200, suka 86, komentar 12, simpan 21, dan bagikan 9. Hitung engagement rate berbasis jangkauan, dalam persen.",
+       petunjuk:"Engagement rate berbasis jangkauan = (total interaksi ÷ jangkauan) × 100.",
+       jawab:4.0, tol:0.2, satuan:"%", maks:8,
+       fb:"(86 + 12 + 21 + 9) ÷ 3.200 × 100 = 4,00%. Untuk UMKM, angka di atas 3% umumnya sehat. Selalu sebutkan dasar hitungnya, karena ER berbasis pengikut akan memberi angka berbeda."},
+      {tipe:"single", tanya:"Berikut kinerja empat unggahan. Rekomendasi optimasi mana yang paling berdasar?",
+       petunjuk:"Simpan dan bagikan menandakan nilai jangka panjang; suka paling mudah didapat dan paling lemah sebagai sinyal.",
+       tabel:{kepala:["Unggahan","Format","Jangkauan","Simpan","Pesan masuk"],
+              isi:[["A","Foto produk + harga","2.100","4","1"],
+                   ["B","Carousel “cara memilih”","1.850","63","11"],
+                   ["C","Reels tren tanpa produk","9.400","7","0"],
+                   ["D","Reels proses produksi","3.600","41","8"]]},
+       opsi:[
+        {t:"Perbanyak format seperti B dan D karena simpan dan pesan masuknya tinggi, lalu uji ulang jam unggah; C dievaluasi karena jangkauan besar tanpa konversi",pts:8,fb:"Keputusan mengikuti metrik yang paling dekat dengan pendapatan, bukan yang paling besar angkanya."},
+        {t:"Perbanyak konten seperti C karena jangkauannya paling besar",pts:2,fb:"Jangkauan besar tanpa simpan dan tanpa pesan masuk adalah lalu lintas yang tidak berujung pada penjualan."},
+        {t:"Hapus semua unggahan berkinerja rendah lalu mulai akun baru",pts:0,fb:"Membuang riwayat data dan bukti kerja, padahal justru di situ pelajarannya."},
+        {t:"Beli pengikut agar rasio terlihat lebih baik",pts:0,fb:"Menambah pengikut tidak aktif menurunkan engagement rate dan merusak kepercayaan."}
+       ]}
+    ]
+  },
+  {
+    minggu:"14", sub:"4.1", judul:"Konten website dan e-commerce dasar",
+    tugas:"Tugas 7 — Struktur informasi website company profile (kelompok)",
+    bahan:"Struktur informasi, wireframe, UX, katalog produk, e-commerce dasar, SEO on-page",
+    langkah:[
+      {tipe:"urut", tanya:"Urutkan bagian landing page mitra dari atas ke bawah.",
+       petunjuk:"Pengunjung memutuskan dalam hitungan detik: apa ini, kenapa saya percaya, bagaimana saya memesan.",
+       urutan:["Hero: nama usaha, penawaran utama, dan tombol pesan",
+               "Bukti sosial: testimoni, jumlah pembeli, atau liputan",
+               "Katalog produk beserta harga",
+               "Cara memesan langkah demi langkah",
+               "Pertanyaan yang sering diajukan",
+               "Kontak, lokasi, dan tautan media sosial"],
+       fb:"Tombol pesan hadir di hero dan diulang setelah katalog; jangan biarkan pengunjung mencari cara membeli."},
+      {tipe:"pasangan", tanya:"Isi elemen SEO on-page halaman katalog mitra.",
+       petunjuk:"SEO on-page adalah menulis untuk manusia dengan struktur yang bisa dibaca mesin.",
+       baris:[
+        {q:"Title tag", opsi:["Nama produk + kata kunci + kota, di bawah 60 karakter","Beranda","Selamat datang di website kami yang baru dan terpercaya nomor satu di Indonesia"], benar:0, fb:"Judul yang spesifik dan berlokasi menang untuk pencarian UMKM."},
+        {q:"Meta description", opsi:["Satu sampai dua kalimat yang menjelaskan isi halaman dan memuat ajakan, sekitar 150 karakter","Daftar 40 kata kunci dipisah koma","Dibiarkan kosong"], benar:0, fb:"Deskripsi adalah teks iklan gratis di hasil pencarian."},
+        {q:"Heading H1", opsi:["Satu H1 per halaman yang memuat topik utama","Lima H1 agar semuanya penting","Tanpa heading, semua teks biasa"], benar:0, fb:"Struktur heading menolong pembaca layar dan mesin pencari memahami hierarki."},
+        {q:"Alt text gambar", opsi:["Deskripsi isi gambar secara ringkas dan jujur","IMG_20260912.jpg","Ditumpuk kata kunci berulang"], benar:0, fb:"Alt text melayani aksesibilitas lebih dulu; manfaat SEO mengikuti."},
+        {q:"Kecepatan muat", opsi:["Kompres gambar dan batasi skrip tambahan","Unggah foto asli 12 MB apa adanya","Tambah animasi di setiap bagian"], benar:0, fb:"Halaman lambat kehilangan pengunjung sebelum melihat produk, terutama di jaringan seluler."}
+       ]},
+      {tipe:"single", tanya:"Mitra ingin pembeli bisa bertransaksi dari website. Mana solusi paling tepat untuk skala mitra saat ini?",
+       petunjuk:"Pilih solusi paling sederhana yang menyelesaikan masalah, lalu tingkatkan bila volume sudah menuntut.",
+       opsi:[
+        {t:"Katalog dengan harga jelas, stok terbaru, dan tombol pesan via WhatsApp yang otomatis mengisi nama produk",pts:7,fb:"Sesuai perilaku pembeli Indonesia dan tidak membebani mitra dengan sistem yang tidak sanggup dirawat."},
+        {t:"Bangun e-commerce lengkap dengan gerbang pembayaran, akun pengguna, dan pelacakan kiriman sendiri",pts:2,fb:"Biaya dan perawatan jauh melampaui volume pesanan mitra saat ini."},
+        {t:"Cukup tulis “hubungi kami untuk harga”",pts:1,fb:"Harga tersembunyi adalah hambatan konversi terbesar pada katalog UMKM."}
+       ]}
+    ]
+  },
+  {
+    minggu:"15", sub:"4.2", judul:"Kampanye email marketing",
+    tugas:"Tugas 8 — Kampanye email terkirim beserta laporan metrik (kelompok)",
+    bahan:"Basis data dan lead magnet, etika data pribadi, segmentasi, copywriting subject line, metrik email",
+    langkah:[
+      {tipe:"pasangan", tanya:"Cocokkan segmen pelanggan dengan isi email yang paling tepat.",
+       petunjuk:"Segmentasi berarti pesan yang berbeda untuk kebutuhan yang berbeda, bukan email sama dikirim ke semua orang.",
+       baris:[
+        {q:"Pelanggan baru, satu kali beli", opsi:["Email sambutan: cara pemakaian, cara pesan ulang, dan satu ajakan kecil","Penawaran grosir","Permintaan menjadi reseller"], benar:0, fb:"Tugas email pertama adalah memastikan pengalaman pertama berhasil."},
+        {q:"Tidak membeli selama 60 hari", opsi:["Email pemulihan: pengingat bernilai plus satu alasan kembali","Email ucapan terima kasih tanpa ajakan","Diamkan saja"], benar:0, fb:"Segmen tidak aktif paling murah untuk diaktifkan kembali dibanding mencari pelanggan baru."},
+        {q:"Pelanggan loyal, beli berulang", opsi:["Akses awal produk baru dan permintaan ulasan","Diskon terbesar yang pernah ada","Email penawaran yang sama seperti pelanggan baru"], benar:0, fb:"Loyalitas dijawab dengan pengakuan, bukan potongan harga terus-menerus."},
+        {q:"Berlangganan tetapi belum pernah beli", opsi:["Edukasi dan bukti sosial, lalu tawaran percobaan kecil","Langsung kirim tagihan","Hapus dari daftar"], benar:0, fb:"Mereka sudah memberi izin; yang belum tuntas adalah kepercayaan."}
+       ]},
+      {tipe:"single", tanya:"Mana subject line yang paling layak dipakai untuk kampanye pertama?",
+       petunjuk:"Subject line yang baik jelas, spesifik, dan menepati janji isi email.",
+       opsi:[
+        {t:"“Katalog baru: 6 motif untuk acara adat, lengkap dengan harga”",pts:7,fb:"Spesifik, jujur, dan menjawab kebutuhan segmen. Panjangnya masih terbaca di ponsel."},
+        {t:"“GRATIS!!! BURUAN SEBELUM KEHABISAN!!!”",pts:1,fb:"Huruf kapital dan tanda seru bertumpuk memicu filter spam dan menurunkan kepercayaan."},
+        {t:"“(tanpa subjek)”",pts:0,fb:"Email tanpa subjek hampir pasti tidak dibuka dan berisiko masuk folder spam."}
+       ]},
+      {tipe:"single", tanya:"Mitra memberi Anda daftar 2.000 nomor dan email yang dikumpulkan dari grup WhatsApp orang lain. Apa tindakan Anda?",
+       petunjuk:"Perlindungan data pribadi bukan formalitas; ia menentukan apakah kampanye layak dijalankan.",
+       opsi:[
+        {t:"Tolak memakainya; bangun daftar berbasis izin lewat lead magnet, dengan centang persetujuan dan tautan berhenti berlangganan di setiap email",pts:8,fb:"Daftar berizin lebih kecil tetapi jauh lebih tinggi tingkat bukanya, dan mitra terlindungi secara hukum."},
+        {t:"Pakai saja, kirim sekali lalu lihat hasilnya",pts:0,fb:"Mengirim tanpa izin melanggar perlindungan data pribadi dan merusak reputasi domain pengirim."},
+        {t:"Pakai tetapi sembunyikan identitas pengirim",pts:0,fb:"Menyamarkan pengirim memperberat pelanggaran sekaligus menghapus kepercayaan."}
+       ]}
+    ]
+  },
+  {
+    minggu:"16", sub:"UAS", judul:"Evaluasi akhir semester",
+    tugas:"Soal UAS berbasis studi kasus — mengukur Sub-CPMK 3.1 sampai 4.2",
+    bahan:"Integrasi seluruh materi minggu 9–15", ujian:true,
+    langkah:[
+      {tipe:"single", sub:"3.1", tanya:"Portofolio konten sudah rapi, tetapi seluruhnya tidak berkaitan dengan content pillar yang disusun di minggu 4–5. Apa penilaian Anda?",
+       opsi:[
+        {t:"Mutu teknis tidak menggantikan kesesuaian strategi; konten harus dipetakan ulang ke pilar sebelum dipublikasikan",pts:8,fb:"Inilah sebab penilaian memakai kriteria kesesuaian dengan brief, bukan hanya kualitas teknis."},
+        {t:"Tidak masalah, yang penting hasilnya bagus",pts:1,fb:"Konten indah yang tidak menjalankan tujuan bisnis adalah biaya, bukan aset."},
+        {t:"Ganti saja content pillar-nya agar cocok dengan konten yang sudah dibuat",pts:2,fb:"Mengubah strategi agar menyesuaikan eksekusi yang keliru membalik urutan berpikir."}
+       ]},
+      {tipe:"single", sub:"3.2", tanya:"Setelah delapan minggu, jangkauan naik 300% tetapi pesanan tetap. Apa langkah diagnosis pertama?",
+       opsi:[
+        {t:"Periksa perjalanan setelah jangkauan: apakah profil, tautan, katalog, dan jalur pemesanan bekerja, dan apakah audiens yang datang memang segmen sasaran",pts:8,fb:"Diagnosis mengikuti funnel. Masalah konversi jarang selesai dengan menambah konten."},
+        {t:"Naikkan frekuensi unggah dua kali lipat",pts:2,fb:"Menambah masukan pada funnel yang bocor hanya memperbesar kebocoran."},
+        {t:"Simpulkan bahwa pemasaran digital tidak cocok untuk mitra",pts:0,fb:"Kesimpulan tanpa diagnosis. Data yang ada justru cukup untuk menemukan titik hambatan."}
+       ]},
+      {tipe:"single", sub:"4.1", tanya:"Analitik website menunjukkan 78% pengunjung datang dari ponsel, tetapi halaman katalog sulit digulir dan tombol pesan berada di bawah delapan gambar besar. Apa prioritas perbaikan?",
+       opsi:[
+        {t:"Perbaiki tata letak ponsel lebih dulu: kompres gambar, ringkas katalog, dan naikkan tombol pesan ke area yang langsung terlihat",pts:8,fb:"Perbaikan diarahkan ke tempat mayoritas pengunjung berada dan ke hambatan konversi terdekat."},
+        {t:"Tambah animasi agar halaman terlihat modern",pts:1,fb:"Menambah beban muat pada masalah yang justru disebabkan beban muat."},
+        {t:"Tunggu sampai pengunjung desktop bertambah",pts:0,fb:"Menunggu perubahan yang tidak ada dasarnya sementara kerugian berjalan tiap hari."}
+       ]},
+      {tipe:"single", sub:"4.2", tanya:"Kampanye email: open rate 34%, klik 1,2%, berhenti berlangganan 0,3%. Apa kesimpulan dan tindak lanjut yang paling tepat?",
+       opsi:[
+        {t:"Subject line berhasil tetapi isi email belum meyakinkan; perbaiki penawaran, kejelasan tombol, dan relevansi per segmen, lalu uji A/B pada isi",pts:8,fb:"Membaca metrik secara berurutan: buka menilai subject line, klik menilai isi dan tawaran."},
+        {t:"Kampanye gagal, hentikan email marketing",pts:1,fb:"Open rate 34% adalah sinyal sehat. Menghentikan kanal berarti membuang aset yang sudah berizin."},
+        {t:"Kirim ulang email yang sama setiap hari sampai kliknya naik",pts:0,fb:"Mempercepat kelelahan daftar dan menaikkan angka berhenti berlangganan."}
+       ]}
+    ]
+  }
+];
+
+/* ---------- keadaan permainan ---------- */
+let S = null;
+function keadaanBaru(mitra, nama, kelas){
+  const skor = {}; Object.keys(BOBOT).forEach(k=>skor[k]={p:0,m:0});
+  return {
+    versi:1, nama, kelas, mitraId:mitra.id, misiKe:0, langkahKe:0,
+    skor, riwayat:[], lencana:[], feed:[], petunjukDipakai:0, selesai:false,
+    metrik:{pengikut:mitra.id==="pempek"?210:(mitra.id==="songket"?640:430), er:1.2, jangkauan:900, pesanan:4, konsistensi:35},
+    risetDibuka:false
+  };
+}
+const mitra = ()=>MITRA.find(m=>m.id===S.mitraId);
+const app = document.getElementById("app");
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+/* ---------- layar mulai ---------- */
+function layarMulai(){
+  document.getElementById("chipMitra").innerHTML = "";
+  app.innerHTML = `
+  <div class="kartu">
+    <span class="pill emas">Latihan sebelum menyentuh akun sungguhan</span>
+    <h2 style="margin-top:.5rem">Satu mitra UMKM, 16 minggu, semua keputusan ada di tangan Anda</h2>
+    <p>Anda akan bekerja untuk satu usaha mitra sepanjang semester. Setiap minggu, mitra menunggu keputusan:
+    siapa yang disasar, apa yang diunggah, kapan diunggah, dan apa yang diperbaiki setelah angkanya keluar.
+    Keputusan yang keliru tidak dihukum — dijelaskan sebabnya, lalu Anda coba lagi.</p>
+    <p>Isi nama dulu supaya laporan akhir bisa Anda unduh dan kumpulkan sebagai bukti tugas.</p>
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin:.6rem 0 1rem">
+      <label>Nama <br><input type="text" id="inNama" placeholder="Nama lengkap"></label>
+      <label>Kelas <br><input type="text" id="inKelas" placeholder="misal 3NA"></label>
+    </div>
+    <h3>Pilih mitra usaha</h3>
+    <div class="pilih-mitra">
+      ${MITRA.map(m=>`<button class="mitra" data-id="${m.id}">
+        <div class="ikon">${m.ikon}</div>
+        <h3>${esc(m.nama)}</h3>
+        <p>${esc(m.kategori)} · ${esc(m.ikut)}<br>Anggaran konten ${esc(m.modal)}</p>
+      </button>`).join("")}
+    </div>
+    <div id="briefMitra" style="margin-top:1rem"></div>
+  </div>`;
+  app.querySelectorAll(".mitra").forEach(b=>b.onclick=()=>{
+    app.querySelectorAll(".mitra").forEach(x=>x.classList.remove("aktif"));
+    b.classList.add("aktif");
+    const m = MITRA.find(x=>x.id===b.dataset.id);
+    document.getElementById("briefMitra").innerHTML = `
+      <div class="wa">
+        <div class="nama">${esc(m.nama)} · pesan masuk</div>
+        ${m.wa.map(t=>`<div class="bubble">${esc(t)}</div>`).join("")}
+      </div>
+      <button class="btn btn-utama" id="btnMulai" style="margin-top:.8rem">Terima pekerjaan ini</button>`;
+    document.getElementById("btnMulai").onclick = ()=>{
+      const nama = (document.getElementById("inNama").value||"Mahasiswa").trim();
+      const kelas = (document.getElementById("inKelas").value||"-").trim();
+      S = keadaanBaru(m, nama, kelas);
+      simpanOtomatis(); render();
+    };
+  });
+}
+
+/* ---------- kerangka utama ---------- */
+function render(){
+  if(!S){ layarMulai(); return; }
+  const m = mitra();
+  document.getElementById("chipMitra").innerHTML =
+    `<span>${m.ikon}</span><div><b>${esc(m.nama)}</b><br><small>${esc(S.nama)} · ${esc(S.kelas)}</small></div>`;
+  if(S.selesai){ layarLaporan(); return; }
+  app.innerHTML = `
+    <div class="layout">
+      <nav class="jadwal" aria-label="Peta 16 minggu">${htmlJadwal()}</nav>
+      <main>${htmlMetrik()}<div id="panggung"></div></main>
+    </div>`;
+  pasangJadwal();
+  gambarLangkah();
+}
+
+function htmlJadwal(){
+  return `<ol>${MISI.map((mi,i)=>{
+    const st = i<S.misiKe?"usai":(i===S.misiKe?"kini":"");
+    return `<li><button data-i="${i}" class="${st}" ${i>S.misiKe?"disabled":""}>
+      <span class="no">${mi.minggu}</span><span>${esc(mi.judul)}</span></button></li>`;}).join("")}</ol>`;
+}
+function pasangJadwal(){
+  app.querySelectorAll(".jadwal button").forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.i;
+    if(i<=S.misiKe){
+      if(i<S.misiKe || S.langkahKe>0) bersihkanMinggu(MISI[i].minggu);
+      S.misiKe=i; S.langkahKe=0; delete S._urut; render();
+    }
+  });
+}
+
+function bersihkanMinggu(minggu){
+  S.riwayat.filter(x=>x.minggu===minggu).forEach(x=>{
+    if(S.skor[x.sub]){ S.skor[x.sub].p=Math.max(0,S.skor[x.sub].p-x.dapat); S.skor[x.sub].m=Math.max(0,S.skor[x.sub].m-x.maks); }
+  });
+  S.riwayat = S.riwayat.filter(x=>x.minggu!==minggu);
+}
+
+function htmlMetrik(){
+  const k=S.metrik;
+  const sel=[["Pengikut",k.pengikut.toLocaleString("id-ID")],["Engagement rate",k.er.toFixed(1)+"%"],
+    ["Jangkauan/minggu",k.jangkauan.toLocaleString("id-ID")],["Pesanan/minggu",k.pesanan],
+    ["Konsistensi merek",k.konsistensi+"/100"]];
+  return `<div class="metrik">${sel.map(([l,v])=>
+    `<div class="m"><span class="lbl">${l}</span><span class="angka">${v}</span></div>`).join("")}</div>`;
+}
+
+/* ---------- render langkah ---------- */
+function langkahAktif(){
+  const mi = MISI[S.misiKe];
+  const l = JSON.parse(JSON.stringify(mi.langkah[S.langkahKe]));
+  if(l.key && mitra()[l.key]){                     // data khusus mitra
+    if(l.tipe==="single") l.opsi = mitra()[l.key];
+    if(l.tipe==="multi")  l.opsi = mitra()[l.key];
+    if(l.tipe==="alokasi") l.rentang = mitra()[l.key];
+  }
+  return l;
+}
+
+function gambarLangkah(){
+  const mi = MISI[S.misiKe], l = langkahAktif(), p = document.getElementById("panggung");
+  const total = mi.langkah.length;
+  let badan = "";
+
+  if(l.tipe==="single"||l.tipe==="multi"){
+    badan = `<div class="opsi" id="opsi">${l.opsi.map((o,i)=>
+      `<label data-i="${i}"><input type="${l.tipe==="single"?"radio":"checkbox"}" name="o" value="${i}"><span>${esc(o.t)}</span></label>`).join("")}</div>`;
+    if(l.tipe==="multi") badan += `<small>Pilih ${l.jml} jawaban.</small>`;
+  }
+  if(l.tipe==="urut"){
+    if(!S._urut){ S._urut = acak(l.urutan.map((t,i)=>({t,i}))); }
+    badan = `<div class="urut" id="urut">${S._urut.map((it,idx)=>
+      `<div class="row" data-idx="${idx}"><span class="no" style="font-family:Georgia,serif">${idx+1}</span>
+        <span class="t">${esc(it.t)}</span>
+        <button class="btn btn-kecil" data-naik="${idx}" aria-label="Naikkan">↑</button>
+        <button class="btn btn-kecil" data-turun="${idx}" aria-label="Turunkan">↓</button></div>`).join("")}</div>`;
+  }
+  if(l.tipe==="pasangan"){
+    badan = `<div class="pasangan">${l.baris.map((b,i)=>{
+      const ops = acak(b.opsi.map((t,j)=>({t,j})));
+      return `<div class="row"><div class="q">${esc(b.q)}</div>
+        <select data-i="${i}"><option value="-1">— pilih —</option>
+        ${ops.map(o=>`<option value="${o.j}">${esc(o.t)}</option>`).join("")}</select></div>`;}).join("")}</div>`;
+  }
+  if(l.tipe==="alokasi"){
+    const k=l.kunci;
+    badan = `<div id="alok">${k.map(x=>`<div class="slider">
+      <div class="head"><span>${esc(l.label[x])}</span><span><b id="v-${x}">20</b>%</span></div>
+      <input type="range" min="0" max="60" step="5" value="20" data-k="${x}"></div>`).join("")}
+      <p class="total-alok">Total: <b id="totAlok">100</b>%</p></div>`;
+  }
+  if(l.tipe==="angka"){
+    badan = `<p><input type="number" id="inAngka" step="0.01" style="width:8rem"> ${l.satuan||""}</p>`;
+  }
+  if(l.tipe==="gabung"){
+    badan = l.grup.map((g,gi)=>`<h3 style="margin-top:.8rem">${esc(g.label)}</h3>
+      <div class="opsi" data-g="${gi}">${g.opsi.map((o,i)=>
+      `<label><input type="radio" name="g${gi}" value="${i}"><span>${esc(o.t)}</span></label>`).join("")}</div>`).join("");
+  }
+
+  let tambahan = "";
+  if(l.grafik) tambahan += htmlGrafikJam();
+  if(l.tabel) tambahan += htmlTabel(l.tabel);
+  if(S.risetDibuka && S.misiKe===2) tambahan += kartuRiset();
+
+  p.innerHTML = `
+    <div class="kartu">
+      <div class="langkah-info">Minggu ${mi.minggu} · ${mi.sub==="UTS"||mi.sub==="UAS"?mi.sub:"Sub-CPMK "+mi.sub} · langkah ${S.langkahKe+1} dari ${total}</div>
+      <h2>${esc(mi.judul)}</h2>
+      <small>${esc(mi.tugas)}</small>
+      <p style="margin-top:.7rem"><b>${esc(l.tanya)}</b></p>
+      ${tambahan}
+      ${badan}
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem">
+        <button class="btn btn-utama" id="btnPeriksa">Kirim jawaban</button>
+        ${(!mi.ujian && l.petunjuk)?`<button class="btn" id="btnPetunjuk">Buka petunjuk (poin −25%)</button>`:""}
+      </div>
+      <div id="umpan"></div>
+    </div>`;
+
+  if(l.tipe==="urut") pasangUrut();
+  if(l.tipe==="alokasi") pasangAlokasi();
+  const bp=document.getElementById("btnPetunjuk");
+  if(bp) bp.onclick=()=>{ S._petunjuk=true; S.petunjukDipakai++; bp.disabled=true;
+    document.getElementById("umpan").innerHTML=`<div class="umpan"><b>Petunjuk</b><p style="margin:.3rem 0 0">${esc(l.petunjuk)}</p></div>`; };
+  document.getElementById("btnPeriksa").onclick=()=>periksa(l);
+}
+
+function acak(a){ const b=a.slice(); for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];} return b; }
+
+function pasangUrut(){
+  const box=document.getElementById("urut");
+  box.querySelectorAll("[data-naik]").forEach(b=>b.onclick=()=>{const i=+b.dataset.naik; if(i>0){[S._urut[i-1],S._urut[i]]=[S._urut[i],S._urut[i-1]]; gambarLangkah();}});
+  box.querySelectorAll("[data-turun]").forEach(b=>b.onclick=()=>{const i=+b.dataset.turun; if(i<S._urut.length-1){[S._urut[i+1],S._urut[i]]=[S._urut[i],S._urut[i+1]]; gambarLangkah();}});
+}
+function pasangAlokasi(){
+  const box=document.getElementById("alok");
+  const hitung=()=>{
+    let t=0; box.querySelectorAll("input[type=range]").forEach(r=>{t+=+r.value; document.getElementById("v-"+r.dataset.k).textContent=r.value;});
+    const el=document.getElementById("totAlok"); el.textContent=t; el.style.color = t===100?"var(--hijau)":"var(--coral)";
+  };
+  box.querySelectorAll("input[type=range]").forEach(r=>r.oninput=hitung); hitung();
+}
+function htmlGrafikJam(){
+  const j=mitra().jam, maks=Math.max(...j);
+  const jam=j.map((_,i)=>String(i+8).padStart(2,"0"));
+  return `<div class="kartu terang"><h3>Jam aktif pengikut (data Insight mitra)</h3>
+    <div class="grafik">${j.map(v=>`<div style="height:${Math.round(v/maks*100)}%"></div>`).join("")}</div>
+    <div class="grafik-lbl">${jam.map(h=>`<div>${h}</div>`).join("")}</div>
+    <small>Jam WIB, rata-rata tujuh hari terakhir.</small></div>`;
+}
+function htmlTabel(t){
+  return `<div class="kartu terang"><table class="tbl"><thead><tr>${t.kepala.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead>
+    <tbody>${t.isi.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+function kartuRiset(){
+  const m=mitra();
+  return `<div class="kartu terang"><h3>Temuan riset audiens ${esc(m.nama)}</h3>
+    <ul style="margin:.2rem 0 0;padding-left:1.1rem;font-size:.92rem">
+      <li>Jam aktif tertinggi pengikut: ${esc(m.jamBenar)}</li>
+      <li>Pertanyaan dan keberatan yang paling sering muncul sudah terangkum pada pilihan persona di bawah.</li>
+      <li>Porsi promosi yang terlalu besar menurunkan jangkauan organik akun sekecil milik mitra.</li>
+    </ul></div>`;
+}
+
+/* ---------- penilaian ---------- */
+function periksa(l){
+  const mi=MISI[S.misiKe];
+  let dapat=0, maks=0, rincian=[];
+
+  if(l.tipe==="single"){
+    const pil=document.querySelector("input[name=o]:checked");
+    if(!pil){ pesanKosong("Pilih satu jawaban dulu."); return; }
+    const o=l.opsi[+pil.value];
+    maks=Math.max(...l.opsi.map(x=>x.pts)); dapat=o.pts;
+    rincian.push((o.pts===maks?"✔ ":"✘ ")+o.fb);
+    if(o.pts!==maks){ const b=l.opsi.find(x=>x.pts===maks); rincian.push("Jawaban terkuat: "+b.t); }
+    tandai(pil.closest("label"), o.pts===maks);
+  }
+  else if(l.tipe==="multi"){
+    const pil=[...document.querySelectorAll("input[name=o]:checked")].map(x=>+x.value);
+    if(pil.length!==l.jml){ pesanKosong("Pilih tepat "+l.jml+" jawaban."); return; }
+    const benar=l.opsi.map((o,i)=>o.ok?i:-1).filter(i=>i>=0);
+    maks = l.tipe==="multi" ? (l.jml*3) : 0;
+    let cocok=0;
+    pil.forEach(i=>{ const o=l.opsi[i]; if(o.ok){cocok++; dapat+=3; rincian.push("✔ "+o.fb);} else {dapat-=1; rincian.push("✘ "+o.t+" — "+o.fb);}
+      tandai(document.querySelector('.opsi label[data-i="'+i+'"]'), !!o.ok); });
+    if(cocok<l.jml){ rincian.push("Yang seharusnya masuk: "+benar.map(i=>l.opsi[i].t).slice(0,l.jml+1).join("; ")); }
+    dapat=Math.max(0,dapat);
+  }
+  else if(l.tipe==="urut"){
+    maks=l.urutan.length*2;
+    let tepat=0;
+    S._urut.forEach((it,idx)=>{ if(l.urutan[idx]===it.t) tepat++; });
+    dapat=tepat*2;
+    rincian.push((tepat===l.urutan.length?"✔ Urutan tepat seluruhnya. ":"Urutan tepat pada "+tepat+" dari "+l.urutan.length+" posisi. ")+l.fb);
+    rincian.push("Urutan acuan: "+l.urutan.map((t,i)=>(i+1)+". "+t).join("  "));
+    delete S._urut;
+  }
+  else if(l.tipe==="pasangan"){
+    const sel=[...document.querySelectorAll(".pasangan select")];
+    if(sel.some(s=>s.value==="-1")){ pesanKosong("Lengkapi semua baris dulu."); return; }
+    maks=l.baris.length*3;
+    sel.forEach(s=>{ const b=l.baris[+s.dataset.i]; const ok=(+s.value===b.benar);
+      if(ok){dapat+=3; rincian.push("✔ "+b.q+" — "+b.fb);} else {rincian.push("✘ "+b.q+" → seharusnya: "+b.opsi[b.benar]+". "+b.fb);} });
+  }
+  else if(l.tipe==="alokasi"){
+    const nil={}; let tot=0;
+    document.querySelectorAll("#alok input[type=range]").forEach(r=>{nil[r.dataset.k]=+r.value; tot+=+r.value;});
+    if(tot!==100){ pesanKosong("Total harus tepat 100%. Sekarang "+tot+"%."); return; }
+    maks=l.kunci.length*3;
+    l.kunci.forEach(k=>{ const [a,b]=l.rentang[k], v=nil[k];
+      if(v>=a&&v<=b){dapat+=3; rincian.push("✔ "+l.label[k]+" "+v+"% berada di rentang sehat "+a+"–"+b+"%.");}
+      else if(v>=a-5&&v<=b+5){dapat+=1.5; rincian.push("~ "+l.label[k]+" "+v+"% hampir tepat; rentang yang disarankan "+a+"–"+b+"%.");}
+      else{rincian.push("✘ "+l.label[k]+" "+v+"% jauh dari rentang "+a+"–"+b+"%.");} });
+    rincian.push("Rentang ini berasal dari perilaku audiens mitra, bukan aturan universal. Untuk mitra lain, porsinya bisa berbeda.");
+  }
+  else if(l.tipe==="angka"){
+    const v=parseFloat(document.getElementById("inAngka").value);
+    if(isNaN(v)){ pesanKosong("Masukkan angka hasil hitungan."); return; }
+    maks=l.maks||8; dapat = Math.abs(v-l.jawab)<=l.tol ? maks : 0;
+    rincian.push((dapat?"✔ ":"✘ Jawaban Anda "+v+". ")+l.fb);
+  }
+  else if(l.tipe==="gabung"){
+    const pilih=[];
+    for(let gi=0;gi<l.grup.length;gi++){
+      const r=document.querySelector('input[name=g'+gi+']:checked');
+      if(!r){ pesanKosong("Lengkapi semua bagian caption."); return; }
+      pilih.push(+r.value);
+    }
+    l.grup.forEach((g,gi)=>{ const o=g.opsi[pilih[gi]], top=Math.max(...g.opsi.map(x=>x.pts));
+      maks+=top; dapat+=o.pts; rincian.push((o.pts===top?"✔ ":"✘ ")+g.label+": "+o.fb); });
+  }
+
+  if(S._petunjuk){ dapat=dapat*0.75; rincian.push("Poin dipotong 25% karena petunjuk dibuka. Menggunakan petunjuk tetap lebih baik daripada menebak."); }
+  delete S._petunjuk;
+
+  const sub = l.sub || mi.sub;
+  if(S.skor[sub]){ S.skor[sub].p += dapat; S.skor[sub].m += maks; }
+  S.riwayat.push({minggu:mi.minggu, sub, dapat:+dapat.toFixed(1), maks});
+
+  const rasio = maks? dapat/maks : 0;
+  const u=document.getElementById("umpan");
+  u.innerHTML = `<div class="umpan ${rasio>=.8?"baik":(rasio<.5?"kurang":"")}">
+      <div class="skor">${dapat.toFixed(1)} dari ${maks} poin</div>
+      <ul>${rincian.map(r=>`<li>${esc(r)}</li>`).join("")}</ul>
+    </div>
+    <button class="btn btn-utama" id="btnLanjut">Lanjut</button>`;
+  document.querySelectorAll("#opsi input,.pasangan select,#alok input,#inAngka").forEach(x=>x.disabled=true);
+  document.getElementById("btnPeriksa").disabled=true;
+  if(l.sesudah==="riset") S.risetDibuka=true;
+  document.getElementById("btnLanjut").onclick=lanjut;
+  document.getElementById("btnLanjut").scrollIntoView({block:"nearest"});
+}
+function tandai(el,ok){ if(el) el.classList.add(ok?"benar":"salah"); }
+function pesanKosong(t){ document.getElementById("umpan").innerHTML=`<div class="umpan kurang">${esc(t)}</div>`; }
+
+function lanjut(){
+  const mi=MISI[S.misiKe];
+  if(S.langkahKe < mi.langkah.length-1){ S.langkahKe++; simpanOtomatis(); render(); return; }
+  layarHasilMinggu();
+}
+
+/* ---------- hasil mingguan ---------- */
+function layarHasilMinggu(){
+  const mi=MISI[S.misiKe], m=mitra();
+  const r=S.riwayat.filter(x=>x.minggu===mi.minggu);
+  const dapat=r.reduce((a,b)=>a+b.dapat,0), maks=r.reduce((a,b)=>a+b.maks,0);
+  const rasio=maks?dapat/maks:0;
+  const lama={...S.metrik};
+
+  const basis=[40,70,90,110,30,160,200,120,90,40][S.misiKe];
+  S.metrik.pengikut += Math.round(basis*(0.3+1.5*rasio));
+  S.metrik.er = Math.max(0.4, Math.min(9, +(S.metrik.er + (rasio-0.55)*0.9).toFixed(2)));
+  S.metrik.jangkauan = Math.round(S.metrik.pengikut*(2.2+5.5*rasio));
+  S.metrik.pesanan = Math.max(0, Math.round(S.metrik.pesanan + (rasio-0.4)*9));
+  S.metrik.konsistensi = Math.max(0, Math.min(100, Math.round(S.metrik.konsistensi + (rasio-0.5)*28)));
+
+  if(rasio>=0.8){ const nm="Lencana "+mi.judul; if(!S.lencana.includes(nm)) S.lencana.push(nm); }
+  if(!mi.ujian) S.feed.push(m.emoji[S.feed.length % m.emoji.length]);
+
+  const delta=(a,b,f)=>{const d=b-a; return `<span class="delta ${d<0?"turun":""}">${d>=0?"+":""}${f?f(d):d}</span>`;};
+  const komentar = rasio>=0.8
+    ? "Mitra puas. Keputusan Anda punya alasan, dan alasan itu bisa diulang minggu depan."
+    : rasio>=0.5 ? "Arahnya benar, eksekusinya masih bocor di beberapa titik. Baca ulang umpan balik sebelum lanjut."
+    : "Minggu ini banyak keputusan yang tidak berdasar data. Buka kembali langkahnya lewat peta minggu di kiri dan kerjakan sekali lagi.";
+
+  app.innerHTML = `<div class="layout">
+    <nav class="jadwal">${htmlJadwal()}</nav>
+    <main>
+      ${htmlMetrik()}
+      <div class="kartu">
+        <span class="pill emas">Minggu ${mi.minggu} selesai</span>
+        <h2 style="margin-top:.5rem">Laporan ke mitra</h2>
+        <p class="skor">${dapat.toFixed(1)} dari ${maks} poin (${Math.round(rasio*100)}%)</p>
+        <p>${komentar}</p>
+        <table class="tbl">
+          <tr><th>Pengikut</th><td>${lama.pengikut.toLocaleString("id-ID")} → ${S.metrik.pengikut.toLocaleString("id-ID")} ${delta(lama.pengikut,S.metrik.pengikut)}</td></tr>
+          <tr><th>Engagement rate</th><td>${lama.er.toFixed(1)}% → ${S.metrik.er.toFixed(1)}% ${delta(lama.er,S.metrik.er,d=>d.toFixed(1)+"%")}</td></tr>
+          <tr><th>Pesanan per minggu</th><td>${lama.pesanan} → ${S.metrik.pesanan} ${delta(lama.pesanan,S.metrik.pesanan)}</td></tr>
+          <tr><th>Konsistensi merek</th><td>${lama.konsistensi} → ${S.metrik.konsistensi} ${delta(lama.konsistensi,S.metrik.konsistensi)}</td></tr>
+        </table>
+        ${S.feed.length?`<h3 style="margin-top:.9rem">Feed mitra sejauh ini</h3>
+          <div class="feed">${S.feed.map(e=>`<div class="sel">${e}</div>`).join("")}</div>`:""}
+        ${S.lencana.length?`<h3 style="margin-top:.9rem">Lencana</h3><div class="lencana">${S.lencana.map(x=>`<span>${esc(x)}</span>`).join("")}</div>`:""}
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem">
+          <button class="btn btn-utama" id="btnMingguBerikut">${S.misiKe<MISI.length-1?"Lanjut ke minggu berikutnya":"Lihat laporan akhir semester"}</button>
+          <button class="btn" id="btnUlang">Ulangi minggu ini</button>
+        </div>
+      </div>
+    </main></div>`;
+  pasangJadwal();
+  document.getElementById("btnUlang").onclick=()=>{
+    S.riwayat=S.riwayat.filter(x=>x.minggu!==mi.minggu);
+    r.forEach(x=>{ if(S.skor[x.sub]){S.skor[x.sub].p-=x.dapat; S.skor[x.sub].m-=x.maks;} });
+    S.metrik=lama; S.langkahKe=0; if(!mi.ujian) S.feed.pop(); render();
+  };
+  document.getElementById("btnMingguBerikut").onclick=()=>{
+    if(S.misiKe<MISI.length-1){ S.misiKe++; S.langkahKe=0; simpanOtomatis(); render(); }
+    else { S.selesai=true; simpanOtomatis(); render(); }
+  };
+}
+
+/* ---------- laporan akhir ---------- */
+function nilaiAkhir(){
+  let total=0, per={};
+  Object.keys(BOBOT).forEach(k=>{
+    const s=S.skor[k]; const pct = s.m? (s.p/s.m*100) : 0;
+    per[k]=+pct.toFixed(1); total += pct*BOBOT[k]/100;
+  });
+  return {per, total:+total.toFixed(1)};
+}
+function huruf(n){ return n>=86?"A":n>=76?"B+":n>=71?"B":n>=66?"C+":n>=56?"C":n>=41?"D":"E"; }
+
+function layarLaporan(){
+  const {per,total}=nilaiAkhir(), m=mitra();
+  const lemah=Object.keys(per).sort((a,b)=>per[a]-per[b]).slice(0,3);
+  const saran={
+    "1.1":"Ulangi analisis STP dan USP: tulis satu kalimat target pasar yang memuat usia, lokasi, dan kebutuhan, lalu uji apakah USP mitra masih bermakna bagi orang itu.",
+    "1.2":"Latih konsistensi visual: buat satu lembar brand guideline sederhana (dua font, tiga warna, dua sudut foto) sebelum menyusun dokumen berikutnya.",
+    "2.1":"Perkuat dasar data: kerjakan lima wawancara pembeli dan salin kalimat asli mereka sebelum menyusun content pillar.",
+    "2.2":"Perbaiki kelayakan jadwal: turunkan frekuensi sampai bisa dijalankan, dan cantumkan penanggung jawab di setiap slot content calendar.",
+    "3.1":"Latih hook tiga detik dan konsistensi preset: produksi lima video pendek dengan struktur hook–konteks–solusi–ajakan.",
+    "3.2":"Latih membaca angka: hitung engagement rate lima unggahan mitra secara manual, lalu tulis satu rekomendasi per unggahan.",
+    "4.1":"Uji website di ponsel: periksa kecepatan muat, posisi tombol pesan, dan kelengkapan SEO on-page halaman katalog.",
+    "4.2":"Bangun daftar berizin: rancang satu lead magnet, satu alur persetujuan, dan satu email sambutan bersegmen."
+  };
+  app.innerHTML = `<div class="kartu">
+    <span class="pill emas">Laporan akhir simulasi</span>
+    <h2 style="margin-top:.5rem">${esc(S.nama)} · ${esc(S.kelas)} · mitra ${esc(m.nama)}</h2>
+    <p>Nilai simulasi <b class="skor">${total.toFixed(1)}</b> (${huruf(total)}). Angka ini hasil latihan di dalam permainan, bukan nilai mata kuliah.
+    Bobot tiap Sub-CPMK mengikuti RPS Pemasaran Digital.</p>
+    <h3>Capaian per Sub-CPMK</h3>
+    <div class="bar-cpmk">${Object.keys(BOBOT).map(k=>`
+      <div class="row"><div class="lbl"><span>Sub-CPMK ${k} · bobot ${BOBOT[k]}%</span><span>${per[k].toFixed(0)}%</span></div>
+      <div class="trek"><div class="isi" style="width:${Math.max(2,per[k])}%"></div></div></div>`).join("")}</div>
+    <h3 style="margin-top:1rem">Kondisi akhir akun mitra</h3>
+    <table class="tbl">
+      <tr><th>Pengikut</th><td>${S.metrik.pengikut.toLocaleString("id-ID")}</td></tr>
+      <tr><th>Engagement rate</th><td>${S.metrik.er.toFixed(1)}%</td></tr>
+      <tr><th>Jangkauan per minggu</th><td>${S.metrik.jangkauan.toLocaleString("id-ID")}</td></tr>
+      <tr><th>Pesanan per minggu</th><td>${S.metrik.pesanan}</td></tr>
+      <tr><th>Konsistensi merek</th><td>${S.metrik.konsistensi}/100</td></tr>
+      <tr><th>Petunjuk dibuka</th><td>${S.petunjukDipakai} kali</td></tr>
+    </table>
+    <h3 style="margin-top:1rem">Tiga hal yang perlu Anda latih sebelum menyentuh akun sungguhan</h3>
+    <ol>${lemah.map(k=>`<li style="margin-bottom:.35rem"><b>Sub-CPMK ${k}</b> — ${esc(saran[k])}</li>`).join("")}</ol>
+    ${S.lencana.length?`<h3>Lencana</h3><div class="lencana">${S.lencana.map(x=>`<span>${esc(x)}</span>`).join("")}</div>`:""}
+    <h3 style="margin-top:1rem">Refleksi untuk dikumpulkan</h3>
+    <ol>
+      <li>Keputusan mana yang paling banyak mengubah angka mitra, dan mengapa?</li>
+      <li>Data apa yang seharusnya Anda cari lebih dulu, tetapi baru Anda sadari di minggu akhir?</li>
+      <li>Bila mitra Anda berganti kategori usaha, bagian strategi mana yang tetap dan bagian mana yang harus dirombak?</li>
+    </ol>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem">
+      <button class="btn btn-utama" id="btnUnduh">Unduh laporan (.txt)</button>
+      <button class="btn" id="btnCetak">Cetak atau simpan PDF</button>
+      <button class="btn" id="btnUlangSemua">Main ulang dengan mitra lain</button>
+    </div>
+  </div>`;
+  document.getElementById("btnCetak").onclick=()=>window.print();
+  document.getElementById("btnUlangSemua").onclick=()=>{
+    if(!confirm("Mulai ulang dengan mitra lain? Kemajuan yang tersimpan di browser ini akan dihapus dan tidak bisa dikembalikan.\n\nTekan \u201cSimpan progres\u201d dulu kalau masih dibutuhkan.")) return;
+    hapusTersimpan(); S=null; layarMulai();
+  };
+  document.getElementById("btnUnduh").onclick=()=>{
+    const t=[`LAPORAN SIMULASI PEMASARAN DIGITAL — STUDIO UMKM`,
+      `Nama: ${S.nama}   Kelas: ${S.kelas}`,
+      `Mitra: ${m.nama} (${m.kategori})`,
+      `Nilai simulasi: ${total.toFixed(1)} (${huruf(total)})`,
+      ``,`Capaian per Sub-CPMK (bobot RPS):`,
+      ...Object.keys(BOBOT).map(k=>`  Sub-CPMK ${k} (${BOBOT[k]}%): ${per[k].toFixed(1)}%`),
+      ``,`Akun mitra: pengikut ${S.metrik.pengikut}, ER ${S.metrik.er.toFixed(1)}%, jangkauan ${S.metrik.jangkauan}, pesanan ${S.metrik.pesanan}/minggu, konsistensi ${S.metrik.konsistensi}/100`,
+      `Petunjuk dibuka: ${S.petunjukDipakai} kali`,
+      ``,`Rincian per langkah:`,
+      ...S.riwayat.map(x=>`  Minggu ${x.minggu} · ${x.sub}: ${x.dapat}/${x.maks}`),
+      ``,`Prioritas latihan: ${lemah.map(k=>"Sub-CPMK "+k).join(", ")}`
+    ].join("\n");
+    unduh(t, `laporan-simulasi-${S.nama.replace(/\s+/g,"-").toLowerCase()}.txt`, "text/plain");
+  };
+}
+function unduh(isi,nama,tipe){
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([isi],{type:tipe}));
+  a.download=nama; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+
+/* ---------- simpan / muat ---------- */
+const KUNCI = "studioumkm.v1";
+let cadangan=null, gagalSimpan=false;
+function simpanOtomatis(){
+  cadangan = JSON.stringify(S);
+  try { localStorage.setItem(KUNCI, cadangan); }
+  catch(e){
+    if(!gagalSimpan){
+      gagalSimpan = true;
+      alert("Browser menolak menyimpan kemajuan. Biasanya karena tab ini mode Private atau Incognito.\n\nBuka di tab biasa, atau tekan \u201cSimpan progres\u201d sebelum menutup tab.");
+    }
+  }
+}
+function sahProgres(d){ return d && d.mitraId && d.skor && MITRA.some(m=>m.id===d.mitraId); }
+function muatTersimpan(){
+  try {
+    const t = localStorage.getItem(KUNCI);
+    if(!t) return null;
+    const d = JSON.parse(t);
+    return sahProgres(d) ? d : null;
+  } catch(e){ return null; }
+}
+function hapusTersimpan(){ try { localStorage.removeItem(KUNCI); } catch(e){} }
+
+/* kotak teks untuk menyalin dan menempel — di iPhone tombol unduh
+   tidak berfungsi, jadi menyalin teks adalah satu-satunya cara aman */
+function kotakTeks(judul, keterangan, isi, muat){
+  const bg = document.createElement("div");
+  bg.setAttribute("style","position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(20,22,26,.72);z-index:999;display:flex;align-items:center;justify-content:center;padding:16px");
+  bg.innerHTML = `<div style="background:#fff;border-radius:10px;padding:20px;max-width:640px;width:100%;max-height:88vh;overflow:auto;font-family:inherit">
+    <h3 style="margin:0 0 .4rem">${esc(judul)}</h3>
+    <p style="margin:0 0 .7rem;font-size:.92rem;line-height:1.5">${keterangan}</p>
+    <textarea id="ktTa" rows="9" style="width:100%;font-family:ui-monospace,Consolas,monospace;font-size:.75rem;padding:8px;border:1px solid #ccc;border-radius:6px">${esc(isi||"")}</textarea>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:.8rem">
+      ${muat ? '<button class="btn btn-utama" id="ktMuat">Muat progres ini</button>'
+             : '<button class="btn btn-utama" id="ktCopy">Copy semua teks</button><button class="btn" id="ktUnduh">Download berkas</button>'}
+      <button class="btn" id="ktTutup">Tutup</button>
+    </div></div>`;
+  document.body.appendChild(bg);
+  const tutup = ()=>document.body.removeChild(bg);
+  bg.querySelector("#ktTutup").onclick = tutup;
+  bg.onclick = e => { if(e.target===bg) tutup(); };
+  if(muat){
+    bg.querySelector("#ktMuat").onclick = ()=>{
+      let d=null;
+      try { d = JSON.parse(bg.querySelector("#ktTa").value.trim()); } catch(e){}
+      if(!sahProgres(d)){ alert("Teks itu tidak dikenali sebagai progres Studio UMKM. Pastikan seluruh isi berkas tersalin, termasuk tanda kurung kurawal."); return; }
+      S=d; simpanOtomatis(); tutup(); render();
+    };
+  } else {
+    bg.querySelector("#ktCopy").onclick = ()=>{
+      const ta=bg.querySelector("#ktTa");
+      ta.focus(); ta.select();
+      let ok=false;
+      try { ok=document.execCommand("copy"); } catch(e){}
+      if(!ok && navigator.clipboard){ navigator.clipboard.writeText(ta.value); ok=true; }
+      alert(ok ? "Tersalin. Tempel ke WhatsApp, email, atau kolom tugas di LMS."
+               : "Tekan lama di kotak teks, lalu pilih Select All dan Copy.");
+    };
+    bg.querySelector("#ktUnduh").onclick = ()=>{
+      try { unduh(isi, `progres-studio-umkm-${(S.nama||"mahasiswa").replace(/\s+/g,"-").toLowerCase()}.json`, "application/json"); }
+      catch(e){ alert("Browser ini tidak mendukung unduh. Pakai tombol Copy."); }
+    };
+  }
+}
+document.getElementById("btnSimpan").onclick=()=>{
+  if(!S){ alert("Mulai permainan dulu."); return; }
+  kotakTeks("Simpan progres",
+    "Kemajuanmu sudah tersimpan otomatis di browser ini. Kotak di bawah dipakai kalau kamu ingin <b>mengumpulkan tugas</b> atau <b>pindah perangkat</b>. Di iPhone dan iPad tombol download biasanya tidak berfungsi \u2014 pakai Copy.",
+    JSON.stringify(S,null,2), false);
+};
+document.getElementById("btnMuat").onclick=()=>{
+  kotakTeks("Muat progres",
+    "Pilih berkas .json, atau tempel isinya ke kotak di bawah lalu tekan Muat.",
+    "", true);
+  document.getElementById("fileMuat").click();
+};
+document.getElementById("fileMuat").onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const fr=new FileReader();
+  fr.onload=()=>{ try{ const d=JSON.parse(fr.result);
+      if(!d.mitraId||!d.skor) throw new Error("bukan berkas progres");
+      S=d; simpanOtomatis(); render(); }
+    catch(err){ alert("Berkas tidak bisa dibaca sebagai progres Studio UMKM. Pilih berkas .json hasil tombol Simpan progres."); } };
+  fr.readAsText(f);
+};
+
+/* ---------- panel dosen ---------- */
+document.getElementById("btnDosen").onclick=()=>{
+  const p=document.getElementById("panelDosen");
+  p.classList.toggle("buka");
+  if(p.classList.contains("buka")) p.innerHTML=htmlPanelDosen();
+};
+function htmlPanelDosen(){
+  return `<h2>Panel dosen</h2>
+  <p>Simulasi ini memetakan satu berbanding satu dengan RPS Pemasaran Digital. Setiap misi memakai bobot penilaian
+  Sub-CPMK yang sama seperti di RPS, sehingga laporan akhir mahasiswa bisa dipakai sebagai bukti latihan sebelum tugas sesungguhnya.</p>
+  <table class="tbl">
+    <thead><tr><th>Minggu</th><th>Sub-CPMK</th><th>Misi dalam permainan</th><th>Tugas RPS</th><th>Bobot</th></tr></thead>
+    <tbody>${MISI.map(mi=>`<tr><td>${mi.minggu}</td><td>${mi.sub}</td><td>${esc(mi.judul)}</td><td>${esc(mi.tugas)}</td>
+      <td>${BOBOT[mi.sub]?BOBOT[mi.sub]+"%":"50%"}</td></tr>`).join("")}</tbody>
+  </table>
+  <h3>Cara memakai di kelas</h3>
+  <ul>
+    <li><b>Pemanasan praktikum (15 menit).</b> Mahasiswa mengerjakan misi minggu berjalan sebelum menyentuh akun mitra, lalu satu kelompok memaparkan alasan pilihannya.</li>
+    <li><b>Kalibrasi kelompok.</b> Tiga kelompok memilih tiga mitra berbeda, lalu membandingkan mengapa porsi content pillar dan jam unggah mereka tidak boleh sama.</li>
+    <li><b>Latihan sebelum UTS dan UAS.</b> Misi minggu 8 dan 16 berformat studi kasus, sejalan dengan bentuk soal di RPS.</li>
+    <li><b>Bukti asesmen.</b> Tombol “Unduh laporan” menghasilkan rekap poin per Sub-CPMK; minta mahasiswa melampirkannya bersama refleksi tiga pertanyaan di akhir.</li>
+    <li><b>Catatan integritas.</b> Nilai di permainan bukan nilai mata kuliah. Bobotnya dipakai agar mahasiswa mengenali struktur penilaian, bukan untuk menggantikan rubrik.</li>
+  </ul>
+  <h3>Mengubah isi</h3>
+  <p>Seluruh materi ada di dalam satu berkas ini. Data mitra berada pada konstanta <code>MITRA</code>, dan seluruh soal pada konstanta <code>MISI</code>.
+  Setiap langkah memakai satu dari tujuh tipe: <code>single</code>, <code>multi</code>, <code>urut</code>, <code>pasangan</code>, <code>alokasi</code>, <code>angka</code>, <code>gabung</code>.
+  Menambah soal berarti menambah satu objek langkah, tanpa mengubah mesin permainannya.</p>`;
+}
+
+/* ---------- pembuka: lanjutkan kalau ada kemajuan tersimpan ---------- */
+(function(){
+  const d = muatTersimpan();
+  if(!d){ layarMulai(); return; }
+  const m = MITRA.find(x=>x.id===d.mitraId);
+  const mi = MISI[d.misiKe] || MISI[MISI.length-1];
+  const bg = document.createElement("div");
+  bg.setAttribute("style","position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(20,22,26,.72);z-index:999;display:flex;align-items:center;justify-content:center;padding:16px");
+  bg.innerHTML = `<div style="background:#fff;border-radius:10px;padding:22px;max-width:520px;width:100%;font-family:inherit">
+    <h3 style="margin:0 0 .5rem">Lanjutkan pekerjaan sebelumnya?</h3>
+    <p style="margin:0 0 1rem;font-size:.95rem;line-height:1.55">Tersimpan di perangkat ini:<br>
+      <b>${esc(d.nama||"Mahasiswa")}</b> ${d.kelas?"\u00b7 "+esc(d.kelas):""}<br>
+      mitra <b>${esc(m?m.nama:d.mitraId)}</b> \u00b7 ${d.selesai?"sudah selesai":"minggu "+esc(mi.minggu)+", misi "+(d.misiKe+1)+" dari "+MISI.length}</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-utama" id="lsLanjut">Lanjutkan</button>
+      <button class="btn" id="lsBaru">Mulai baru</button>
+    </div></div>`;
+  document.body.appendChild(bg);
+  bg.querySelector("#lsLanjut").onclick = ()=>{ document.body.removeChild(bg); S=d; render(); };
+  bg.querySelector("#lsBaru").onclick = ()=>{
+    if(!confirm("Mulai baru akan menghapus kemajuan yang tersimpan di browser ini. Lanjutkan?")) return;
+    document.body.removeChild(bg); hapusTersimpan(); layarMulai();
+  };
+  layarMulai();
+})();
+</script>
+</body>
+</html>

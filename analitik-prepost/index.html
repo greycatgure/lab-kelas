@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab Analitik &amp; Pre-Post — Copywriting dan SEO</title>
+<style>
+/* =========================================================
+   LAB ANALITIK & PRE-POST  (Sub-CPMK 4)
+   Sekeluarga dengan Lab Tiga Engine: kertas & tinta sama,
+   aksen dipindah ke hijau ukur karena ini alat kerja data.
+   ========================================================= */
+:root{
+  --paper:#F1F2EC; --card:#FBFBF7; --ink:#17202B; --ink-soft:#4A5563;
+  --rule:#CDD1C2; --data:#1B6B4A; --warn:#B4700E; --bad:#A32020; --good:#2E6B45;
+  --sans:"Arial Narrow","Helvetica Neue Condensed","Liberation Sans Narrow",system-ui,sans-serif;
+  --serif:Georgia,"Iowan Old Style","Palatino Linotype",serif;
+  --mono:ui-monospace,"SFMono-Regular","Consolas","Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:17px; line-height:1.6; -webkit-text-size-adjust:100%}
+h1,h2,h3,h4,.u-sans{font-family:var(--sans); letter-spacing:-.01em; font-weight:700; line-height:1.1}
+h1{font-size:2.1rem; margin:0 0 4px}
+h2{font-size:1.6rem; margin:0 0 8px}
+h3{font-size:1.15rem; margin:22px 0 6px}
+p{margin:0 0 .85em; max-width:68ch}
+button:focus{outline:2px solid var(--data); outline-offset:2px}
+:focus-visible{outline:3px solid var(--data); outline-offset:2px}
+
+header.top{background:var(--ink); color:#E7EAE2; padding:16px 20px 0}
+header.top .wm{font-family:var(--sans); font-size:1.35rem; line-height:1}
+header.top .wm span{display:block; font-family:var(--mono); font-size:.7rem; color:#9AA69B; margin-top:5px}
+.steps{display:flex; gap:4px; margin-top:14px; overflow-x:auto}
+.steps button{
+  background:none; border:0; border-bottom:3px solid transparent; color:#AAB4A9;
+  font-family:var(--sans); font-size:.98rem; padding:9px 13px; cursor:pointer; white-space:nowrap;
+}
+.steps button[aria-current="true"]{color:#fff; border-bottom-color:var(--data)}
+.steps button:hover{color:#fff}
+.tools{display:flex; gap:6px; flex-wrap:wrap; padding:10px 20px; background:#22303F}
+.tools button{background:none; border:1px solid #3A4C60; color:#C9D0C6; font-family:var(--sans); font-size:.85rem; padding:5px 10px; border-radius:3px; cursor:pointer}
+.tools button:hover{background:#2C3C4E; color:#fff}
+
+main{padding:26px 20px 90px; max-width:920px}
+.lead{font-family:var(--sans); font-size:1.05rem; color:var(--ink-soft); max-width:62ch; margin-bottom:20px}
+.tag{font-family:var(--sans); font-size:.92rem; color:var(--data); display:flex; align-items:center; gap:8px; margin-bottom:8px}
+.tag:before{content:""; width:30px; height:4px; background:var(--data)}
+
+.card{background:var(--card); border:1px solid var(--rule); border-radius:4px; padding:16px 18px; margin-bottom:16px}
+.card>h3:first-child{margin-top:0}
+label.fl{display:block; font-family:var(--sans); font-size:.93rem; margin-bottom:3px}
+label.fl small{color:var(--ink-soft); font-family:var(--mono); font-size:.72rem; margin-left:5px}
+input[type=text],input[type=number],input[type=date],textarea,select{
+  width:100%; font-family:var(--serif); font-size:1rem; color:var(--ink); background:#fff;
+  border:1px solid var(--rule); border-radius:3px; padding:8px 10px; margin-bottom:12px;
+}
+input[type=number]{font-family:var(--mono)}
+textarea{min-height:90px; resize:vertical}
+select{font-family:var(--sans)}
+.pair{display:grid; grid-template-columns:1fr 1fr; gap:0 18px}
+.pair>div{min-width:0}
+.pairhead{font-family:var(--sans); font-size:1rem; padding:6px 0; border-bottom:2px solid var(--rule); margin-bottom:10px}
+.pairhead.post{border-bottom-color:var(--data); color:var(--data)}
+.chk{display:block; font-size:.95rem; margin-bottom:7px; max-width:68ch}
+.chk input{width:auto; margin:0 8px 0 0}
+
+.btn{font-family:var(--sans); font-size:1rem; background:var(--ink); color:#fff; border:0; padding:10px 20px; border-radius:3px; cursor:pointer}
+.btn:hover{background:#0E151D}
+.btn.ghost{background:none; color:var(--ink); border:1px solid var(--ink)}
+.btn.ghost:hover{background:#E6E9DC}
+.btn.go{background:var(--data)}
+.btn.go:hover{background:#14503A}
+.btnrow{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:6px 0 22px}
+
+/* metrik */
+.mgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:0; border:1px solid var(--rule); border-radius:4px; overflow:hidden; margin-bottom:18px}
+.m{padding:13px 15px; background:var(--card); border-right:1px solid var(--rule); border-bottom:1px solid var(--rule)}
+.m .nm{font-family:var(--sans); font-size:.9rem}
+.m .v{font-family:var(--sans); font-size:1.85rem; line-height:1.1; margin:3px 0}
+.m .f{font-family:var(--mono); font-size:.7rem; color:var(--ink-soft)}
+.m .d{font-family:var(--mono); font-size:.78rem; margin-top:5px}
+.up{color:var(--good)} .down{color:var(--bad)} .flat{color:var(--ink-soft)}
+
+table.t{width:100%; border-collapse:collapse; font-size:.93rem; margin:12px 0 18px}
+table.t th,table.t td{border-bottom:1px solid var(--rule); padding:7px 8px; text-align:left; vertical-align:top}
+table.t th{font-family:var(--sans); font-size:.9rem}
+table.t td.n{font-family:var(--mono); text-align:right; white-space:nowrap}
+table.t caption{text-align:left; font-family:var(--sans); font-size:.95rem; padding-bottom:6px; color:var(--ink-soft)}
+
+ul.find{list-style:none; padding:0; margin:0 0 18px}
+ul.find li{position:relative; padding:9px 0 9px 30px; border-bottom:1px solid var(--rule); max-width:74ch; font-size:.96rem}
+ul.find li:before{position:absolute; left:2px; top:9px; font-family:var(--mono); font-size:.9rem}
+ul.find li.ok:before{content:"\2713"; color:var(--good)}
+ul.find li.warn:before{content:"!"; color:var(--warn)}
+ul.find li.bad:before{content:"\00D7"; color:var(--bad)}
+ul.find li.info:before{content:"i"; color:var(--data)}
+ul.find li b{font-family:var(--sans)}
+
+.gauge{border:1px solid var(--ink); border-radius:4px; overflow:hidden; margin-bottom:20px}
+.gauge>header{background:var(--ink); color:#E7EAE2; font-family:var(--sans); font-size:.95rem; padding:8px 14px; display:flex; justify-content:space-between}
+.gauge .body{background:var(--card); padding:16px}
+.gauge .sc{font-family:var(--sans); font-size:2.6rem; line-height:1}
+.gauge .lb{font-family:var(--sans); font-size:1.1rem; margin-bottom:8px}
+.gauge .track{height:9px; background:#E2E5DA; border-radius:99px; overflow:hidden; margin:8px 0 12px}
+.gauge .track i{display:block; height:100%; width:0; background:var(--data); transition:width .6s ease}
+
+.bars{margin:14px 0 20px}
+.bar{display:grid; grid-template-columns:130px 1fr; gap:10px; align-items:center; margin-bottom:7px; font-size:.9rem}
+.bar .tr{height:18px; background:#E2E5DA; border-radius:2px; overflow:hidden; position:relative}
+.bar .tr i{display:block; height:100%; width:0; background:var(--ink-soft)}
+.bar.post .tr i{background:var(--data)}
+.bar .lab{font-family:var(--mono); font-size:.76rem}
+
+.note{background:#E6E9DC; border-radius:3px; padding:11px 15px; font-size:.93rem; margin-bottom:18px; max-width:70ch}
+.note b{font-family:var(--sans)}
+.hint{font-family:var(--mono); font-size:.74rem; color:var(--ink-soft); margin:-8px 0 12px}
+.modal{position:fixed; top:0; right:0; bottom:0; left:0; background:rgba(23,32,43,.72); display:grid; place-items:center; padding:18px; z-index:40}
+.modal[hidden]{display:none}
+.sheet{background:var(--paper); border-radius:5px; padding:24px; max-width:720px; width:100%; max-height:88vh; overflow:auto}
+.toast{position:fixed; left:50%; bottom:22px; transform:translateX(-50%); background:var(--ink); color:#fff; font-family:var(--sans); padding:10px 18px; border-radius:3px; z-index:50}
+.toast[hidden]{display:none}
+.rep{font-family:var(--mono); font-size:.8rem; line-height:1.5; min-height:320px; white-space:pre}
+
+@media (max-width:700px){
+  main{padding:20px 15px 80px}
+  h1{font-size:1.7rem}
+  .pair{grid-template-columns:1fr; gap:0}
+  .pair>div:last-child{margin-top:8px}
+  .m{border-right:0}
+  .bar{grid-template-columns:96px 1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{header.top,.tools,.btnrow,.modal{display:none!important} body{background:#fff} main{max-width:none;padding:0}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wm">LAB ANALITIK &amp; PRE-POST<span>sub-cpmk 4 &middot; copywriting dan seo &middot; polsri</span></div>
+  <nav class="steps" id="steps" aria-label="Tahap kerja">
+    <button data-s="1">1. Data</button>
+    <button data-s="2">2. Diagnosis</button>
+    <button data-s="3">3. Uji Pre-Post</button>
+    <button data-s="4">4. Laporan</button>
+  </nav>
+</header>
+<div class="tools">
+  <button id="btnCase">Kasus latihan</button>
+  <button id="btnGuide">Panduan metrik</button>
+  <button id="btnRubric">Rubrik penilaian</button>
+  <button id="btnExport">Export jawaban</button>
+  <button id="btnImport">Import jawaban</button>
+  <button id="btnReset">Kosongkan</button>
+</div>
+<main id="stage" tabindex="-1"></main>
+<div class="modal" id="modal" hidden><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast" hidden></div>
+<script>
+/* =======================================================================
+   LAB ANALITIK & PRE-POST  \u2014 Sub-CPMK 4
+   Semua angka dihitung dari input mahasiswa. Tidak ada data simulasi:
+   alat ini hanya menghitung, mendiagnosis, dan menguji kelayakan klaim.
+   ======================================================================= */
+"use strict";
+
+var KEY = "labanalitik.v1";
+
+/* ---------------- input yang diminta ---------------- */
+var FIELDS = [
+  { k: "imp", g: "x", nm: "Impresi", hint: "X/Threads Analytics" },
+  { k: "likes", g: "x", nm: "Suka", hint: "" },
+  { k: "replies", g: "x", nm: "Balasan", hint: "" },
+  { k: "reposts", g: "x", nm: "Repost / kutipan", hint: "" },
+  { k: "bookmarks", g: "x", nm: "Markah (bookmark)", hint: "" },
+  { k: "lclicks", g: "x", nm: "Klik tautan", hint: "link clicks" },
+  { k: "gimp", g: "g", nm: "Tayangan", hint: "Google Search Console" },
+  { k: "gclicks", g: "g", nm: "Klik", hint: "GSC" },
+  { k: "gpos", g: "g", nm: "Posisi rata-rata", hint: "GSC, boleh desimal" },
+  { k: "sessions", g: "b", nm: "Sesi artikel", hint: "analitik blog" },
+  { k: "bounce", g: "b", nm: "Bounce rate (%)", hint: "0\u2013100" },
+  { k: "read", g: "b", nm: "Waktu baca rata-rata (detik)", hint: "" }
+];
+var GROUPS = { x: "X / Threads", g: "Google Search Console", b: "Artikel blog" };
+
+var CHANGES = [
+  { k: "heading", t: "Struktur heading diperbaiki (H1\u2013H3)" },
+  { k: "title", t: "Title tag atau judul diubah" },
+  { k: "meta", t: "Meta description diubah" },
+  { k: "intern", t: "Tautan internal ditambah" },
+  { k: "cta", t: "Call to action diubah" },
+  { k: "hook", t: "Hook / kalimat pembuka diubah" },
+  { k: "alt", t: "Alt text gambar ditambah" },
+  { k: "isi", t: "Isi artikel ditambah atau ditulis ulang" }
+];
+var CONFOUND = [
+  { k: "ads", t: "Ada iklan berbayar berjalan di periode sesudah", w: 25 },
+  { k: "viral", t: "Ada satu konten yang tiba-tiba viral", w: 20 },
+  { k: "season", t: "Periode sesudah kena musim ramai atau libur", w: 15 },
+  { k: "share", t: "Dibagikan ulang oleh akun besar atau grup", w: 15 },
+  { k: "algo", t: "Ada perubahan algoritma atau pembaruan platform", w: 10 },
+  { k: "other", t: "Ada konten baru lain terbit di periode yang sama", w: 10 }
+];
+
+/* ---------------- state ---------------- */
+var S = null;
+function fresh() {
+  return {
+    v: 1, nama: "", npm: "", kasus: "", kanal: "",
+    pre: { start: "", end: "" }, post: { start: "", end: "" },
+    changes: {}, confound: {}, catatan: "", step: 1
+  };
+}
+function load() {
+  try { var r = localStorage.getItem(KEY); S = r ? JSON.parse(r) : fresh(); }
+  catch (e) { S = fresh(); }
+  if (!S || S.v !== 1) S = fresh();
+  if (!S.pre) S.pre = { start: "", end: "" };
+  if (!S.post) S.post = { start: "", end: "" };
+  if (!S.changes) S.changes = {};
+  if (!S.confound) S.confound = {};
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) { toast("Browser menolak menyimpan. Pakai Export jawaban."); }
+}
+
+/* ---------------- helper ---------------- */
+function el(id) { return document.getElementById(id); }
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
+var tt = null;
+function toast(m) { var t = el("toast"); t.textContent = m; t.hidden = false; clearTimeout(tt); tt = setTimeout(function () { t.hidden = true; }, 3200); }
+function modal(h) { el("sheet").innerHTML = h; el("modal").hidden = false; }
+function closeModal() { el("modal").hidden = true; }
+function num(v) { var n = parseFloat(v); return isFinite(n) ? n : null; }
+function fmt(n, d) {
+  if (n == null) return "\u2014";
+  d = d == null ? 0 : d;
+  var s = Math.abs(n) >= 1000 && d === 0 ? Math.round(n).toLocaleString("id-ID") : n.toFixed(d);
+  return s;
+}
+function days(a, b) {
+  if (!a || !b) return null;
+  var d1 = new Date(a), d2 = new Date(b);
+  if (isNaN(d1) || isNaN(d2)) return null;
+  var n = Math.round((d2 - d1) / 86400000) + 1;
+  return n > 0 ? n : null;
+}
+function overlap() {
+  if (!S.pre.end || !S.post.start) return false;
+  return new Date(S.post.start) <= new Date(S.pre.end);
+}
+function sideHas(side, g) {
+  for (var i = 0; i < FIELDS.length; i++) {
+    var f = FIELDS[i];
+    if (f.g === g && num(S[side] && S[side][f.k]) != null) return true;
+  }
+  return false;
+}
+
+/* ---------------- metrik turunan ----------------
+   Rumusnya ditulis di layar supaya mahasiswa belajar penyebutnya,
+   bukan sekadar menerima angka jadi. */
+var METRICS = [
+  { k: "imp", nm: "Impresi", unit: "", dec: 0, f: "angka mentah dari analitik",
+    calc: function (d) { return num(d.imp); } },
+  { k: "gimp", nm: "Tayangan pencarian", unit: "", dec: 0, f: "angka mentah dari GSC",
+    calc: function (d) { return num(d.gimp); } },
+  { k: "gclicks", nm: "Klik pencarian", unit: "", dec: 0, f: "angka mentah dari GSC",
+    calc: function (d) { return num(d.gclicks); } },
+  { k: "lclicks", nm: "Klik tautan", unit: "", dec: 0, f: "angka mentah dari analitik",
+    calc: function (d) { return num(d.lclicks); } },
+  { k: "sessions", nm: "Sesi artikel", unit: "", dec: 0, f: "angka mentah dari analitik blog",
+    calc: function (d) { return num(d.sessions); } },
+  { k: "er", nm: "Engagement rate", unit: "%", dec: 2,
+    f: "(suka + balasan + repost + markah) \u00f7 impresi \u00d7 100",
+    calc: function (d) {
+      var i = num(d.imp); if (!i) return null;
+      var s = (num(d.likes) || 0) + (num(d.replies) || 0) + (num(d.reposts) || 0) + (num(d.bookmarks) || 0);
+      return s / i * 100;
+    } },
+  { k: "inter", nm: "Total interaksi", unit: "", dec: 0,
+    f: "suka + balasan + repost + markah",
+    calc: function (d) {
+      if (num(d.imp) == null && num(d.likes) == null) return null;
+      return (num(d.likes) || 0) + (num(d.replies) || 0) + (num(d.reposts) || 0) + (num(d.bookmarks) || 0);
+    } },
+  { k: "pctr", nm: "Rasio klik tautan", unit: "%", dec: 2,
+    f: "klik tautan \u00f7 impresi \u00d7 100",
+    calc: function (d) { var i = num(d.imp), c = num(d.lclicks); return (i && c != null) ? c / i * 100 : null; } },
+  { k: "gctr", nm: "CTR pencarian", unit: "%", dec: 2,
+    f: "klik \u00f7 tayangan \u00d7 100  (GSC)",
+    calc: function (d) { var i = num(d.gimp), c = num(d.gclicks); return (i && c != null) ? c / i * 100 : null; } },
+  { k: "gpos", nm: "Posisi rata-rata", unit: "", dec: 1, lowerBetter: true,
+    f: "diambil langsung dari GSC",
+    calc: function (d) { return num(d.gpos); } },
+  { k: "bounce", nm: "Bounce rate", unit: "%", dec: 1, lowerBetter: true,
+    f: "diambil langsung dari analitik blog",
+    calc: function (d) { return num(d.bounce); } },
+  { k: "read", nm: "Waktu baca", unit: " detik", dec: 0,
+    f: "rata-rata durasi di halaman",
+    calc: function (d) { return num(d.read); } },
+  { k: "impday", nm: "Impresi per hari", unit: "", dec: 0,
+    f: "impresi \u00f7 jumlah hari periode",
+    calc: function (d, n) { var i = num(d.imp); return (i != null && n) ? i / n : null; } },
+  { k: "gimpday", nm: "Tayangan per hari", unit: "", dec: 0,
+    f: "tayangan \u00f7 jumlah hari periode",
+    calc: function (d, n) { var i = num(d.gimp); return (i != null && n) ? i / n : null; } }
+];
+
+function computeAll() {
+  var dPre = days(S.pre.start, S.pre.end), dPost = days(S.post.start, S.post.end);
+  var out = { dPre: dPre, dPost: dPost, rows: [] };
+  for (var i = 0; i < METRICS.length; i++) {
+    var m = METRICS[i];
+    var a = m.calc(S.pre || {}, dPre), b = m.calc(S.post || {}, dPost);
+    if (a == null && b == null) continue;
+    var row = { k: m.k, nm: m.nm, unit: m.unit, dec: m.dec, f: m.f, lowerBetter: !!m.lowerBetter, pre: a, post: b };
+    if (a != null && b != null) {
+      row.abs = b - a;
+      row.rel = a !== 0 ? (b - a) / Math.abs(a) * 100 : null;
+      var better = m.lowerBetter ? row.abs < 0 : row.abs > 0;
+      row.dir = row.abs === 0 ? "flat" : (better ? "up" : "down");
+      /* untuk metrik persen, selisihnya adalah poin persentase \u2014 bukan persen */
+      row.pp = m.unit === "%";
+    }
+    out.rows.push(row);
+  }
+  return out;
+}
+function deltaText(r) {
+  if (r.abs == null) return "\u2014";
+  var sign = r.abs > 0 ? "+" : "";
+  var a = sign + fmt(r.abs, r.dec) + (r.pp ? " poin persentase" : r.unit);
+  if (r.rel == null) return a;
+  var s2 = r.rel > 0 ? "+" : "";
+  return a + " (" + s2 + fmt(r.rel, 1) + "% relatif)";
+}
+/* =======================================================================
+   DIAGNOSIS  \u2014 membaca pola antar metrik, bukan satu metrik sendirian.
+   Tiap aturan menyebut kemungkinan penyebab dan tindakan berikutnya,
+   karena indikator 4.3 menuntut "dugaan penyebab", bukan sekadar angka.
+   ======================================================================= */
+
+function v(rows, k, side) {
+  for (var i = 0; i < rows.length; i++) if (rows[i].k === k) return rows[i][side];
+  return null;
+}
+function diagnose(c) {
+  var R = c.rows, o = [], post = "post";
+  var imp = v(R, "impday", post) != null ? v(R, "imp", post) : null;
+  var er = v(R, "er", post), pctr = v(R, "pctr", post), gctr = v(R, "gctr", post);
+  var gpos = v(R, "gpos", post), bounce = v(R, "bounce", post), read = v(R, "read", post);
+  var impRaw = num(S.post.imp), gimpRaw = num(S.post.gimp);
+  var bm = num(S.post.bookmarks), rep = num(S.post.replies), lk = num(S.post.likes);
+
+  if (impRaw != null && impRaw < 500)
+    o.push({ c: "warn", t: "Impresi hanya " + fmt(impRaw) + ". Di bawah 500, persentase mudah berayun: satu orang saja bisa mengubah engagement rate lebih dari setengah poin. Laporkan angka mentahnya, jangan hanya persennya." });
+
+  if (er != null) {
+    if (er >= 3) o.push({ c: "ok", t: "Engagement rate " + fmt(er, 2) + "% tergolong kuat untuk akun kecil. Catat konten mana yang menyumbang paling banyak sebelum menyimpulkan polanya." });
+    else if (er < 1) o.push({ c: "warn", t: "Engagement rate " + fmt(er, 2) + "% rendah. Kalau impresinya sendiri sudah wajar, masalahnya bukan distribusi melainkan isi: hook tidak menahan, atau audiensnya tidak tepat." });
+  }
+
+  if (impRaw != null && impRaw >= 500 && pctr != null && pctr < 1)
+    o.push({ c: "bad", t: "Distribusi jalan (" + fmt(impRaw) + " impresi) tapi rasio klik hanya " + fmt(pctr, 2) + "%. Orang melihat, tidak tertarik membuka. Perbaiki hook dan call to action \u2014 menambah frekuensi posting tidak akan menolong." });
+
+  if (gpos != null && gpos > 10 && gpos <= 20)
+    o.push({ c: "info", t: "Posisi rata-rata " + fmt(gpos, 1) + " berarti kamu di halaman dua. Memperbaiki title tag dan meta description artikel ini jauh lebih murah daripada menulis artikel baru." });
+  if (gpos != null && gpos > 6 && gpos <= 10)
+    o.push({ c: "info", t: "Posisi rata-rata " + fmt(gpos, 1) + ": masih halaman pertama, tapi di bagian bawah. Klik di posisi 9 jauh lebih sedikit daripada posisi 3, jadi naik dua tingkat saja sudah terasa. Perkuat isi dan tautan internal ke halaman ini." });
+  if (gpos != null && gpos <= 6 && gctr != null && gctr < 2)
+    o.push({ c: "bad", t: "Peringkat sudah bagus (posisi " + fmt(gpos, 1) + ") tapi CTR hanya " + fmt(gctr, 2) + "%. Yang gagal adalah judul di hasil pencarian, bukan peringkatnya. Tulis ulang title tag dan meta description." });
+  if (gpos != null && gpos > 20)
+    o.push({ c: "warn", t: "Posisi rata-rata " + fmt(gpos, 1) + ": belum masuk dua halaman pertama, jadi CTR belum bisa dipakai menilai judul. Kerjakan dulu relevansi isi dan kata kunci." });
+
+  if (bounce != null && read != null) {
+    if (bounce > 70 && read < 45)
+      o.push({ c: "bad", t: "Bounce " + fmt(bounce, 1) + "% dengan waktu baca " + fmt(read) + " detik: pembaca datang lalu pergi cepat. Jawaban belum ada di paragraf pertama. Terapkan pola jawaban-dulu." });
+    else if (bounce > 70 && read >= 120)
+      o.push({ c: "info", t: "Bounce " + fmt(bounce, 1) + "% tapi dibaca " + fmt(read) + " detik. Ini bukan kegagalan: halaman menjawab tuntas lalu orang pergi. Inilah zero-click \u2014 ukur dengan penyebutan merek dan pencarian nama merek, bukan hanya sesi." });
+    else if (bounce <= 55)
+      o.push({ c: "ok", t: "Bounce " + fmt(bounce, 1) + "% relatif sehat. Periksa tautan internal mana yang paling banyak diklik, lalu perkuat yang itu." });
+  }
+
+  if (bm != null && lk != null && bm > lk)
+    o.push({ c: "info", t: "Markah lebih banyak daripada suka. Ini konten referensi yang disimpan untuk dipakai nanti, bukan konten percakapan. Nilai keberhasilannya dari simpanan dan klik tautan, jangan dari komentar." });
+  if (rep != null && lk != null && rep > lk && lk > 0)
+    o.push({ c: "warn", t: "Balasan lebih banyak daripada suka. Baca isi komentarnya dulu: perdebatan dan keluhan juga menaikkan engagement rate, dan itu bukan keberhasilan." });
+
+  if (gimpRaw != null && impRaw != null && gimpRaw > 0 && impRaw > 0) {
+    var ratio = gimpRaw / impRaw;
+    if (ratio < 0.2) o.push({ c: "info", t: "Tayangan pencarian jauh lebih kecil daripada impresi media sosial. Trafikmu masih bergantung pada distribusi platform, belum pada pencarian. Trafik organik butuh waktu \u2014 jangan simpulkan SEO-nya gagal dari dua minggu data." });
+  }
+
+  /* --- aturan yang membaca pergerakan antar periode, bukan satu angka --- */
+  function d(k, f) { for (var i = 0; i < R.length; i++) if (R[i].k === k) return R[i][f]; return null; }
+  var dGctr = d("gctr", "rel"), dGpos = d("gpos", "abs"), dGimp = d("gimp", "rel");
+  var dRead = d("read", "rel"), dBounce = d("bounce", "abs"), dEr = d("er", "rel"), dImp = d("imp", "rel");
+  var sess = num(S.post.sessions), gcl = num(S.post.gclicks);
+
+  if (dGctr != null && dGctr >= 20 && dGpos != null && Math.abs(dGpos) < 1)
+    o.push({ c: "ok", t: "CTR pencarian naik " + fmt(dGctr, 1) + "% sementara posisi hampir tidak berubah. Yang bekerja adalah judul dan meta description, bukan peringkat. Simpan kalimat judul itu dan pakai polanya untuk artikel lain." });
+
+  if (dGpos != null && dGpos <= -3 && dGimp != null && Math.abs(dGimp) < 15)
+    o.push({ c: "ok", t: "Posisi membaik " + fmt(Math.abs(dGpos), 1) + " tingkat sementara tayangan hampir sama. Berarti yang berubah relevansi halamanmu, bukan besarnya permintaan pencarian — kenaikan klik ini memang dari kerjamu, bukan dari tren." });
+
+  if (dGpos != null && dGpos <= -1 && dGimp != null && dGimp > 40)
+    o.push({ c: "warn", t: "Posisi membaik, tapi tayangan juga naik " + fmt(dGimp, 1) + "%. Sebagian kenaikan klik bisa datang dari naiknya minat pencarian, bukan dari optimasimu. Sebutkan keduanya di laporan." });
+
+  if (dRead != null && dRead >= 30 && dBounce != null && dBounce < 0)
+    o.push({ c: "ok", t: "Waktu baca naik " + fmt(dRead, 1) + "% dan bounce turun " + fmt(Math.abs(dBounce), 1) + " poin persentase bersamaan. Pola ini biasanya muncul setelah struktur heading dirapikan dan jawaban dipindah ke depan." });
+
+  if (dImp != null && dImp > 20 && dEr != null && dEr < -10)
+    o.push({ c: "warn", t: "Impresi naik " + fmt(dImp, 1) + "% tapi engagement rate turun " + fmt(Math.abs(dEr), 1) + "%. Kontenmu menjangkau lebih banyak orang yang kurang relevan. Jangkauan lebih besar bukan selalu perbaikan." });
+
+  if (bounce != null && bounce > 55 && bounce <= 70)
+    o.push({ c: "info", t: "Bounce " + fmt(bounce, 1) + "% tergolong menengah. Periksa apakah ada tautan internal yang wajar diklik dari halaman ini; kalau tidak ada, pembaca memang tidak punya tujuan berikutnya." });
+
+  if (sess != null && gcl != null && gcl > 0 && sess > gcl * 1.5)
+    o.push({ c: "warn", t: "Sesi (" + fmt(sess) + ") jauh lebih besar daripada klik pencarian (" + fmt(gcl) + "). Sebagian besar trafikmu bukan dari Google. Jangan menulis kenaikan ini sebagai hasil SEO tanpa memisahkan sumbernya dulu." });
+
+  if (!o.length) o.push({ c: "info", t: "Belum cukup data untuk didiagnosis. Isi minimal impresi beserta interaksi, atau tayangan beserta klik dari Search Console." });
+  return o;
+}
+
+/* =======================================================================
+   UJI KELAYAKAN KLAIM
+   Mahasiswa sering menulis "optimasi berhasil menaikkan CTR 40%".
+   Bagian ini memeriksa apakah kalimat itu boleh ditulis sama sekali.
+   ======================================================================= */
+function validity(c) {
+  var pen = [], score = 100;
+  var dPre = c.dPre, dPost = c.dPost;
+
+  function hit(w, cls, t) { score -= w; pen.push({ c: cls, t: t, w: w }); }
+
+  if (!dPre || !dPost) hit(40, "bad", "Tanggal periode belum lengkap. Tanpa rentang tanggal, pre-post tidak bisa diverifikasi siapa pun \u2014 termasuk olehmu sendiri minggu depan.");
+  else {
+    if (dPre < 7 || dPost < 7) hit(20, "warn", "Periode terpendek hanya " + Math.min(dPre, dPost) + " hari. Di bawah 7 hari, perbedaan hari kerja dan akhir pekan saja sudah bisa membuat angkanya berubah.");
+    var gap = Math.abs(dPre - dPost) / Math.max(dPre, dPost);
+    if (gap > 0.2) hit(15, "warn", "Panjang periode tidak sama (" + dPre + " hari vs " + dPost + " hari). Bandingkan angka per hari, jangan total \u2014 tabel di bawah sudah menyediakannya.");
+  }
+  if (overlap()) hit(25, "bad", "Periode sesudah dimulai sebelum periode sebelum berakhir. Dua periode yang bertumpuk tidak bisa dibandingkan.");
+
+  var nch = 0, chList = [];
+  for (var i = 0; i < CHANGES.length; i++) if (S.changes[CHANGES[i].k]) { nch++; chList.push(CHANGES[i].t); }
+  if (nch === 0) hit(30, "bad", "Belum ada perubahan yang dicatat. Kalau tidak ada yang diubah, tidak ada yang bisa diklaim sebagai sebab.");
+  else if (nch > 3) hit(20, "warn", nch + " perubahan dilakukan sekaligus. Angkanya boleh naik, tapi kamu tidak bisa menyebut perubahan mana penyebabnya. Tulis \u201csetelah serangkaian perbaikan\u201d, bukan \u201ckarena heading diperbaiki\u201d.");
+  else if (nch > 1) hit(8, "info", nch + " perubahan dilakukan bersamaan. Sebutkan semuanya di laporan dan jangan menunjuk satu penyebab tunggal.");
+
+  var cf = 0;
+  for (var j = 0; j < CONFOUND.length; j++) if (S.confound[CONFOUND[j].k]) { hit(CONFOUND[j].w, "warn", "Faktor luar diakui: " + CONFOUND[j].t.toLowerCase() + ". Kenaikan angka sebagian atau seluruhnya bisa berasal dari sini."); cf++; }
+
+  var small = 0, rows = c.rows;
+  var ip = num(S.pre.imp), io = num(S.post.imp), gp = num(S.pre.gimp), go = num(S.post.gimp);
+  if ((ip != null && ip < 300) || (io != null && io < 300)) small++;
+  if ((gp != null && gp < 300) || (go != null && go < 300)) small++;
+  if (small) hit(15, "warn", "Salah satu penyebut di bawah 300. Persentase dari angka sekecil ini tidak stabil; sertakan angka mentahnya di laporan.");
+
+  var moved = 0, tiny = 0;
+  for (var r = 0; r < rows.length; r++) {
+    if (rows[r].rel == null) continue;
+    moved++;
+    if (Math.abs(rows[r].rel) < 10) tiny++;
+  }
+  if (moved && tiny === moved) hit(15, "info", "Semua perubahan di bawah 10%. Selisih sekecil ini masih dalam rentang naik-turun biasa. Laporkan sebagai \u201ctidak ada perubahan berarti\u201d \u2014 itu temuan yang sah, bukan kegagalan tugas.");
+
+  score = Math.max(0, Math.min(100, score));
+  var label, advice;
+  if (score >= 80) { label = "Kuat"; advice = "Boleh ditulis sebagai temuan, dengan menyebut perubahan yang dilakukan dan rentang tanggalnya."; }
+  else if (score >= 60) { label = "Sedang"; advice = "Tulis dengan catatan keterbatasan. Pakai kata \u201cdiikuti oleh\u201d, bukan \u201cmenyebabkan\u201d."; }
+  else if (score >= 35) { label = "Lemah"; advice = "Jangan menyatakan sebab-akibat. Laporkan angkanya apa adanya dan sebutkan apa yang membuatnya belum bisa disimpulkan."; }
+  else { label = "Tidak bisa disimpulkan"; advice = "Perbaiki dulu rancangan pengukurannya sebelum menulis kesimpulan apa pun. Ini yang harus ditulis di laporan, bukan disembunyikan."; }
+  return { score: score, label: label, advice: advice, pen: pen, changes: chList, nch: nch, cf: cf };
+}
+
+/* kasus latihan \u2014 dipakai sebelum data asli mahasiswa terkumpul */
+var CASES = [
+  { nm: "Artikel di halaman dua",
+    why: "Peringkat lumayan, judul di hasil pencarian tidak meyakinkan. Latih membedakan masalah peringkat dan masalah judul.",
+    d: { kasus: "Blog UMKM \u2014 artikel panduan perawatan sepatu", kanal: "Blog + Google Search Console",
+      pre: { start: "2026-09-01", end: "2026-09-14", gimp: 2400, gclicks: 31, gpos: 14.2, sessions: 31, bounce: 78, read: 38 },
+      post: { start: "2026-09-15", end: "2026-09-28", gimp: 2610, gclicks: 96, gpos: 9.4, sessions: 96, bounce: 61, read: 74 },
+      changes: { title: 1, meta: 1 } } },
+  { nm: "Impresi tinggi, tidak ada yang klik",
+    why: "Distribusi bagus tapi hook gagal. Latih menolak kesimpulan \u201cjangkauan kurang\u201d.",
+    d: { kasus: "Utas X \u2014 promosi jasa cuci sepatu", kanal: "X / Threads",
+      pre: { start: "2026-09-01", end: "2026-09-14", imp: 8200, likes: 41, replies: 3, reposts: 5, bookmarks: 12, lclicks: 22 },
+      post: { start: "2026-09-15", end: "2026-09-28", imp: 12400, likes: 58, replies: 4, reposts: 7, bookmarks: 19, lclicks: 30 },
+      changes: { hook: 1, cta: 1 } } },
+  { nm: "Naik, tapi ada iklan berjalan",
+    why: "Angka naik tajam sementara faktor luar aktif. Latih menahan diri dari klaim sebab-akibat.",
+    d: { kasus: "Artikel afiliasi \u2014 rekomendasi produk perawatan", kanal: "Blog + Google Search Console",
+      pre: { start: "2026-09-08", end: "2026-09-14", gimp: 900, gclicks: 18, gpos: 18.1, sessions: 18, bounce: 74, read: 41 },
+      post: { start: "2026-09-15", end: "2026-09-28", gimp: 5200, gclicks: 260, gpos: 11.3, sessions: 262, bounce: 55, read: 88 },
+      changes: { title: 1, meta: 1, heading: 1, intern: 1, cta: 1 },
+      confound: { ads: 1, share: 1 } } }
+];
+/* =======================================================================
+   TAMPILAN
+   ======================================================================= */
+function paintSteps() {
+  var bs = el("steps").querySelectorAll("button");
+  for (var i = 0; i < bs.length; i++) bs[i].setAttribute("aria-current", (+bs[i].getAttribute("data-s") === S.step) ? "true" : "false");
+}
+function go(n) {
+  S.step = n; save(); paintSteps();
+  if (n === 1) view1(); else if (n === 2) view2(); else if (n === 3) view3(); else view4();
+  window.scrollTo(0, 0);
+}
+
+/* ---------------- 1. DATA ---------------- */
+function sideFields(side, g) {
+  var out = "";
+  for (var i = 0; i < FIELDS.length; i++) {
+    var f = FIELDS[i]; if (f.g !== g) continue;
+    var val = (S[side] && S[side][f.k] != null) ? S[side][f.k] : "";
+    out += '<label class="fl" for="' + side + "_" + f.k + '">' + esc(f.nm) + (f.hint ? "<small>" + esc(f.hint) + "</small>" : "") + "</label>" +
+      '<input type="number" step="any" min="0" id="' + side + "_" + f.k + '" value="' + esc(val) + '">';
+  }
+  return out;
+}
+function view1() {
+  var gsel = "";
+  for (var g in GROUPS) {
+    var on = S.kanal && S.kanal.indexOf(g) >= 0;
+    gsel += '<label class="chk"><input type="checkbox" class="kan" value="' + g + '"' + (on ? " checked" : "") + "> " + esc(GROUPS[g]) + "</label>";
+  }
+  var blocks = "";
+  for (var k in GROUPS) {
+    if (!S.kanal || S.kanal.indexOf(k) < 0) continue;
+    blocks += '<div class="card"><h3>' + esc(GROUPS[k]) + "</h3>" +
+      '<div class="pair"><div><div class="pairhead">Sebelum optimasi</div>' + sideFields("pre", k) + "</div>" +
+      '<div><div class="pairhead post">Sesudah optimasi</div>' + sideFields("post", k) + "</div></div></div>";
+  }
+  var ch = "", cf = "";
+  for (var i = 0; i < CHANGES.length; i++)
+    ch += '<label class="chk"><input type="checkbox" class="chg" value="' + CHANGES[i].k + '"' + (S.changes[CHANGES[i].k] ? " checked" : "") + "> " + esc(CHANGES[i].t) + "</label>";
+  for (var j = 0; j < CONFOUND.length; j++)
+    cf += '<label class="chk"><input type="checkbox" class="cfd" value="' + CONFOUND[j].k + '"' + (S.confound[CONFOUND[j].k] ? " checked" : "") + "> " + esc(CONFOUND[j].t) + "</label>";
+
+  el("stage").innerHTML =
+    '<div class="tag">Tahap 1 dari 4</div><h1>Masukkan data asli</h1>' +
+    '<p class="lead">Ambil angkanya langsung dari X/Threads Analytics, Google Search Console, atau analitik blogmu. Alat ini tidak mengarang data \u2014 kalau kolomnya kosong, metrik yang bergantung padanya tidak dihitung.</p>' +
+    '<div class="card"><div class="pair"><div><label class="fl" for="nama">Nama</label><input type="text" id="nama" value="' + esc(S.nama) + '"></div>' +
+    '<div><label class="fl" for="npm">NPM</label><input type="text" id="npm" value="' + esc(S.npm) + '"></div></div>' +
+    '<label class="fl" for="kasus">Studi kasus / aset yang dioptimasi</label>' +
+    '<input type="text" id="kasus" placeholder="mis. artikel blog panduan perawatan sepatu \u2014 UMKM Kilap Sepatu" value="' + esc(S.kasus) + '"></div>' +
+    '<div class="card"><h3>Sumber data yang kamu punya</h3>' + gsel + "</div>" +
+    '<div class="card"><h3>Rentang tanggal</h3>' +
+    '<div class="pair"><div><div class="pairhead">Sebelum optimasi</div>' +
+    '<label class="fl" for="pre_start">Mulai</label><input type="date" id="pre_start" value="' + esc(S.pre.start) + '">' +
+    '<label class="fl" for="pre_end">Selesai</label><input type="date" id="pre_end" value="' + esc(S.pre.end) + '"></div>' +
+    '<div><div class="pairhead post">Sesudah optimasi</div>' +
+    '<label class="fl" for="post_start">Mulai</label><input type="date" id="post_start" value="' + esc(S.post.start) + '">' +
+    '<label class="fl" for="post_end">Selesai</label><input type="date" id="post_end" value="' + esc(S.post.end) + '"></div></div>' +
+    '<p class="hint" id="dayinfo"></p></div>' +
+    blocks +
+    '<div class="card"><h3>Apa saja yang kamu ubah</h3><p class="hint">Ini yang nanti boleh atau tidak boleh kamu sebut sebagai penyebab.</p>' + ch + "</div>" +
+    '<div class="card"><h3>Faktor lain yang terjadi di periode sesudah</h3><p class="hint">Jujur di sini menaikkan nilai laporanmu, bukan menurunkannya.</p>' + cf + "</div>" +
+    '<div class="btnrow"><button class="btn go" id="next1">Hitung metrik</button>' +
+    '<button class="btn ghost" id="c1">Muat kasus latihan</button></div>';
+
+  el("c1").onclick = caseDialog;
+  el("next1").onclick = function () { collect1(); go(2); };
+  dayInfo();
+}
+function collect1() {
+  S.nama = el("nama") ? el("nama").value : S.nama;
+  S.npm = el("npm") ? el("npm").value : S.npm;
+  S.kasus = el("kasus") ? el("kasus").value : S.kasus;
+  var kan = [], ks = el("stage").querySelectorAll(".kan");
+  for (var i = 0; i < ks.length; i++) if (ks[i].checked) kan.push(ks[i].value);
+  var changed = kan.join(",") !== S.kanal;
+  S.kanal = kan.join(",");
+  ["pre", "post"].forEach(function (side) {
+    ["start", "end"].forEach(function (p) { var e = el(side + "_" + p); if (e) S[side][p] = e.value; });
+    FIELDS.forEach(function (f) { var e = el(side + "_" + f.k); if (e) S[side][f.k] = e.value; });
+  });
+  S.changes = {}; S.confound = {};
+  var cs = el("stage").querySelectorAll(".chg");
+  for (var j = 0; j < cs.length; j++) if (cs[j].checked) S.changes[cs[j].value] = 1;
+  var fs = el("stage").querySelectorAll(".cfd");
+  for (var m = 0; m < fs.length; m++) if (fs[m].checked) S.confound[fs[m].value] = 1;
+  save();
+  if (changed) view1();
+}
+function dayInfo() {
+  var e = el("dayinfo"); if (!e) return;
+  var a = el("pre_start").value, b = el("pre_end").value, c = el("post_start").value, d = el("post_end").value;
+  var n1 = days(a, b), n2 = days(c, d), t = [];
+  if (n1) t.push("periode sebelum: " + n1 + " hari");
+  if (n2) t.push("periode sesudah: " + n2 + " hari");
+  if (n1 && n2 && Math.abs(n1 - n2) / Math.max(n1, n2) > 0.2) t.push("panjangnya beda jauh \u2014 nanti dibandingkan per hari");
+  if (b && c && new Date(c) <= new Date(b)) t.push("periode bertumpuk");
+  e.textContent = t.join(" \u00b7 ");
+}
+
+/* ---------------- 2. DIAGNOSIS ---------------- */
+function view2() {
+  var c = computeAll(), dg = diagnose(c);
+  var cards = "";
+  for (var i = 0; i < c.rows.length; i++) {
+    var r = c.rows[i];
+    if (r.post == null) continue;
+    cards += '<div class="m"><div class="nm">' + esc(r.nm) + "</div>" +
+      '<div class="v">' + fmt(r.post, r.dec) + esc(r.unit) + "</div>" +
+      '<div class="f">' + esc(r.f) + "</div>" +
+      (r.abs != null ? '<div class="d ' + r.dir + '">' + esc(deltaText(r)) + "</div>" : "") + "</div>";
+  }
+  el("stage").innerHTML =
+    '<div class="tag">Tahap 2 dari 4</div><h1>Metrik dan dugaan penyebab</h1>' +
+    '<p class="lead">Angka besar di bawah adalah nilai periode sesudah. Rumusnya ditulis di bawah setiap angka \u2014 hafalkan penyebutnya, karena kesalahan paling sering terjadi di situ, bukan di pembilangnya.</p>' +
+    (cards ? '<div class="mgrid">' + cards + "</div>" : '<div class="note">Belum ada metrik yang bisa dihitung. Kembali ke Tahap 1 dan isi minimal impresi beserta interaksi.</div>') +
+    '<div class="note"><b>Selisih persen dan poin persentase itu beda.</b> CTR dari 2% menjadi 2,8% naik <i>0,8 poin persentase</i>, sekaligus naik <i>40% relatif</i>. Dua-duanya benar, dan menyebut yang kedua saja tanpa yang pertama adalah cara paling umum membesar-besarkan hasil.</div>' +
+    "<h3>Dugaan penyebab dan langkah berikutnya</h3><ul class=\"find\">" +
+    dg.map(function (d) { return '<li class="' + d.c + '">' + esc(d.t) + "</li>"; }).join("") + "</ul>" +
+    '<div class="btnrow"><button class="btn ghost" id="b2back">Kembali ke data</button>' +
+    '<button class="btn go" id="b2next">Uji kelayakan klaim</button></div>';
+  el("b2back").onclick = function () { go(1); };
+  el("b2next").onclick = function () { go(3); };
+}
+
+/* ---------------- 3. PRE-POST ---------------- */
+function view3() {
+  var c = computeAll(), val = validity(c);
+  var rows = "", bars = "";
+  for (var i = 0; i < c.rows.length; i++) {
+    var r = c.rows[i];
+    rows += "<tr><td>" + esc(r.nm) + '</td><td class="n">' + fmt(r.pre, r.dec) + esc(r.unit) +
+      '</td><td class="n">' + fmt(r.post, r.dec) + esc(r.unit) +
+      '</td><td class="n ' + (r.dir || "flat") + '">' + esc(deltaText(r)) + "</td></tr>";
+    if (r.pre != null && r.post != null && !r.lowerBetter) {
+      var max = Math.max(r.pre, r.post) || 1;
+      bars += '<div class="bar"><span>' + esc(r.nm) + '</span><div class="tr"><i style="width:' + (r.pre / max * 100) + '%"></i></div></div>' +
+        '<div class="bar post"><span class="lab">sesudah</span><div class="tr"><i style="width:' + (r.post / max * 100) + '%"></i></div></div>';
+    }
+  }
+  el("stage").innerHTML =
+    '<div class="tag">Tahap 3 dari 4</div><h1>Uji kelayakan klaim</h1>' +
+    '<p class="lead">Pertanyaannya bukan \u201capakah angkanya naik\u201d, tapi \u201capakah kenaikan itu boleh kamu sebut sebagai hasil kerjamu\u201d. Bagian ini memeriksa rancangan pengukurannya, bukan hasilnya.</p>' +
+    '<div class="gauge"><header><span>Skor kelayakan klaim</span><span>' + (c.dPre || "?") + " hari vs " + (c.dPost || "?") + ' hari</span></header><div class="body">' +
+    '<div class="sc">' + val.score + '<span style="font-size:1rem;color:var(--ink-soft)">/100</span></div>' +
+    '<div class="track"><i style="width:' + val.score + '%"></i></div>' +
+    '<div class="lb">' + esc(val.label) + "</div><p style=\"margin:0\">" + esc(val.advice) + "</p>" +
+    '<p class="hint" style="margin:10px 0 0">Skor ini menilai rancangan pengukuranmu, bukan bagus atau jeleknya hasil. Klaim yang kuat boleh saja berbunyi \u201ctidak ada perbaikan\u201d.</p></div></div>' +
+    (val.pen.length ? "<h3>Yang melemahkan klaimmu</h3><ul class=\"find\">" +
+      val.pen.map(function (p) { return '<li class="' + p.c + '">' + esc(p.t) + " <b>(\u2212" + p.w + ")</b></li>"; }).join("") + "</ul>"
+      : '<div class="note"><b>Tidak ada catatan.</b> Rancangan pengukuranmu bersih: periode setara, perubahan tercatat, tidak ada faktor luar yang diakui.</div>') +
+    "<h3>Tabel pre-post</h3><table class=\"t\"><caption>Bandingkan kolom selisih, bukan hanya kolom sesudah.</caption>" +
+    "<tr><th>Metrik</th><th>Sebelum</th><th>Sesudah</th><th>Selisih</th></tr>" + rows + "</table>" +
+    (bars ? "<h3>Perbandingan</h3><div class=\"bars\">" + bars + "</div>" : "") +
+    '<div class="btnrow"><button class="btn ghost" id="b3back">Kembali ke diagnosis</button>' +
+    '<button class="btn go" id="b3next">Susun laporan</button></div>';
+  el("b3back").onclick = function () { go(2); };
+  el("b3next").onclick = function () { go(4); };
+}
+
+/* ---------------- 4. LAPORAN ---------------- */
+function pad(s, n) { s = String(s); while (s.length < n) s += " "; return s; }
+function buildReport() {
+  var c = computeAll(), val = validity(c), L = [];
+  L.push("LAPORAN ANALISIS PERFORMA DAN UJI PRE-POST");
+  L.push("Mata kuliah Copywriting dan SEO \u2014 Sub-CPMK 4");
+  L.push("");
+  L.push("Nama  : " + (S.nama || "-"));
+  L.push("NPM   : " + (S.npm || "-"));
+  L.push("Kasus : " + (S.kasus || "-"));
+  L.push("Kanal : " + (S.kanal ? S.kanal.split(",").map(function (k) { return GROUPS[k]; }).join(", ") : "-"));
+  L.push("");
+  L.push("1. PERIODE PENGAMATAN");
+  L.push("   Sebelum : " + (S.pre.start || "?") + " s.d. " + (S.pre.end || "?") + " (" + (c.dPre || "?") + " hari)");
+  L.push("   Sesudah : " + (S.post.start || "?") + " s.d. " + (S.post.end || "?") + " (" + (c.dPost || "?") + " hari)");
+  L.push("");
+  L.push("2. PERUBAHAN YANG DILAKUKAN");
+  if (val.changes.length) val.changes.forEach(function (t, i) { L.push("   " + (i + 1) + ". " + t); });
+  else L.push("   (belum dicatat)");
+  L.push("");
+  L.push("3. TABEL PRE-POST");
+  L.push("   " + pad("Metrik", 26) + pad("Sebelum", 13) + pad("Sesudah", 13) + "Selisih");
+  L.push("   " + new Array(76).join("-"));
+  c.rows.forEach(function (r) {
+    L.push("   " + pad(r.nm, 26) + pad(fmt(r.pre, r.dec) + r.unit, 13) + pad(fmt(r.post, r.dec) + r.unit, 13) + deltaText(r));
+  });
+  L.push("");
+  L.push("4. TEMUAN");
+  diagnose(c).forEach(function (d, i) { L.push("   " + (i + 1) + ". " + d.t); });
+  L.push("");
+  L.push("5. KELAYAKAN KLAIM: " + val.label.toUpperCase() + " (" + val.score + "/100)");
+  L.push("   " + val.advice);
+  L.push("");
+  L.push("6. KETERBATASAN PENGUKURAN");
+  if (val.pen.length) val.pen.forEach(function (p, i) { L.push("   " + (i + 1) + ". " + p.t); });
+  else L.push("   Tidak ada catatan pada rancangan pengukuran.");
+  L.push("");
+  L.push("7. CATATAN DAN RENCANA LANJUTAN");
+  L.push("   " + (S.catatan ? S.catatan.replace(/\n/g, "\n   ") : "(isi di kolom catatan sebelum menyalin laporan)"));
+  L.push("");
+  L.push("Laporan ini disusun dari data analitik yang diambil pada tanggal di atas.");
+  L.push("Penyusun bertanggung jawab atas kebenaran angka yang dilaporkan.");
+  return L.join("\n");
+}
+function view4() {
+  el("stage").innerHTML =
+    '<div class="tag">Tahap 4 dari 4</div><h1>Laporan siap unggah</h1>' +
+    '<p class="lead">Laporan ini sudah memuat tabel pre-post, temuan, dan bagian keterbatasan \u2014 bagian yang paling sering hilang dari tugas mahasiswa, padahal itu yang dinilai. Salin lalu tempel ke dokumenmu, atau unggah berkas JSON-nya ke LMS.</p>' +
+    '<div class="card"><label class="fl" for="catatan">Catatan dan rencana lanjutan<small>tulis sendiri, jangan dikosongkan</small></label>' +
+    '<textarea id="catatan" placeholder="Apa yang akan kamu coba berikutnya, dan bagaimana cara mengukurnya supaya klaimnya lebih kuat?">' + esc(S.catatan) + "</textarea></div>" +
+    '<div class="btnrow"><button class="btn go" id="rCopy">Copy laporan</button>' +
+    '<button class="btn ghost" id="rPrint">Cetak / simpan PDF</button>' +
+    '<button class="btn ghost" id="rRef">Perbarui laporan</button></div>' +
+    '<textarea class="rep" id="rep" rows="22"></textarea>';
+  el("rep").value = buildReport();
+  el("catatan").oninput = function () { S.catatan = this.value; save(); };
+  el("rCopy").onclick = function () { el("rep").value = buildReport(); copyBox("rep"); };
+  el("rRef").onclick = function () { el("rep").value = buildReport(); toast("Laporan diperbarui."); };
+  el("rPrint").onclick = function () { window.print(); };
+}
+
+/* ---------------- modal: kasus latihan, panduan, rubrik ---------------- */
+function caseDialog() {
+  modal("<h2>Kasus latihan</h2><p>Tiga set data untuk dipakai sebelum data aslimu terkumpul. Memuat kasus akan menimpa isian sekarang.</p>" +
+    CASES.map(function (c, i) {
+      return '<div class="card"><h3>' + esc(c.nm) + "</h3><p>" + esc(c.why) + '</p><button class="btn go" data-case="' + i + '">Muat kasus ini</button></div>';
+    }).join("") +
+    '<div class="btnrow"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+  el("sheet").onclick = function (e) {
+    var b = e.target.closest("button[data-case]"); if (!b) return;
+    var c = CASES[+b.getAttribute("data-case")].d;
+    var st = fresh();
+    st.kasus = c.kasus;
+    st.kanal = c.kanal.indexOf("Blog") >= 0 ? "g,b" : "x";
+    st.pre = {}; st.post = {};
+    for (var k in c.pre) st.pre[k] = c.pre[k];
+    for (var k2 in c.post) st.post[k2] = c.post[k2];
+    st.changes = c.changes || {}; st.confound = c.confound || {};
+    st.nama = S.nama; st.npm = S.npm;
+    S = st; save(); closeModal(); go(1);
+    toast("Kasus latihan dimuat.");
+  };
+}
+function guide() {
+  modal("<h2>Panduan metrik</h2>" +
+    "<h3>Yang sering salah</h3>" +
+    "<p><b>Engagement rate.</b> Penyebutnya harus konsisten. Alat ini memakai impresi karena itu yang tersedia di X dan Threads. Kalau di laporan lain kamu memakai jumlah pengikut sebagai penyebut, angkanya tidak bisa dibandingkan \u2014 sebutkan penyebut yang kamu pakai.</p>" +
+    "<p><b>Poin persentase vs persen.</b> CTR 2% menjadi 2,8%: naik 0,8 poin persentase, atau 40% relatif. Menyebut \u201cnaik 40%\u201d tanpa angka aslinya membuat kenaikan kecil terdengar besar.</p>" +
+    "<p><b>Bounce rate tinggi belum tentu buruk.</b> Kalau waktu bacanya panjang, orang menemukan jawabannya lalu pergi. Itu zero-click, bukan kegagalan halaman.</p>" +
+    "<p><b>Posisi rata-rata di GSC adalah rata-rata.</b> Posisi 9,4 bisa berarti kadang di posisi 3, kadang di 20. Jangan dibaca sebagai peringkat tetap.</p>" +
+    "<h3>Ambil datanya dari mana</h3>" +
+    "<p>Impresi, suka, balasan, repost, markah, klik tautan: X Analytics atau Threads Insights, di menu analitik masing-masing unggahan.<br>" +
+    "Tayangan, klik, posisi rata-rata: Google Search Console, laporan Performance, filter per halaman.<br>" +
+    "Sesi, bounce rate, waktu baca: analitik platform blog yang kamu pakai.</p>" +
+    "<h3>Aturan main pengukuran</h3>" +
+    "<p>Periode sebelum dan sesudah sebaiknya sama panjang dan minimal 7 hari. Jangan mengubah banyak hal sekaligus kalau ingin tahu penyebabnya. Catat tanggal pengambilan data, karena angka di dasbor berubah seiring waktu.</p>" +
+    '<div class="btnrow"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+}
+function rubric() {
+  var c = computeAll(), val = validity(c);
+  var has = function (b) { return b ? '<li class="ok">' : '<li class="bad">'; };
+  var mCount = c.rows.filter(function (r) { return r.post != null; }).length;
+  modal("<h2>Rubrik penilaian \u2014 Sub-CPMK 4</h2>" +
+    "<p>Empat indikator pada RPS, dicek terhadap isian kamu saat ini.</p><ul class=\"find\">" +
+    has(mCount >= 3) + "<b>4.1</b> Ketepatan membaca metrik analitik X/Threads dan Google Search Console \u2014 " + mCount + " metrik terhitung</li>" +
+    has(c.rows.some(function (r) { return (r.k === "er" || r.k === "pctr" || r.k === "gctr") && r.post != null; })) +
+      "<b>4.2</b> Ketepatan menghitung engagement rate dan rasio klik</li>" +
+    has(diagnose(c).some(function (d) { return d.c === "bad" || d.c === "warn" || d.c === "ok"; })) +
+      "<b>4.3</b> Ketepatan mendeteksi indikator lemah beserta dugaan penyebabnya</li>" +
+    has(val.nch > 0) + "<b>4.4</b> Ketepatan melaksanakan perbaikan teknis pada heading, tautan internal, dan call to action \u2014 " + val.nch + " perubahan tercatat</li>" +
+    has(c.dPre && c.dPost && val.score >= 35) + "<b>A3</b> Setiap klaim perbaikan dijelaskan dengan angka, bukan perasaan \u2014 kelayakan klaim " + val.score + "/100</li>" +
+    "</ul><p>Tanda \u00d7 bukan berarti nilaimu jelek. Itu bagian yang belum kamu isi atau belum bisa dibuktikan dari data yang ada.</p>" +
+    '<div class="btnrow"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+}
+
+/* ---------------- export / import ---------------- */
+function copyBox(id) {
+  var ta = el(id);
+  ta.focus(); ta.select();
+  try { ta.setSelectionRange(0, ta.value.length); } catch (e) {}
+  var ok = false;
+  try { ok = document.execCommand("copy"); } catch (e2) { ok = false; }
+  if (!ok && navigator.clipboard) {
+    navigator.clipboard.writeText(ta.value).then(function () { toast("Tersalin."); },
+      function () { toast("Tekan lama di kotak teks, lalu Select All \u2192 Copy."); });
+    return;
+  }
+  toast(ok ? "Tersalin. Tempel ke dokumen atau LMS." : "Tekan lama di kotak teks, lalu Select All \u2192 Copy.");
+}
+function exportDialog() {
+  var json = JSON.stringify(S, null, 2);
+  var name = "analitik-" + (S.npm || "siswa").replace(/[^a-zA-Z0-9]+/g, "") + "-" + new Date().toISOString().slice(0, 10) + ".json";
+  modal("<h2>Export jawaban</h2><p>Di iPhone dan iPad, tombol download biasanya tidak berfungsi \u2014 pakai Copy, lalu tempel ke WhatsApp, email, atau kolom tugas di LMS.</p>" +
+    '<div class="btnrow"><button class="btn go" id="eC">Copy semua teks</button><button class="btn ghost" id="eD">Download .json</button></div>' +
+    '<textarea id="eT" rows="8">' + esc(json) + "</textarea>" +
+    '<p class="hint">Nama berkas: ' + esc(name) + "</p>" +
+    '<div class="btnrow"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+  el("eC").onclick = function () { copyBox("eT"); };
+  el("eD").onclick = function () {
+    try {
+      var b = new Blob([json], { type: "application/json" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(b); a.download = name;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+      toast("Berkas " + name + " diunduh.");
+    } catch (e) { toast("Download tidak didukung di browser ini. Pakai Copy."); }
+  };
+}
+function applyImport(txt) {
+  try {
+    var o = JSON.parse(txt);
+    if (!o || o.v !== 1) throw 0;
+    S = o; if (!S.pre) S.pre = {}; if (!S.post) S.post = {};
+    if (!S.changes) S.changes = {}; if (!S.confound) S.confound = {};
+    save(); closeModal(); go(S.step || 1); toast("Jawaban dimuat.");
+  } catch (e) { toast("Teks tidak dikenali. Pastikan seluruh isi berkas .json tersalin."); }
+}
+function importDialog() {
+  modal("<h2>Import jawaban</h2><p>Pilih berkas .json, atau tempel isinya ke kotak di bawah.</p>" +
+    '<input type="file" id="iF" accept="application/json,text/plain,.json" style="margin-bottom:12px">' +
+    '<textarea id="iT" rows="6" placeholder="Tempel isi berkas .json di sini."></textarea>' +
+    '<div class="btnrow"><button class="btn go" id="iG">Muat</button><button class="btn ghost" onclick="closeModal()">Batal</button></div>');
+  el("iF").onchange = function () {
+    if (!this.files || !this.files[0]) return;
+    var r = new FileReader();
+    r.onload = function () { applyImport(r.result); };
+    r.onerror = function () { toast("Berkas tidak bisa dibaca. Pakai cara tempel teks."); };
+    r.readAsText(this.files[0]);
+  };
+  el("iG").onclick = function () {
+    var v2 = el("iT").value.trim();
+    if (!v2) { toast("Kotaknya masih kosong."); return; }
+    applyImport(v2);
+  };
+}
+
+/* ---------------- init ---------------- */
+load();
+el("modal").addEventListener("click", function (e) { if (e.target === el("modal")) closeModal(); });
+el("stage").addEventListener("change", function () { if (S.step === 1) collect1(); });
+el("stage").addEventListener("input", function () { if (S.step === 1) dayInfo(); });
+document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
+el("steps").addEventListener("click", function (e) {
+  var b = e.target.closest("button[data-s]"); if (!b) return;
+  if (S.step === 1) collect1();
+  go(+b.getAttribute("data-s"));
+});
+el("btnCase").onclick = caseDialog;
+el("btnGuide").onclick = guide;
+el("btnRubric").onclick = rubric;
+el("btnExport").onclick = exportDialog;
+el("btnImport").onclick = importDialog;
+el("btnReset").onclick = function () {
+  modal("<h2>Kosongkan semua isian?</h2><p>Seluruh data, catatan, dan laporan di browser ini akan dihapus dan tidak bisa dikembalikan. Export dulu kalau masih dibutuhkan.</p>" +
+    '<div class="btnrow"><button class="btn" id="rz">Ya, kosongkan</button><button class="btn ghost" onclick="closeModal()">Batal</button></div>');
+  el("rz").onclick = function () { S = fresh(); save(); closeModal(); go(1); };
+};
+go(S.step || 1);
+
+</script>
+</body>
+</html>

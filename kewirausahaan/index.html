@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ruang Usaha — Manajemen dan Kewirausahaan</title>
+<style>
+/* =========================================================
+   RUANG USAHA — Manajemen dan Kewirausahaan (D3 Administrasi Bisnis)
+   Sekeluarga dengan Lab Tiga Engine: kertas & tinta sama,
+   aksen amber karena ini meja kerja, bukan ruang mesin.
+   ========================================================= */
+:root{
+  --paper:#F1F2EC; --card:#FBFBF7; --ink:#17202B; --ink-soft:#4A5563; --rule:#CDD1C2;
+  --amber:#8C3A2B; --good:#2E6B45; --bad:#A32020; --info:#2547C8; --plum:#7B2D7A;
+  --sans:"Arial Narrow","Helvetica Neue Condensed","Liberation Sans Narrow",system-ui,sans-serif;
+  --serif:Georgia,"Iowan Old Style","Palatino Linotype",serif;
+  --mono:ui-monospace,"SFMono-Regular","Consolas","Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:17px; line-height:1.6; -webkit-text-size-adjust:100%}
+h1,h2,h3,h4,.u-sans{font-family:var(--sans); letter-spacing:-.01em; font-weight:700; line-height:1.1}
+h1{font-size:2.3rem;margin:0}
+h2{font-size:1.75rem;margin:0 0 6px}
+h3{font-size:1.15rem;margin:22px 0 6px}
+p{margin:0 0 .9em; max-width:68ch}
+button:focus{outline:2px solid var(--amber); outline-offset:2px}
+:focus-visible{outline:3px solid var(--amber); outline-offset:2px}
+
+.wrap{display:grid; grid-template-columns:258px minmax(0,1fr); min-height:100vh}
+.rail{background:var(--ink); color:#E7EAE2; padding:20px 16px 40px; position:sticky; top:0; align-self:start; height:100vh; overflow:auto; -webkit-overflow-scrolling:touch}
+.stage{padding:32px 36px 90px; max-width:940px}
+
+.wm{font-family:var(--sans); font-size:1.4rem; line-height:1}
+.wm span{display:block; font-family:var(--mono); font-size:.68rem; color:#9AA69B; margin-top:6px; letter-spacing:.02em}
+.who{margin:16px 0; padding:10px 12px; background:#22303F; border-radius:3px; font-family:var(--sans); font-size:.88rem}
+.who b{display:block; font-size:1.05rem}
+.who em{display:block; color:#9AA69B; font-style:normal; font-family:var(--mono); font-size:.72rem; margin-top:3px}
+.xp{height:7px; background:#0E151D; border-radius:99px; margin-top:8px; overflow:hidden}
+.xp i{display:block; height:100%; background:#D98C6A; width:0; transition:width .6s ease}
+.blok{margin:16px 0 5px; font-family:var(--sans); font-size:.8rem; color:#8E9A8F}
+.mlist{list-style:none; margin:0; padding:0}
+.mlist button{width:100%; text-align:left; background:none; border:0; color:#D8DDD3; cursor:pointer; font-family:var(--sans); font-size:.94rem; padding:6px 8px 6px 26px; border-radius:3px; position:relative; line-height:1.25}
+.mlist button:hover{background:#22303F}
+.mlist button[aria-current="true"]{background:#2C3C4E; color:#fff}
+.mlist button:before{content:attr(data-n); position:absolute; left:6px; top:6px; font-family:var(--mono); font-size:.7rem; color:#7E8A80}
+.mlist button.done:before{content:"\2713"; color:#D98C6A}
+.mlist button.locked{opacity:.42; cursor:not-allowed}
+.mlist .w{font-family:var(--mono); font-size:.68rem; opacity:.65}
+.tools{margin-top:20px; border-top:1px solid #2C3C4E; padding-top:12px; display:grid; gap:5px}
+.tools button{background:none; border:1px solid #3A4C60; color:#C9D0C6; font-family:var(--sans); font-size:.86rem; padding:5px 9px; border-radius:3px; cursor:pointer; text-align:left}
+.tools button:hover{background:#22303F; color:#fff}
+.badges{display:flex; gap:6px; flex-wrap:wrap; margin-top:8px}
+.badge{font-family:var(--sans); font-size:.76rem; border:1px solid #3A4C60; color:#9AA69B; padding:2px 7px; border-radius:99px}
+.badge.on{background:#D98C6A; color:#17202B; border-color:#D98C6A}
+
+.tag{font-family:var(--sans); font-size:.9rem; color:var(--amber); display:flex; align-items:center; gap:8px; margin-bottom:8px}
+.tag:before{content:""; width:30px; height:4px; background:var(--amber)}
+.mt{display:flex; gap:11px; align-items:baseline; margin-bottom:5px}
+.mt .no{font-family:var(--mono); font-size:.95rem; color:var(--ink-soft)}
+.goal{font-family:var(--sans); font-size:1.04rem; color:var(--ink-soft); max-width:62ch; margin-bottom:20px}
+.brief{border-left:4px solid var(--rule); padding-left:18px; margin-bottom:22px}
+ol.steps{counter-reset:s; list-style:none; padding:0; margin:0 0 22px; max-width:68ch}
+ol.steps li{counter-increment:s; position:relative; padding-left:38px; margin-bottom:10px}
+ol.steps li:before{content:counter(s); position:absolute; left:0; top:2px; width:25px; height:25px; background:var(--amber); color:#fff; font-family:var(--mono); font-size:.8rem; display:grid; place-items:center; border-radius:50%}
+.note{background:#E6E9DC; border-radius:3px; padding:12px 16px; font-size:.94rem; margin-bottom:20px; max-width:70ch}
+.note b{font-family:var(--sans)}
+
+.card{background:var(--card); border:1px solid var(--rule); border-radius:4px; padding:16px 18px; margin-bottom:16px}
+.card>h3:first-child{margin-top:0}
+label.fl{display:block; font-family:var(--sans); font-size:.92rem; margin-bottom:3px}
+label.fl small{color:var(--ink-soft); font-family:var(--mono); font-size:.72rem; margin-left:5px}
+input[type=text],input[type=number],select,textarea{width:100%; font-family:var(--serif); font-size:1rem; color:var(--ink); background:#fff; border:1px solid var(--rule); border-radius:3px; padding:8px 10px; margin-bottom:12px}
+input[type=number]{font-family:var(--mono)}
+select{font-family:var(--sans)}
+textarea{min-height:80px; resize:vertical}
+.btn{font-family:var(--sans); font-size:1rem; background:var(--ink); color:#fff; border:0; padding:10px 20px; border-radius:3px; cursor:pointer}
+.btn:hover{background:#0E151D}
+.btn.go{background:var(--amber)} .btn.go:hover{background:#6E2C21}
+.btn.ghost{background:none; color:var(--ink); border:1px solid var(--ink)}
+.btn.ghost:hover{background:#E6E9DC}
+.btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:4px 0 22px}
+.hint{font-family:var(--mono); font-size:.74rem; color:var(--ink-soft); margin:-8px 0 12px}
+
+/* soal & pilihan */
+.q{border-bottom:1px solid var(--rule); padding:13px 0}
+.q:last-child{border-bottom:0}
+.q .stem{font-size:1.02rem; margin-bottom:7px; max-width:70ch}
+.q .stem b{font-family:var(--sans)}
+.opts{display:flex; gap:7px; flex-wrap:wrap}
+.opts button{font-family:var(--sans); font-size:.92rem; background:#fff; border:1px solid var(--rule); padding:6px 12px; border-radius:99px; cursor:pointer}
+.opts button[aria-pressed="true"]{background:var(--ink); color:#fff; border-color:var(--ink)}
+.opts button.right{background:#DCEBE0; border-color:var(--good); color:var(--good)}
+.opts button.part{background:#F3E1DC; border-color:var(--amber); color:var(--amber)}
+.opts button.wrong{background:#F4DCDC; border-color:var(--bad); color:var(--bad)}
+.why{font-size:.9rem; color:var(--ink-soft); margin-top:7px; max-width:72ch}
+
+/* checklist chip */
+.chips{display:flex; gap:7px; flex-wrap:wrap; margin-bottom:6px}
+.chip{font-family:var(--sans); font-size:.9rem; background:#fff; border:1px solid var(--rule); padding:6px 12px; border-radius:99px; cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink); color:#fff; border-color:var(--ink)}
+.chip.right{background:#DCEBE0; border-color:var(--good); color:var(--good)}
+.chip.wrong{background:#F4DCDC; border-color:var(--bad); color:var(--bad)}
+.chip.miss{background:#fff; border-color:var(--good); color:var(--good); border-style:dashed}
+
+/* urutan */
+.seq{list-style:none; padding:0; margin:0 0 10px}
+.seq li{background:#fff; border:1px solid var(--rule); border-radius:3px; padding:8px 12px; margin-bottom:6px; display:flex; gap:10px; align-items:center; font-size:.95rem}
+.seq li .n{font-family:var(--mono); font-size:.8rem; width:22px; color:var(--ink-soft)}
+.seq li .mv{margin-left:auto; display:flex; gap:4px}
+.seq li .mv button{font-family:var(--mono); background:#fff; border:1px solid var(--rule); width:28px; height:26px; border-radius:3px; cursor:pointer}
+.seq li.ok{border-color:var(--good); background:#F2F8F3}
+.seq li.no{border-color:var(--bad); background:#FBF3F3}
+
+/* tabel kas kecil */
+table.t{width:100%; border-collapse:collapse; font-size:.92rem; margin:10px 0 16px}
+table.t th,table.t td{border-bottom:1px solid var(--rule); padding:6px 7px; text-align:left; vertical-align:middle}
+table.t th{font-family:var(--sans); font-size:.88rem}
+table.t td.n,table.t th.n{font-family:var(--mono); text-align:right; white-space:nowrap}
+table.t select{margin:0; padding:4px 6px; font-size:.85rem}
+table.t tfoot td{font-family:var(--sans); border-top:2px solid var(--ink); border-bottom:0}
+.wrapx{overflow-x:auto}
+
+/* grid tata ruang */
+.room{display:grid; gap:3px; margin:10px 0 14px; max-width:520px}
+.cell{aspect-ratio:1/1; background:#fff; border:1px solid var(--rule); border-radius:2px; font-family:var(--sans); font-size:.62rem; line-height:1.05; padding:2px; cursor:pointer; overflow:hidden; text-align:center; color:var(--ink-soft)}
+.cell.fix{background:#E2E5DA; cursor:default; color:var(--ink)}
+.cell.door{background:#DDE6D9; border-color:var(--good); color:var(--good)}
+.cell.pimp{background:#EBD9EB; border-color:var(--plum); color:var(--plum)}
+.cell.win{background:#DDE4EF; border-color:var(--info); color:var(--info)}
+.cell.has{background:#F3E1DC; border-color:var(--amber); color:#5E241B; font-weight:700}
+.cell.sel{box-shadow:inset 0 0 0 2px var(--amber)}
+.palette{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px}
+.palette button{font-family:var(--sans); font-size:.86rem; background:#fff; border:1px solid var(--rule); padding:5px 10px; border-radius:3px; cursor:pointer}
+.palette button[aria-pressed="true"]{background:var(--amber); color:#fff; border-color:var(--amber)}
+.palette button.placed{opacity:.5}
+
+ul.find{list-style:none; padding:0; margin:0 0 16px}
+ul.find li{position:relative; padding:8px 0 8px 28px; border-bottom:1px solid var(--rule); max-width:74ch; font-size:.94rem}
+ul.find li:before{position:absolute; left:2px; top:8px; font-family:var(--mono); font-size:.88rem}
+ul.find li.ok:before{content:"\2713"; color:var(--good)}
+ul.find li.part:before{content:"~"; color:var(--amber)}
+ul.find li.no:before{content:"\00D7"; color:var(--bad)}
+ul.find li.info:before{content:"i"; color:var(--info)}
+ul.find li b{font-family:var(--sans)}
+
+.score{border:1px solid var(--ink); border-radius:4px; overflow:hidden; margin-bottom:20px}
+.score>header{background:var(--ink); color:#E7EAE2; font-family:var(--sans); font-size:.94rem; padding:8px 14px; display:flex; justify-content:space-between}
+.score .body{background:var(--card); padding:15px}
+.score .v{font-family:var(--sans); font-size:2.4rem; line-height:1}
+.score .track{height:8px; background:#E2E5DA; border-radius:99px; overflow:hidden; margin:8px 0 10px}
+.score .track i{display:block; height:100%; width:0; background:var(--amber); transition:width .6s ease}
+
+.modal{position:fixed; top:0; right:0; bottom:0; left:0; background:rgba(23,32,43,.72); display:grid; place-items:center; padding:18px; z-index:40}
+.modal[hidden]{display:none}
+.sheet{background:var(--paper); border-radius:5px; padding:24px; max-width:720px; width:100%; max-height:88vh; overflow:auto}
+.toast{position:fixed; left:50%; bottom:22px; transform:translateX(-50%); background:var(--ink); color:#fff; font-family:var(--sans); padding:10px 18px; border-radius:3px; z-index:50}
+.toast[hidden]{display:none}
+.rep{font-family:var(--mono); font-size:.78rem; line-height:1.5; white-space:pre; min-height:300px}
+
+
+/* alokasi satuan usaha (misi 6) */
+.alloc{display:grid; gap:12px; margin-bottom:6px}
+.arow{display:grid; grid-template-columns:210px 1fr 52px; gap:12px; align-items:center}
+.arow .nm{font-family:var(--sans); font-size:.94rem}
+.arow .nm small{display:block; color:var(--ink-soft); font-family:var(--serif); font-size:.8rem; line-height:1.3}
+.arow output{font-family:var(--mono); font-size:.9rem; text-align:right}
+input[type=range]{width:100%; accent-color:var(--amber)}
+.sov{display:grid; gap:5px; margin:14px 0 4px}
+.sovrow{display:grid; grid-template-columns:200px 1fr; gap:10px; align-items:center; font-size:.9rem}
+.sovrow .bar{height:15px; background:#E2E5DA; border-radius:2px; overflow:hidden}
+.sovrow .bar i{display:block; height:100%; background:var(--amber); width:0; transition:width .5s ease}
+@media (max-width:700px){
+  .arow{grid-template-columns:1fr 56px}
+  .arow input[type=range]{grid-column:1/-1}
+  .sovrow{grid-template-columns:120px 1fr}
+}
+
+@media (max-width:820px){
+  .wrap{grid-template-columns:1fr}
+  .rail{position:static; height:auto; padding-bottom:16px}
+  .stage{padding:22px 16px 70px}
+  h1{font-size:1.8rem} h2{font-size:1.4rem}
+  .room{max-width:100%}
+  .cell{font-size:.5rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{.rail,.btnrow,.tools,.modal{display:none!important} body{background:#fff} .stage{max-width:none;padding:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="rail" aria-label="Daftar misi">
+    <div class="wm">RUANG USAHA<span>manajemen &amp; kewirausahaan &middot; d3 teknik komputer</span></div>
+    <div class="who" id="who"></div>
+    <div id="nav"></div>
+    <div class="tools">
+      <button id="btnRubrik">Bobot &amp; Sub-CPMK</button>
+      <button id="btnPanduan">Panduan istilah</button>
+      <button id="btnRapor">Rapor saya</button>
+      <button id="btnExport">Export jawaban</button>
+      <button id="btnImport">Import jawaban</button>
+      <button id="btnReset">Kosongkan</button>
+    </div>
+  </nav>
+  <main class="stage" id="stage" tabindex="-1"></main>
+</div>
+<div class="modal" id="modal" hidden><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast" hidden></div>
+<script>
+/* =======================================================================
+   RUANG USAHA \u2014 Manajemen dan Kewirausahaan (TC250606)
+   Sepuluh misi mengikuti Sub-CPMK 1\u201310 pada RPS.
+   Kasus memakai konteks D3 Teknik Komputer: jasa servis, perangkat,
+   dan layanan digital \u2014 bukan contoh dagang umum.
+   ======================================================================= */
+"use strict";
+
+var KEY = "ruangusaha.v1";
+var BLOK = { 1: "Sebelum ETS \u2014 minggu 1\u20139", 2: "Setelah ETS \u2014 minggu 11\u201317" };
+var LEVELS = [
+  { at: 0, t: "Calon Wirausaha" }, { at: 180, t: "Pemilik Ide" },
+  { at: 380, t: "Perintis Usaha" }, { at: 580, t: "Pemilik Usaha" },
+  { at: 780, t: "Pengembang Usaha" }
+];
+var BADGES = [
+  { id: "konsep", t: "Paham Konsep" }, { id: "mindset", t: "Pola Pikir Tumbuh" },
+  { id: "kreatif", t: "Pembongkar Hambatan" }, { id: "inovasi", t: "Inovator Berguna" },
+  { id: "peluang", t: "Pembaca Masalah" }, { id: "validasi", t: "Penguji Asumsi" },
+  { id: "etika", t: "Wirausaha Taat" }, { id: "kelayakan", t: "Penghitung BEP" },
+  { id: "pasar", t: "Strategi Selaras" }, { id: "bmc", t: "Perancang Model" },
+  { id: "lengkap", t: "Sepuluh Misi Tuntas" }
+];
+
+var S = null;
+function fresh() { return { v: 1, nama: "", npm: "", usaha: "", xp: 0, badges: [], m: {}, cur: null }; }
+function load() {
+  try { var r = localStorage.getItem(KEY); S = r ? JSON.parse(r) : fresh(); }
+  catch (e) { S = fresh(); }
+  if (!S || S.v !== 1) S = fresh();
+  if (!S.m) S.m = {}; if (!S.badges) S.badges = [];
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) { toast("Browser menolak menyimpan. Pakai Export jawaban."); }
+}
+function award(id) {
+  if (S.badges.indexOf(id) < 0) {
+    S.badges.push(id);
+    for (var i = 0; i < BADGES.length; i++) if (BADGES[i].id === id) { toast("Badge baru: " + BADGES[i].t); return; }
+  }
+}
+function levelOf(xp) {
+  var out = LEVELS[0];
+  for (var i = 0; i < LEVELS.length; i++) if (xp >= LEVELS[i].at) out = LEVELS[i];
+  return out;
+}
+function finish(id, score, data) {
+  var prev = S.m[id] ? S.m[id].score : 0;
+  S.m[id] = { score: Math.max(prev, Math.round(score)), attempts: ((S.m[id] && S.m[id].attempts) || 0) + 1, data: data || {}, at: Date.now() };
+  S.xp = 0;
+  for (var k in S.m) S.xp += S.m[k].score;
+  var n = 0;
+  for (var j = 0; j < MISSIONS.length; j++) if (S.m[MISSIONS[j].id]) n++;
+  if (n === MISSIONS.length) award("lengkap");
+  save(); paintRail();
+}
+
+function el(id) { return document.getElementById(id); }
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
+var tt = null;
+function toast(m) { var t = el("toast"); t.textContent = m; t.hidden = false; clearTimeout(tt); tt = setTimeout(function () { t.hidden = true; }, 3400); }
+function modal(h) { el("sheet").innerHTML = h; el("modal").hidden = false; }
+function closeModal() { el("modal").hidden = true; }
+function num(v) { var n = parseFloat(String(v).replace(/[^0-9.,\-]/g, "").replace(",", ".")); return isFinite(n) ? n : null; }
+/* "46.875" bisa berarti 46,875 atau 46875 \u2014 keduanya dicoba, supaya
+   mahasiswa tidak dihukum karena kebiasaan menulis pemisah ribuan. */
+function nums(v) {
+  var raw = String(v == null ? "" : v).replace(/[^0-9.,\-]/g, "");
+  var out = [], a = parseFloat(raw.replace(/,/g, ".")), b = parseFloat(raw.replace(/\./g, "").replace(/,/g, "."));
+  if (isFinite(a)) out.push(a);
+  if (isFinite(b) && out.indexOf(b) < 0) out.push(b);
+  return out;
+}
+function okNum(v, target, tol) {
+  var c = nums(v);
+  for (var i = 0; i < c.length; i++) if (Math.abs(c[i] - target) <= tol) return true;
+  return false;
+}
+function rp(n) {
+  if (n == null) return "\u2014";
+  var s = Math.round(Math.abs(n)).toString(), out = "", c = 0;
+  for (var i = s.length - 1; i >= 0; i--) { out = s.charAt(i) + out; if (++c % 3 === 0 && i > 0) out = "." + out; }
+  return (n < 0 ? "-Rp" : "Rp") + out;
+}
+function mk(w, got, t, why) { return { w: w, got: Math.max(0, Math.min(1, got)), t: t, why: why || "" }; }
+function total(cs) {
+  var s = 0, m = 0;
+  for (var i = 0; i < cs.length; i++) { s += cs[i].w * cs[i].got; m += cs[i].w; }
+  return m ? Math.round(s / m * 100) : 0;
+}
+function checkList(cs) {
+  return '<ul class="find">' + cs.map(function (c) {
+    var cl = c.got >= .99 ? "ok" : (c.got > 0 ? "part" : "no");
+    return '<li class="' + cl + '"><b>' + esc(c.t) + "</b>" + (c.why ? " \u2014 " + esc(c.why) : "") + "</li>";
+  }).join("") + "</ul>";
+}
+function scoreBox(sc, cap, cs) {
+  return '<section class="score"><header><span>Penilaian</span><span>' + esc(cap || "") + "</span></header>" +
+    '<div class="body"><div class="v">' + sc + '<span style="font-size:1rem;color:var(--ink-soft)">/100</span></div>' +
+    '<div class="track"><i style="width:' + sc + '%"></i></div>' + (cs ? checkList(cs) : "") + "</div></section>";
+}
+function inArr(a, v) { return a && a.indexOf(v) >= 0; }
+function near(a, b, tol) { return a != null && Math.abs(a - b) <= tol; }
+/* =======================================================================
+   DAFTAR MISI \u2014 Sub-CPMK 1\u201310
+   kind: match | inovasi | peluang | validasi | kelayakan | pasar | bmc
+   ======================================================================= */
+
+var MISSIONS = [
+{
+  id: "w1", blok: 1, no: 1, bobot: 10, sub: 1,
+  title: "Konsep dasar dan karakter wirausaha",
+  goal: "Pisahkan apa yang benar tentang wirausaha dari apa yang cuma sering diulang orang.",
+  brief:
+    "<p>Kewirausahaan bukan soal berdagang. Intinya <b>melihat peluang lalu menanggung risiko untuk mewujudkannya</b> dengan sumber daya yang belum tentu kamu miliki sekarang.</p>" +
+    "<p>Bagi mahasiswa Teknik Komputer ini penting justru karena kemampuan teknismu bukan penentu utama. Banyak lulusan bisa merakit dan memperbaiki; yang membedakan adalah kemampuan melihat mana keahlian yang orang mau bayar.</p>" +
+    "<p>Beberapa istilah yang sering tertukar: <b>wirausaha</b> membangun usaha sendiri, <b>intrapreneur</b> membangun hal baru di dalam perusahaan orang lain, dan <b>freelancer</b> menjual waktunya sendiri tanpa membangun sistem yang bisa jalan tanpa dia.</p>",
+  steps: [
+    "Baca tiap pernyataan, jangan langsung menebak yang terdengar paling positif.",
+    "Perhatikan kata mutlak seperti \u201cselalu\u201d dan \u201cpasti\u201d \u2014 biasanya penanda mitos.",
+    "Untuk tipe wirausaha, lihat sumber nilai utamanya: teknologi, jaringan, atau proses."
+  ],
+  note: "<b>Yang perlu diluruskan sejak awal:</b> wirausaha bukan orang yang suka risiko. Wirausaha adalah orang yang berusaha <i>mengecilkan</i> risiko sebelum mengambilnya. Itulah gunanya seluruh mata kuliah ini.",
+  kind: "match",
+  opts: ["Benar", "Mitos"],
+  items: [
+    { stem: "Wirausaha selalu berani mengambil risiko besar tanpa perhitungan.", ans: 1, alt: -1,
+      why: "Wirausaha yang bertahan justru menguji dulu dengan biaya kecil. Yang menyukai risiko besar tanpa hitungan namanya penjudi." },
+    { stem: "Modal uang adalah hambatan utama memulai usaha.", ans: 1, alt: -1,
+      why: "Hambatan paling sering adalah tidak ada pelanggan yang mau membayar. Banyak usaha jasa teknis bisa dimulai dengan keahlian dan satu alat." },
+    { stem: "Keahlian teknis saja tidak cukup untuk membangun usaha.", ans: 0, alt: -1,
+      why: "Benar. Keahlian membuat produknya ada; yang membuat usahanya hidup adalah pelanggan, harga, dan arus kas." },
+    { stem: "Usaha yang baik dimulai dari masalah nyata, bukan dari ide yang terdengar keren.", ans: 0, alt: -1,
+      why: "Benar. Ide tanpa masalah yang dirasakan orang hanya menjadi proyek pribadi." },
+    { stem: "Wirausaha sukses adalah bakat bawaan, tidak bisa dipelajari.", ans: 1, alt: -1,
+      why: "Karakter wirausaha terbentuk dari kebiasaan: mencari peluang, menguji, dan memperbaiki. Semuanya bisa dilatih." },
+    { stem: "Freelancer dan wirausaha adalah hal yang sama.", ans: 1, alt: -1,
+      why: "Freelancer menjual waktunya. Wirausaha membangun sistem yang tetap menghasilkan walau dia tidak mengerjakan sendiri." },
+    { stem: "Seseorang yang membangun produk baru di dalam perusahaan tempat ia bekerja disebut apa?",
+      opts: ["Intrapreneur", "Freelancer", "Investor"], ans: 0, alt: -1,
+      why: "Intrapreneur memakai sumber daya perusahaan untuk membangun sesuatu yang baru, dengan risiko yang ditanggung perusahaan." },
+    { stem: "Usaha jasa perakitan PC yang bersaing lewat kecepatan dan ketepatan pengerjaan bertumpu pada apa?",
+      opts: ["Keunggulan teknologi", "Keunggulan proses", "Keunggulan jaringan"], ans: 1, alt: 0,
+      why: "Kecepatan dan ketepatan adalah soal proses kerja, bukan soal teknologi yang dipakai. Proses lebih sulit ditiru daripada alat." }
+  ],
+  badge: "konsep"
+},
+{
+  id: "w2", blok: 1, no: 2, bobot: 10, sub: 2,
+  title: "Berpikir perubahan dan kecerdasan finansial",
+  goal: "Pisahkan aset dari liabilitas, dan pola pikir tetap dari pola pikir tumbuh.",
+  brief:
+    "<p>Kecerdasan finansial dimulai dari satu pembedaan yang sering keliru: <b>aset memasukkan uang, liabilitas mengeluarkan uang</b>. Barang bagus yang kamu pakai sendiri dan menimbulkan biaya rutin bukan aset, walau harganya mahal.</p>" +
+    "<p>Untuk usaha berbasis komputer bedanya sangat nyata. Laptop yang dipakai mengerjakan order klien memasukkan uang. Laptop gaming yang dibeli dengan cicilan untuk dipakai sendiri mengeluarkan uang setiap bulan.</p>" +
+    "<p>Sisi keduanya adalah pola pikir. <b>Pola pikir tetap</b> menganggap kemampuan sudah terberi, sehingga kegagalan berarti dirinya tidak mampu. <b>Pola pikir tumbuh</b> menganggap kemampuan bisa dibangun, sehingga kegagalan adalah data.</p>",
+  steps: [
+    "Untuk setiap barang, tanya: dalam sebulan ini, dia memasukkan uang atau mengeluarkan uang?",
+    "Jangan menilai dari harga atau gengsinya.",
+    "Pada pernyataan pola pikir, perhatikan apakah kegagalan dijelaskan sebagai sifat diri atau sebagai proses."
+  ],
+  note: "<b>Uji sederhana yang dipakai di kelas:</b> kalau kamu berhenti bekerja sebulan, barang itu masih memasukkan uang atau tidak? Kalau tidak, statusnya paling banter alat kerja \u2014 dan alat kerja yang dibeli berlebihan adalah liabilitas yang menyamar.",
+  kind: "match",
+  opts: ["Aset", "Liabilitas", "Alat kerja"],
+  items: [
+    { stem: "Laptop yang dipakai mengerjakan order desain dari klien", ans: 2, alt: 0,
+      why: "Ini alat kerja: tidak menghasilkan sendiri, tetapi diperlukan untuk menghasilkan. Menyebutnya aset membuat orang membeli terlalu banyak alat." },
+    { stem: "Dua unit PC yang disewakan ke usaha warnet tetangga, dibayar bulanan", ans: 0, alt: -1,
+      why: "Aset: memasukkan uang tanpa kamu harus bekerja setiap hari." },
+    { stem: "Motor yang dibeli dengan cicilan, dipakai untuk jalan-jalan", ans: 1, alt: -1,
+      why: "Liabilitas: cicilan, bensin, dan servis keluar setiap bulan tanpa pemasukan yang menyertainya." },
+    { stem: "Kursus sertifikasi jaringan yang langsung menaikkan tarif jasamu", ans: 0, alt: 2,
+      why: "Pengeluaran yang menaikkan penghasilan berulang berperilaku seperti aset, walau bentuknya bukan barang." },
+    { stem: "Langganan aplikasi berbayar yang tidak pernah kamu pakai", ans: 1, alt: -1,
+      why: "Liabilitas kecil yang menetes terus. Biaya langganan yang terlupakan adalah kebocoran arus kas paling umum pada usaha digital." },
+    { stem: "\u201cSaya tidak bisa jualan, memang bukan orangnya.\u201d",
+      opts: ["Pola pikir tetap", "Pola pikir tumbuh"], ans: 0, alt: -1,
+      why: "Kegagalan dijelaskan sebagai sifat diri yang tidak bisa diubah. Ini yang menghentikan orang paling awal." },
+    { stem: "\u201cPenawaran pertama saya ditolak sepuluh orang. Saya catat alasan penolakannya.\u201d",
+      opts: ["Pola pikir tetap", "Pola pikir tumbuh"], ans: 1, alt: -1,
+      why: "Penolakan diperlakukan sebagai data untuk perbaikan, bukan sebagai penilaian atas dirinya." },
+    { stem: "\u201cSaya tunggu sampai benar-benar siap dan ilmunya lengkap dulu.\u201d",
+      opts: ["Pola pikir tetap", "Pola pikir tumbuh"], ans: 0, alt: -1,
+      why: "Terdengar hati-hati, tetapi sering menjadi cara menunda tanpa batas. Kesiapan tumbuh dari mengerjakan, bukan sebelum mengerjakan." }
+  ],
+  badge: "mindset"
+},
+{
+  id: "w3", blok: 1, no: 3, bobot: 10, sub: 3,
+  title: "Berpikir kritis dan kreatif",
+  goal: "Kenali hambatan kreativitas yang sedang bekerja, lalu pilih cara membongkarnya.",
+  brief:
+    "<p>Kreativitas dalam kewirausahaan bukan bakat seni. Kreativitas adalah <b>kemampuan menghubungkan hal yang sudah ada dengan cara yang belum dicoba</b>. Karena itu bisa dilatih, dan karena itu juga bisa terhambat.</p>" +
+    "<p>Hambatan yang paling sering muncul di kelas teknik:</p>" +
+    "<p><b>Asumsi satu jawaban benar</b> \u2014 kebiasaan dari soal ujian, berbahaya di pasar.<br>" +
+    "<b>Takut salah</b> \u2014 membuat orang hanya mengusulkan yang sudah pasti diterima.<br>" +
+    "<b>Terlalu cepat menilai</b> \u2014 ide dibunuh sebelum sempat diperbaiki.<br>" +
+    "<b>Terkurung keahlian sendiri</b> \u2014 semua masalah dijawab dengan alat yang sudah dikuasai.</p>" +
+    "<p>Alat pembongkarnya sederhana: <b>SCAMPER</b> (ganti, gabung, sesuaikan, ubah fungsi, hilangkan, balik), <b>pertanyaan 5 mengapa</b> untuk menembus gejala ke akar, dan <b>penundaan penilaian</b> \u2014 kumpulkan dulu, nilai kemudian.</p>",
+  steps: [
+    "Untuk tiap situasi, tentukan hambatan mana yang sedang bekerja.",
+    "Baru pilih alat yang cocok. Alat yang salah membuat rapat ide terasa sia-sia.",
+    "Ingat bedanya: berpikir kritis menyaring, berpikir kreatif menambah. Keduanya dipakai, tapi jangan pada saat yang sama."
+  ],
+  note: "<b>Kesalahan paling sering saat brainstorming:</b> menyaring dan menambah dilakukan bersamaan. Begitu ide pertama dinilai, orang berhenti mengusulkan. Kumpulkan dua puluh ide dulu, saring setelah itu.",
+  kind: "match",
+  opts: ["Asumsi satu jawaban benar", "Takut salah", "Terlalu cepat menilai", "Terkurung keahlian sendiri"],
+  items: [
+    { stem: "Rapat ide baru berjalan lima menit, sudah ada yang berkata \u201cnggak mungkin jalan\u201d, dan ruangan langsung sepi.", ans: 2, alt: 1,
+      why: "Penilaian datang terlalu cepat, sebelum ide dikumpulkan. Pisahkan waktu mengumpulkan dari waktu menyaring." },
+    { stem: "Semua masalah pelanggan dijawab dengan \u201cbikin aplikasi saja\u201d, termasuk yang sebenarnya soal penjadwalan.", ans: 3, alt: 0,
+      why: "Keahlian yang kuat membatasi cara melihat. Kalau yang kamu punya cuma palu, semua masalah terlihat seperti paku." },
+    { stem: "Mahasiswa mencari satu solusi \u201cyang paling benar\u201d untuk soal peluang usaha, seperti mengerjakan soal ujian.", ans: 0, alt: -1,
+      why: "Masalah pasar punya banyak jawaban yang sama-sama bisa jalan. Yang menentukan adalah mana yang kamu uji lebih dulu." },
+    { stem: "Ada yang punya ide tetapi diam saja karena khawatir dianggap tidak masuk akal oleh dosen dan teman.", ans: 1, alt: 2,
+      why: "Takut salah membuat ide terbaik tidak pernah terdengar. Ini yang membuat aturan \u201ctidak ada ide yang dinilai dulu\u201d penting." },
+    { stem: "Pelanggan mengeluh servis lama. Untuk menemukan sebab yang sebenarnya, alat yang paling tepat adalah:",
+      opts: ["SCAMPER", "Lima kali bertanya mengapa", "Menunda penilaian"], ans: 1, alt: -1,
+      why: "Keluhan adalah gejala. Bertanya mengapa berulang kali membawa kamu ke akar, misalnya ketersediaan suku cadang." },
+    { stem: "Kamu ingin membuat variasi baru dari jasa servis yang sudah ada. Alat yang paling tepat adalah:",
+      opts: ["SCAMPER", "Lima kali bertanya mengapa", "Analisis pesaing"], ans: 0, alt: -1,
+      why: "SCAMPER dipakai untuk menghasilkan variasi dari sesuatu yang sudah ada: digabung, dibalik, dihilangkan sebagiannya." },
+    { stem: "Pada tahap mengumpulkan ide, yang seharusnya dilakukan adalah:",
+      opts: ["Menyaring ide lemah secepatnya", "Menahan penilaian sampai ide terkumpul", "Memilih satu ide terbaik langsung"], ans: 1, alt: -1,
+      why: "Jumlah dulu, mutu kemudian. Ide bagus sering muncul sebagai perbaikan dari ide yang awalnya terdengar buruk." }
+  ],
+  badge: "kreatif"
+},
+{
+  id: "w4", blok: 1, no: 4, bobot: 10, sub: 4,
+  title: "Menerapkan inovasi pada produk",
+  goal: "Pilih tiga perubahan pada jasa servis komputer yang benar-benar mengubah nilai bagi pelanggan.",
+  brief:
+    "<p>Usahamu: <b>jasa servis dan perawatan komputer</b> di sekitar kampus. Jasa seperti ini ada banyak, harganya mirip, dan pelanggan memilih berdasarkan kedekatan.</p>" +
+    "<p>Inovasi yang berguna menyelesaikan <b>kesulitan yang benar-benar dirasakan pelanggan</b>. Inovasi yang sia-sia hanya mengubah tampilan, terasa modern, tetapi tidak mengubah alasan orang memilih.</p>" +
+    "<p>Untuk jasa servis, kesulitan pelanggan biasanya tiga hal: <b>tidak tahu kapan selesai</b>, <b>takut harga membengkak di tengah jalan</b>, dan <b>tidak bisa kehilangan perangkat karena dipakai kuliah atau kerja</b>.</p>" +
+    "<p>Pilih tiga perubahan. Yang dinilai bukan seberapa canggih, tetapi apakah ia menjawab salah satu dari kesulitan itu.</p>",
+  steps: [
+    "Tulis dulu kesulitan pelanggan, jangan mulai dari daftar fitur.",
+    "Untuk setiap pilihan, tanya: kalau ini ada, apakah orang mau pindah dari tukang servis langganannya?",
+    "Waspadai perubahan yang hanya membuatmu terlihat lebih modern."
+  ],
+  note: "<b>Penanda inovasi kosong:</b> kalau manfaatnya hanya bisa dijelaskan dengan kata \u201clebih kekinian\u201d atau \u201clebih profesional\u201d, tanpa menyebut waktu, biaya, atau risiko yang berubah, biasanya itu belum inovasi.",
+  kind: "inovasi",
+  pick: 3,
+  opsi: [
+    { k: "a", t: "Garansi pengerjaan 24 jam, lewat dari itu biaya jasa gratis", val: 1, why: "Menjawab langsung ketidakpastian waktu, dan berani menanggung risikonya sendiri. Ini janji yang sulit ditiru setengah-setengah." },
+    { k: "b", t: "Logo dan kemasan baru yang lebih modern", val: 0, why: "Mengubah tampilan, tidak mengubah alasan orang memilih. Berguna, tapi bukan inovasi nilai." },
+    { k: "c", t: "Diagnosis dan estimasi biaya tertulis sebelum dikerjakan, tanpa biaya tambahan di tengah jalan", val: 1, why: "Menjawab kekhawatiran harga membengkak. Kepastian biaya sering lebih dihargai daripada harga murah." },
+    { k: "d", t: "Laptop pengganti sementara selama perangkat pelanggan diperbaiki", val: 1, why: "Menjawab kesulitan terberat mahasiswa dan pekerja: tidak bisa kehilangan perangkat. Ini alasan nyata untuk berpindah." },
+    { k: "e", t: "Akun media sosial dengan konten harian", val: 0, why: "Saluran promosi, bukan perubahan nilai. Promosi mempercepat penyebaran, tetapi tidak menciptakan alasan memilih." },
+    { k: "f", t: "Antar-jemput perangkat ke kos atau kantor", val: 1, why: "Menghapus hambatan jarak dan waktu. Untuk jasa di sekitar kampus, ini sering menjadi pembeda paling kuat." },
+    { k: "g", t: "Mengganti kaus seragam teknisi dengan bahan lebih bagus", val: 0, why: "Menaikkan kesan rapi, tidak mengubah waktu, biaya, atau risiko yang dirasakan pelanggan." },
+    { k: "h", t: "Laporan kondisi perangkat berisi foto sebelum dan sesudah beserta saran perawatan", val: 1, why: "Mengubah jasa sekali pakai menjadi hubungan berkelanjutan, dan membuat pekerjaan yang tidak terlihat jadi terlihat." }
+  ],
+  badge: "inovasi"
+},
+{
+  id: "w5", blok: 1, no: 5, bobot: 10, sub: 5,
+  title: "Peluang di balik masalah sehari-hari",
+  goal: "Nilai lima masalah nyata di sekitar kampus, lalu tentukan mana yang paling layak dikerjakan.",
+  brief:
+    "<p>Peluang usaha tidak dicari di daftar \u201cide bisnis menjanjikan\u201d. Peluang ada di keluhan yang kamu dengar berulang tanpa ada yang menyelesaikannya.</p>" +
+    "<p>Tidak semua masalah adalah peluang. Masalah menjadi peluang kalau tiga hal terpenuhi sekaligus:</p>" +
+    "<p><b>Frekuensi</b> \u2014 seberapa sering masalah itu muncul.<br>" +
+    "<b>Tingkat kesakitan</b> \u2014 seberapa mengganggu akibatnya.<br>" +
+    "<b>Kesediaan membayar</b> \u2014 apakah orang mau mengeluarkan uang, bukan hanya mengeluh.</p>" +
+    "<p>Nilai tiap masalah 1 sampai 3 untuk setiap hal itu. Masalah yang sering terjadi tapi tidak ada yang mau bayar bukan peluang usaha \u2014 itu pekerjaan sukarela.</p>",
+  steps: [
+    "Nilai tiap masalah pada tiga kolom, jujur berdasarkan pengamatanmu sendiri.",
+    "Jumlahkan, lalu lihat yang tertinggi.",
+    "Pilih satu untuk dikerjakan. Perhatikan: yang paling menyakitkan belum tentu yang paling ada uangnya."
+  ],
+  note: "<b>Kolom yang paling menentukan adalah kesediaan membayar,</b> dan itu yang paling sering dinilai terlalu tinggi oleh mahasiswa. \u201cPasti banyak yang mau\u201d bukan penilaian, itu harapan. Di misi berikutnya kita uji dengan cara yang lebih keras.",
+  kind: "peluang",
+  kriteria: ["Frekuensi", "Tingkat kesakitan", "Kesediaan membayar"],
+  masalah: [
+    { t: "Mahasiswa kehilangan data tugas karena penyimpanan rusak dan tidak punya salinan", v: [2, 3, 3],
+      why: "Tidak terlalu sering, tetapi akibatnya berat dan orang rela membayar untuk pemulihan data atau pencadangan otomatis." },
+    { t: "Laptop lambat karena penuh dan tidak pernah dirawat", v: [3, 2, 2],
+      why: "Sangat sering dan cukup mengganggu, tetapi banyak yang memilih mengerjakan sendiri karena panduannya mudah dicari." },
+    { t: "Wi-Fi kos sering terputus saat banyak yang memakai", v: [3, 3, 2],
+      why: "Sering dan menyakitkan, tetapi yang berhak membayar perbaikannya biasanya pemilik kos, bukan penghuninya. Perhatikan siapa pemegang uangnya." },
+    { t: "Sulit mencari teknisi yang mau datang di akhir pekan", v: [2, 2, 3],
+      why: "Tidak sering, tetapi ketika terjadi orang bersedia membayar lebih. Peluang pada harga premium, bukan pada volume." },
+    { t: "Kabel dan pengisi daya sering tertinggal di ruang kelas", v: [3, 1, 1],
+      why: "Sering terjadi tetapi akibatnya kecil dan hampir tidak ada yang mau membayar untuk menyelesaikannya. Masalah nyata, bukan peluang usaha." }
+  ],
+  badge: "peluang"
+},
+{
+  id: "w6", blok: 1, no: 6, bobot: 10, sub: 6,
+  title: "Menguji peluang usaha baru",
+  goal: "Kamu punya 100 satuan usaha untuk menguji asumsi. Belanjakan di tempat yang benar-benar membuktikan sesuatu.",
+  brief:
+    "<p>Kamu memilih satu peluang. Sebelum berhenti kuliah dan menjual motor untuk modal, ada pertanyaan yang harus dijawab: <b>apa buktinya orang mau membayar?</b></p>" +
+    "<p>Semua cara pengujian tidak sama kuatnya. Ada yang membuat kamu merasa yakin tanpa membuktikan apa pun, dan justru cara itu yang paling nyaman dilakukan.</p>" +
+    "<p>Urutan kekuatan bukti, dari paling lemah ke paling kuat: <b>pendapat orang dekat</b>, <b>kata-kata calon pelanggan</b>, <b>tanda minat seperti klik atau pendaftaran</b>, lalu <b>uang yang benar-benar dibayarkan</b>.</p>" +
+    "<p>Bagi 100 satuan usaha. Setiap cara punya titik jenuh, dan beberapa punya syarat minimum sebelum menghasilkan apa pun.</p>",
+  steps: [
+    "Habiskan seluruh 100 satuan. Usaha yang tidak dipakai tidak membuktikan apa-apa.",
+    "Perhatikan titik jenuh tiap cara. Menambah terus di satu tempat hampir tidak menambah bukti.",
+    "Beberapa cara butuh minimum tertentu: prototipe dan pra-pesan tidak bisa dikerjakan setengah-setengah.",
+    "Bandingkan dua strategi berbeda sebelum dikunci."
+  ],
+  note: "<b>Yang paling sering terjadi:</b> seluruh usaha dipakai bertanya ke teman dan keluarga, lalu disimpulkan pasarnya besar. Mereka menjawab untuk menyenangkanmu, bukan untuk menguji usahamu.",
+  kind: "validasi",
+  cara: [
+    { k: "teman", nm: "Minta pendapat teman dan keluarga", note: "penuh di 10 satuan \u00b7 nilai pembuktian paling rendah", sat: 10, cap: 15 },
+    { k: "sekunder", nm: "Baca data dan laporan pasar yang sudah ada", note: "penuh di 15 satuan \u00b7 membantu memahami ukuran, bukan minat", sat: 15, cap: 35 },
+    { k: "pesaing", nm: "Pelajari pesaing dan harga yang berlaku", note: "penuh di 15 satuan", sat: 15, cap: 45 },
+    { k: "wawancara", nm: "Wawancara calon pelanggan satu per satu", note: "penuh di 25 satuan \u00b7 baru berguna mulai 10 satuan", sat: 25, cap: 70, min: 10 },
+    { k: "proto", nm: "Bangun prototipe atau layanan versi paling sederhana", note: "penuh di 30 satuan \u00b7 baru berguna mulai 15 satuan", sat: 30, cap: 80, min: 15 },
+    { k: "iklan", nm: "Uji minat dengan iklan atau halaman pendaftaran", note: "penuh di 20 satuan", sat: 20, cap: 60 },
+    { k: "prapesan", nm: "Buka pra-pesan dan terima pembayaran pertama", note: "penuh di 25 satuan \u00b7 baru berguna mulai 15 satuan \u00b7 bukti terkuat", sat: 25, cap: 100, min: 15 }
+  ],
+  badge: "validasi"
+},
+{
+  id: "w7", blok: 2, no: 7, bobot: 10, sub: 7,
+  title: "Etika, izin, dan aspek hukum",
+  goal: "Tujuh keputusan yang akan kamu hadapi begitu usahanya benar-benar jalan.",
+  brief:
+    "<p>Usaha kecil sering menunda urusan legal karena terasa merepotkan dan belum perlu. Masalahnya, hampir semua urusan itu lebih murah diselesaikan saat usaha masih kecil.</p>" +
+    "<p>Yang perlu kamu kenali namanya, bukan pasalnya:</p>" +
+    "<p><b>NIB</b> \u2014 Nomor Induk Berusaha, identitas usaha yang diurus lewat sistem perizinan berusaha daring.<br>" +
+    "<b>NPWP usaha</b> \u2014 identitas pajak, terpisah dari NPWP pribadi.<br>" +
+    "<b>Merek</b> \u2014 didaftarkan agar nama usahamu tidak dipakai orang lain; hak muncul dari pendaftaran, bukan dari siapa yang memakai lebih dulu.<br>" +
+    "<b>Hak cipta</b> \u2014 melekat otomatis pada karya, termasuk kode program yang kamu tulis sendiri.</p>" +
+    "<p>Di bidang komputer ada dua hal yang sering dianggap kecil tetapi berat akibatnya: <b>perangkat lunak tanpa lisensi</b> dan <b>data pelanggan</b>.</p>",
+  steps: [
+    "Baca setiap situasi sebagai keputusan yang akan kamu tanda tangani.",
+    "Pilih yang bisa kamu pertahankan di depan pelanggan, dosen, dan pemeriksa sekaligus.",
+    "Kalau dua pilihan terasa sama-sama benar, pilih yang lebih terbuka."
+  ],
+  note: "<b>Prinsip yang berlaku di hampir semua kasus:</b> yang membuat usaha kecil hancur bukan denda, tetapi hilangnya kepercayaan. Pelanggan yang datanya bocor tidak kembali, dan ia bercerita ke orang lain.",
+  kind: "match",
+  opts: ["A", "B", "C"],
+  items: [
+    { stem: "Usaha servismu mulai jalan dan sudah punya pelanggan tetap. Soal NIB:",
+      opts: ["Urus sekarang walau usaha masih kecil", "Tunggu sampai penghasilan besar", "Tidak perlu karena usaha jasa"], ans: 0, alt: -1,
+      why: "NIB diurus daring tanpa biaya dan membuka akses ke pelanggan instansi, pembiayaan, serta kerja sama resmi. Menundanya tidak menghemat apa pun." },
+    { stem: "Pelanggan minta dipasangkan perangkat lunak berbayar dari unduhan bajakan karena lebih murah:",
+      opts: ["Pasang, itu permintaan pelanggan", "Tolak dan tawarkan alternatif legal atau berlangganan", "Pasang tetapi jangan dicatat"], ans: 1, alt: -1,
+      why: "Memasang perangkat bajakan memindahkan risiko hukum ke usahamu, dan menjadikan pelanggaran itu bagian dari layananmu. Alternatif sah hampir selalu ada." },
+    { stem: "Saat memperbaiki laptop, kamu melihat berkas pribadi pelanggan:",
+      opts: ["Boleh dilihat selama tidak disebarkan", "Jangan dibuka, dan sampaikan batas ini sejak awal", "Salin dulu untuk cadangan tanpa memberi tahu"], ans: 1, alt: -1,
+      why: "Data pelanggan bukan milikmu, walau perangkatnya ada di tanganmu. Pencadangan pun harus dengan izin dan sepengetahuan pemiliknya." },
+    { stem: "Nama usahamu mulai dikenal. Ada usaha lain memakai nama yang sama:",
+      opts: ["Nama yang lebih dulu dipakai otomatis dilindungi", "Perlindungan muncul dari pendaftaran merek", "Cukup diumumkan di media sosial"], ans: 1, alt: -1,
+      why: "Perlindungan merek lahir dari pendaftaran. Banyak usaha kehilangan namanya sendiri karena terlambat mendaftar." },
+    { stem: "Kamu menulis sendiri program kasir untuk dijual ke beberapa toko:",
+      opts: ["Hak cipta melekat otomatis pada karyamu", "Harus didaftarkan dulu baru punya hak", "Tidak ada perlindungan untuk program"], ans: 0, alt: -1,
+      why: "Hak cipta melekat sejak karya diwujudkan. Pencatatan berguna sebagai bukti kalau kelak dipersoalkan, tetapi bukan syarat munculnya hak." },
+    { stem: "Pesaing menjual jasa dengan mengaku bergaransi resmi pabrik padahal tidak:",
+      opts: ["Ikut mengaku hal serupa agar setara", "Bersaing dengan janji yang bisa kamu buktikan", "Sebarkan tuduhan di media sosial"], ans: 1, alt: -1,
+      why: "Ikut berbohong menyamakan posisimu dengan mereka dan menghapus satu-satunya keunggulan yang bertahan lama, yaitu bisa dipercaya." },
+    { stem: "Penghasilan usaha masih kecil. Soal pajak:",
+      opts: ["Tidak perlu dicatat selama masih kecil", "Catat pemasukan sejak awal dan pelajari ketentuannya", "Urus nanti kalau ditagih"], ans: 1, alt: -1,
+      why: "Pencatatan sejak awal jauh lebih mudah daripada menyusun ulang setahun kemudian, dan catatan itu juga yang dipakai untuk mengajukan pembiayaan." }
+  ],
+  badge: "etika"
+},
+{
+  id: "w8", blok: 2, no: 8, bobot: 10, sub: 8,
+  title: "Studi kelayakan dan titik pulang pokok",
+  goal: "Hitung sendiri: berapa unit per bulan sebelum usahamu berhenti merugi.",
+  brief:
+    "<p>Rencana usaha yang tidak bisa dihitung bukan rencana, hanya harapan yang ditulis rapi. Bagian ini yang paling sering dilewati mahasiswa, padahal perhitungannya tidak rumit.</p>" +
+    "<p>Rencana usahamu: <b>jasa servis dan perakitan komputer</b>.</p>" +
+    "<p>Modal awal <b>Rp35.000.000</b> \u2014 peralatan Rp20 juta, sewa dibayar di muka Rp9 juta, persediaan awal Rp6 juta.<br>" +
+    "Harga jasa rata-rata <b>Rp250.000</b> per unit.<br>" +
+    "Biaya bahan dan suku cadang <b>Rp90.000</b> per unit.<br>" +
+    "Biaya tetap <b>Rp7.500.000</b> per bulan \u2014 sewa, gaji satu teknisi, listrik dan internet.</p>" +
+    "<p>Tiga rumus yang perlu kamu pakai:</p>" +
+    "<p><b>Margin kontribusi</b> = harga \u2212 biaya variabel per unit<br>" +
+    "<b>BEP unit</b> = biaya tetap \u00f7 margin kontribusi<br>" +
+    "<b>Payback period</b> = modal awal \u00f7 laba bersih per bulan</p>",
+  steps: [
+    "Hitung margin kontribusi dulu. Semua perhitungan lain bergantung padanya.",
+    "Bagi biaya tetap dengan margin kontribusi untuk mendapat BEP unit.",
+    "Hitung laba pada 70 unit per bulan, lalu bagi modal awal dengan laba itu.",
+    "Terakhir jawab pertanyaan tafsirnya \u2014 angka tanpa tafsir tidak berguna di sidang proposal."
+  ],
+  note: "<b>Kesalahan paling umum:</b> membagi biaya tetap dengan harga jual, bukan dengan margin kontribusi. Hasilnya terlihat jauh lebih ringan daripada kenyataan, dan proposal yang memakai angka itu akan dipertanyakan.",
+  kind: "kelayakan",
+  data: { modal: 35000000, harga: 250000, variabel: 90000, tetap: 7500000, aktual: 70 },
+  soal: [
+    { k: "mk", t: "Margin kontribusi per unit (Rp)", jwb: 160000, tol: 0, why: "250.000 \u2212 90.000 = 160.000. Inilah yang tersisa dari setiap unit untuk menutup biaya tetap." },
+    { k: "bep", t: "BEP dalam unit per bulan (boleh desimal)", jwb: 46.875, tol: 0.25, why: "7.500.000 \u00f7 160.000 = 46,875 unit. Dalam praktiknya dibulatkan ke atas menjadi 47 unit." },
+    { k: "bepr", t: "BEP dalam rupiah per bulan", jwb: 11718750, tol: 100000, why: "46,875 \u00d7 250.000 = 11.718.750. Ini omzet minimum bulanan agar tidak merugi." },
+    { k: "laba", t: "Laba bersih per bulan pada 70 unit (Rp)", jwb: 3700000, tol: 0, why: "(70 \u00d7 160.000) \u2212 7.500.000 = 11.200.000 \u2212 7.500.000 = 3.700.000." },
+    { k: "pb", t: "Payback period (bulan, boleh desimal)", jwb: 9.46, tol: 0.4, why: "35.000.000 \u00f7 3.700.000 = 9,46 bulan. Modal kembali kurang dari setahun kalau 70 unit tercapai." }
+  ],
+  tafsir: [
+    { stem: "Kalau sebulan hanya dapat 40 unit, apa yang terjadi?",
+      opts: ["Masih untung karena di bawah BEP", "Rugi karena di bawah BEP 47 unit", "Tidak untung tidak rugi"], ans: 1,
+      why: "40 unit \u00d7 160.000 = 6.400.000, sedangkan biaya tetap 7.500.000. Rugi 1.100.000 sebulan." },
+    { stem: "Sewa naik menjadi Rp9.000.000 per bulan. Apa akibatnya pada BEP?",
+      opts: ["BEP unit naik", "BEP unit turun", "BEP tidak berubah"], ans: 0,
+      why: "Biaya tetap naik, sementara margin kontribusi per unit tetap, sehingga unit yang harus terjual bertambah." },
+    { stem: "Cara paling cepat menurunkan BEP tanpa menaikkan harga adalah:",
+      opts: ["Menambah promosi", "Menekan biaya bahan per unit", "Menambah jam kerja"], ans: 1,
+      why: "Menekan biaya variabel memperbesar margin kontribusi, sehingga biaya tetap tertutup oleh lebih sedikit unit." }
+  ],
+  badge: "kelayakan"
+},
+{
+  id: "w9", blok: 2, no: 9, bobot: 10, sub: 9,
+  title: "Strategi pemasaran yang selaras",
+  goal: "Pilih segmen, posisi, dan bauran pemasaran yang tidak saling bertentangan.",
+  brief:
+    "<p>Pemasaran bukan promosi. Promosi hanya salah satu bagiannya, dan bagian yang paling percuma kalau tiga hal sebelumnya belum ditentukan.</p>" +
+    "<p><b>STP</b> \u2014 Segmentasi (membagi pasar), Targeting (memilih yang dilayani), Positioning (menentukan bagaimana kamu diingat).</p>" +
+    "<p>Baru setelah itu bauran pemasaran: <b>produk, harga, tempat, dan promosi</b>. Yang dinilai di misi ini bukan seberapa bagus tiap pilihan sendiri-sendiri, tetapi apakah semuanya <b>saling mendukung</b>.</p>" +
+    "<p>Contoh yang tidak selaras: memposisikan diri sebagai layanan paling cepat dan bergaransi, tetapi memasang harga termurah dan melayani dari kos tanpa tempat tetap. Janjinya tidak mungkin ditepati dengan struktur seperti itu.</p>",
+  steps: [
+    "Pilih satu segmen. Melayani semua orang berarti tidak menonjol bagi siapa pun.",
+    "Tentukan posisi yang ingin diingat pelanggan.",
+    "Pilih harga, tempat, dan promosi yang memungkinkan posisi itu ditepati.",
+    "Periksa hasilnya: setiap pertentangan akan ditunjukkan beserta sebabnya."
+  ],
+  note: "<b>Uji selaras paling sederhana:</b> tulis posisimu dalam satu kalimat, lalu tanya untuk setiap keputusan \u2014 apakah ini membuat kalimat itu lebih mudah ditepati, atau lebih sulit?",
+  kind: "pasar",
+  grup: [
+    { k: "seg", t: "Segmen yang dilayani", opt: [
+      { k: "s1", t: "Mahasiswa di sekitar kampus" },
+      { k: "s2", t: "Kantor dan instansi kecil" },
+      { k: "s3", t: "Semua orang yang punya komputer" }] },
+    { k: "pos", t: "Posisi yang ingin diingat", opt: [
+      { k: "p1", t: "Paling murah di kawasan ini" },
+      { k: "p2", t: "Paling cepat dan bergaransi" },
+      { k: "p3", t: "Paling bisa dipercaya untuk data penting" }] },
+    { k: "har", t: "Harga", opt: [
+      { k: "h1", t: "Di bawah harga pasar" },
+      { k: "h2", t: "Setara pasar" },
+      { k: "h3", t: "Di atas pasar dengan jaminan tertulis" }] },
+    { k: "tmp", t: "Tempat dan saluran", opt: [
+      { k: "t1", t: "Dikerjakan dari kos, tanpa tempat tetap" },
+      { k: "t2", t: "Kios kecil dekat kampus dengan antar-jemput" },
+      { k: "t3", t: "Kunjungan ke tempat pelanggan sesuai perjanjian" }] },
+    { k: "pro", t: "Promosi", opt: [
+      { k: "r1", t: "Sebar potongan harga besar-besaran" },
+      { k: "r2", t: "Rekomendasi pelanggan dan kerja sama himpunan mahasiswa" },
+      { k: "r3", t: "Penawaran langsung ke bagian umum kantor" }] }
+  ],
+  badge: "pasar"
+},
+{
+  id: "w10", blok: 2, no: 10, bobot: 10, sub: 10,
+  title: "Business Model Canvas",
+  goal: "Tempatkan sebelas pernyataan ke blok yang benar, lalu periksa apakah modelnya masuk akal.",
+  brief:
+    "<p>Business Model Canvas memuat sembilan blok yang menjelaskan bagaimana usaha menciptakan, menyampaikan, dan menangkap nilai. Gunanya bukan mengisi kotak, tetapi memeriksa apakah antarbagiannya masih saling mendukung.</p>" +
+    "<p><b>Customer Segments</b> siapa yang dilayani \u00b7 <b>Value Propositions</b> nilai yang ditawarkan \u00b7 <b>Channels</b> cara menjangkau \u00b7 <b>Customer Relationships</b> cara menjaga hubungan \u00b7 <b>Revenue Streams</b> dari mana uang masuk \u00b7 <b>Key Resources</b> sumber daya utama \u00b7 <b>Key Activities</b> kegiatan utama \u00b7 <b>Key Partners</b> mitra utama \u00b7 <b>Cost Structure</b> struktur biaya.</p>" +
+    "<p>Yang paling sering tertukar: <b>Channels</b> dengan <b>Customer Relationships</b>, serta <b>Key Resources</b> dengan <b>Key Activities</b>. Saluran adalah jalan menjangkau; hubungan adalah cara memperlakukan. Sumber daya adalah yang kamu miliki; kegiatan adalah yang kamu kerjakan.</p>",
+  steps: [
+    "Tempatkan tiap pernyataan ke bloknya.",
+    "Perhatikan kata kerja: kalau pernyataannya sesuatu yang dikerjakan, itu kegiatan, bukan sumber daya.",
+    "Setelah selesai, jawab pemeriksaan keselarasan model."
+  ],
+  note: "<b>Kanvas yang benar isinya belum tentu model yang sehat.</b> Karena itu bagian terakhir memeriksa hubungan antarblok: pendapatan harus datang dari segmen yang kamu layani, dan biaya terbesar harus menopang nilai yang kamu janjikan.",
+  kind: "bmc",
+  blokNama: ["Customer Segments", "Value Propositions", "Channels", "Customer Relationships",
+    "Revenue Streams", "Key Resources", "Key Activities", "Key Partners", "Cost Structure"],
+  kartu: [
+    { t: "Mahasiswa dan staf di sekitar kampus", b: 0 },
+    { t: "Perbaikan selesai 24 jam dengan biaya pasti sejak awal", b: 1 },
+    { t: "Kios dekat kampus dan pesan lewat WhatsApp", b: 2 },
+    { t: "Laporan kondisi perangkat dan pengingat perawatan berkala", b: 3 },
+    { t: "Ongkos jasa per unit dan paket perawatan langganan", b: 4 },
+    { t: "Dua teknisi bersertifikat dan peralatan diagnostik", b: 5 },
+    { t: "Diagnosis, perbaikan, dan pengendalian mutu hasil kerja", b: 6 },
+    { t: "Pemasok suku cadang dan himpunan mahasiswa jurusan", b: 7 },
+    { t: "Sewa kios, gaji teknisi, listrik dan internet", b: 8 },
+    { t: "Persediaan suku cadang yang siap pakai", b: 5 },
+    { t: "Antar-jemput perangkat ke kos dan kantor", b: 2 }
+  ],
+  cek: [
+    { stem: "Pendapatan utamanya ongkos jasa per unit. Kalau segmen yang dilayani adalah mahasiswa, risiko terbesar model ini adalah:",
+      opts: ["Harga sulit dinaikkan sehingga margin tipis", "Tidak ada yang butuh jasa servis", "Biaya sewa menjadi tidak relevan"], ans: 0,
+      why: "Segmen mahasiswa peka harga. Karena itu paket langganan dan pelanggan kantor penting sebagai penyeimbang." },
+    { stem: "Janji \u201cselesai 24 jam\u201d paling bergantung pada blok mana?",
+      opts: ["Key Partners dan Key Resources", "Customer Relationships", "Cost Structure"], ans: 0,
+      why: "Tanpa persediaan suku cadang dan pemasok yang cepat, janji 24 jam tidak mungkin ditepati. Janji nilai selalu menuntut sumber daya pendukung." },
+    { stem: "\u201cAntar-jemput perangkat\u201d menaikkan biaya. Itu bisa dibenarkan kalau:",
+      opts: ["Dia menaikkan jumlah atau harga pesanan", "Pesaing juga melakukannya", "Terlihat lebih profesional"], ans: 0,
+      why: "Setiap biaya tambahan di kanvas harus bisa ditunjuk pengaruhnya ke pendapatan atau ke nilai yang dijanjikan." }
+  ],
+  badge: "bmc"
+}
+];
+
+function missionById(id) {
+  for (var i = 0; i < MISSIONS.length; i++) if (MISSIONS[i].id === id) return MISSIONS[i];
+  return null;
+}
+function unlocked(i) { return i === 0 ? true : !!S.m[MISSIONS[i - 1].id]; }
+/* =======================================================================
+   TAMPILAN MISI
+   ======================================================================= */
+var cur = null;
+
+function paintRail() {
+  var lv = levelOf(S.xp), nx = null;
+  for (var i = 0; i < LEVELS.length; i++) if (LEVELS[i].at > S.xp) { nx = LEVELS[i]; break; }
+  var pct = nx ? Math.round((S.xp - lv.at) / (nx.at - lv.at) * 100) : 100;
+  el("who").innerHTML = "<b>" + esc(lv.t) + "</b><em>" + S.xp + " poin" +
+    (nx ? " \u00b7 " + (nx.at - S.xp) + " lagi ke " + nx.t : " \u00b7 tertinggi") + "</em>" +
+    (S.nama ? "<em>" + esc(S.nama) + (S.npm ? " \u00b7 " + esc(S.npm) : "") + "</em>" : "") +
+    '<div class="xp"><i style="width:' + pct + '%"></i></div>' +
+    '<div class="badges">' + BADGES.map(function (b) {
+      return '<span class="badge' + (inArr(S.badges, b.id) ? " on" : "") + '">' + esc(b.t) + "</span>";
+    }).join("") + "</div>";
+
+  var html = "", blok = 0;
+  for (var j = 0; j < MISSIONS.length; j++) {
+    var m = MISSIONS[j];
+    if (m.blok !== blok) {
+      if (blok) html += "</ul>";
+      blok = m.blok;
+      html += '<div class="blok">' + esc(BLOK[blok]) + '</div><ul class="mlist">';
+    }
+    var dn = !!S.m[m.id], open = unlocked(j);
+    html += '<li><button data-go="' + m.id + '" data-n="' + m.no + '" class="' + (dn ? "done" : "") +
+      (open ? "" : " locked") + '"' + (open ? "" : " disabled") + (cur === m.id ? ' aria-current="true"' : "") + ">" +
+      esc(m.title) + ' <span class="w">Sub-CPMK ' + m.sub + (dn ? " \u00b7 " + S.m[m.id].score : "") + "</span></button></li>";
+  }
+  html += "</ul>";
+  el("nav").innerHTML = html;
+}
+
+function shell(m, task) {
+  return '<div class="tag">' + esc(BLOK[m.blok]) + " \u00b7 Sub-CPMK " + m.sub + " \u00b7 bobot " + m.bobot + "%</div>" +
+    '<div class="mt"><span class="no">Misi ' + m.no + "</span><h2>" + esc(m.title) + "</h2></div>" +
+    '<p class="goal">' + esc(m.goal) + "</p>" +
+    '<div class="brief">' + m.brief + "</div>" +
+    "<h3>Langkah kerja</h3><ol class=\"steps\">" + m.steps.map(function (s) { return "<li>" + s + "</li>"; }).join("") + "</ol>" +
+    '<div class="note">' + m.note + "</div>" + task;
+}
+function nextBtn(m) {
+  var i = MISSIONS.indexOf(m), n = MISSIONS[i + 1];
+  return '<div class="btnrow" id="after" hidden>' +
+    (n ? '<button class="btn ghost" id="bNext">Misi ' + n.no + ": " + esc(n.title) + "</button>"
+       : '<button class="btn ghost" id="bRapor">Lihat rapor akhir</button>') + "</div>";
+}
+function wireNext(m) {
+  var i = MISSIONS.indexOf(m), n = MISSIONS[i + 1];
+  if (el("bNext") && n) el("bNext").onclick = function () { go(n.id); };
+  if (el("bRapor")) el("bRapor").onclick = rapor;
+}
+function done(m, sc, data, at) {
+  finish(m.id, sc, data);
+  if (m.badge && sc >= (at || 75)) award(m.badge);
+  save(); paintRail();
+  el("after").hidden = false; wireNext(m);
+}
+function go(id) {
+  cur = id; S.cur = id; save();
+  var m = missionById(id); if (!m) return;
+  var f = { match: vMatch, inovasi: vInov, peluang: vPel, validasi: vVal, kelayakan: vKel, pasar: vPas, bmc: vBmc }[m.kind];
+  el("stage").innerHTML = shell(m, f.view(m));
+  paintRail(); window.scrollTo(0, 0);
+  f.wire(m);
+}
+
+/* =========================== MATCH (misi 1,2,3,7) =========================== */
+var vMatch = {
+  view: function (m) {
+    var d = (S.m[m.id] && S.m[m.id].data && S.m[m.id].data.pick) || [];
+    return '<section class="card" id="qs">' + m.items.map(function (it, i) {
+      var opts = it.opts || m.opts;
+      return '<div class="q" data-i="' + i + '"><p class="stem"><b>' + (i + 1) + ".</b> " + esc(it.stem) + '</p><div class="opts">' +
+        opts.map(function (o, j) {
+          return '<button data-q="' + i + '" data-o="' + j + '" aria-pressed="' + (d[i] === j ? "true" : "false") + '">' + esc(o) + "</button>";
+        }).join("") + '</div><p class="why" hidden></p></div>';
+    }).join("") + "</section>" +
+      '<div class="btnrow"><button class="btn go" id="bCek">Periksa jawaban</button></div><div id="out"></div>' + nextBtn(m);
+  },
+  wire: function (m) {
+    var pick = (S.m[m.id] && S.m[m.id].data && S.m[m.id].data.pick) ? S.m[m.id].data.pick.slice() : [];
+    el("qs").onclick = function (e) {
+      var b = e.target.closest("button[data-q]"); if (!b) return;
+      var qi = +b.getAttribute("data-q"); pick[qi] = +b.getAttribute("data-o");
+      var row = el("qs").querySelectorAll('.q[data-i="' + qi + '"] .opts button');
+      for (var i = 0; i < row.length; i++) row[i].setAttribute("aria-pressed", row[i] === b ? "true" : "false");
+    };
+    el("bCek").onclick = function () {
+      var got = 0, cs = [];
+      for (var i = 0; i < m.items.length; i++) {
+        var it = m.items[i], bs = el("qs").querySelectorAll('.q[data-i="' + i + '"] .opts button');
+        var v = pick[i], g = v === it.ans ? 1 : (it.alt >= 0 && v === it.alt ? .5 : 0);
+        got += g;
+        for (var j = 0; j < bs.length; j++) {
+          bs[j].classList.remove("right", "part", "wrong");
+          if (j === it.ans) bs[j].classList.add("right");
+          else if (it.alt >= 0 && j === it.alt) bs[j].classList.add("part");
+          else if (v === j) bs[j].classList.add("wrong");
+        }
+        var w = el("qs").querySelector('.q[data-i="' + i + '"] .why');
+        w.hidden = false; w.textContent = it.why;
+        cs.push(mk(1, g, "Nomor " + (i + 1), g === 1 ? "tepat" : (g > 0 ? "bisa diterima" : (v == null ? "belum dijawab" : "belum tepat"))));
+      }
+      var sc = Math.round(got / m.items.length * 100);
+      el("out").innerHTML = scoreBox(sc, "semua butir bobotnya sama", cs);
+      done(m, sc, { pick: pick });
+    };
+    wireNext(m);
+  }
+};
+
+/* =========================== INOVASI (misi 4) =========================== */
+var vInov = {
+  view: function (m) {
+    var d = (S.m[m.id] && S.m[m.id].data && S.m[m.id].data.sel) || [];
+    return '<section class="card"><h3>Pilih ' + m.pick + " perubahan</h3><div class=\"chips\" id=\"iv\">" +
+      m.opsi.map(function (o) {
+        return '<button class="chip" data-k="' + o.k + '" aria-pressed="' + (inArr(d, o.k) ? "true" : "false") + '">' + esc(o.t) + "</button>";
+      }).join("") + '</div><p class="hint" id="cnt"></p></section>' +
+      '<div class="btnrow"><button class="btn go" id="bCek">Periksa pilihan</button></div><div id="out"></div>' + nextBtn(m);
+  },
+  wire: function (m) {
+    var sel = ((S.m[m.id] && S.m[m.id].data && S.m[m.id].data.sel) || []).slice();
+    function cnt() { el("cnt").textContent = sel.length + " dari " + m.pick + " dipilih"; }
+    cnt();
+    el("iv").onclick = function (e) {
+      var b = e.target.closest("button[data-k]"); if (!b) return;
+      var k = b.getAttribute("data-k"), at = sel.indexOf(k);
+      if (at >= 0) sel.splice(at, 1);
+      else { if (sel.length >= m.pick) { toast("Sudah " + m.pick + ". Lepas satu dulu."); return; } sel.push(k); }
+      b.setAttribute("aria-pressed", at >= 0 ? "false" : "true"); cnt();
+    };
+    el("bCek").onclick = function () {
+      if (sel.length !== m.pick) { toast("Pilih tepat " + m.pick + " perubahan."); return; }
+      var cs = [], good = 0;
+      for (var i = 0; i < m.opsi.length; i++) {
+        var o = m.opsi[i], b = el("iv").querySelector('button[data-k="' + o.k + '"]');
+        b.classList.remove("right", "wrong", "miss");
+        if (inArr(sel, o.k)) {
+          if (o.val) { good++; b.classList.add("right"); } else b.classList.add("wrong");
+          cs.push(mk(1, o.val ? 1 : 0, o.t, o.why));
+        } else if (o.val) b.classList.add("miss");
+      }
+      var sc = Math.round(good / m.pick * 100);
+      el("out").innerHTML = scoreBox(sc, good + " dari " + m.pick + " menjawab kesulitan nyata pelanggan", cs) +
+        '<div class="note">Yang bergaris putus-putus adalah perubahan bernilai yang tidak kamu pilih. Untuk laporan tugas, tuliskan kesulitan pelanggan yang dijawab tiap perubahan \u2014 itu yang membedakan proposal inovasi dari daftar keinginan.</div>';
+      done(m, sc, { sel: sel });
+    };
+    wireNext(m);
+  }
+};
+
+/* =========================== PELUANG (misi 5) =========================== */
+var vPel = {
+  view: function (m) {
+    var d = (S.m[m.id] && S.m[m.id].data && S.m[m.id].data.nilai) || [];
+    var rows = m.masalah.map(function (ms, i) {
+      var sel = m.kriteria.map(function (kr, j) {
+        var v = (d[i] || [])[j];
+        return '<td><select data-i="' + i + '" data-j="' + j + '"><option value="">\u2014</option>' +
+          [1, 2, 3].map(function (n) { return '<option value="' + n + '"' + (v === n ? " selected" : "") + ">" + n + "</option>"; }).join("") + "</select></td>";
+      }).join("");
+      return "<tr><td>" + esc(ms.t) + "</td>" + sel + '<td class="n" id="tot' + i + '"></td></tr>';
+    }).join("");
+    return '<section class="card"><h3>A. Nilai tiap masalah (1 rendah, 3 tinggi)</h3>' +
+      '<div class="wrapx"><table class="t" id="tp"><tr><th>Masalah</th>' +
+      m.kriteria.map(function (k) { return "<th>" + esc(k) + "</th>"; }).join("") + '<th class="n">Total</th></tr>' + rows + "</table></div></section>" +
+      '<section class="card"><h3>B. Mana yang kamu kerjakan lebih dulu?</h3><div class="chips" id="pilih">' +
+      m.masalah.map(function (ms, i) { return '<button class="chip" data-p="' + i + '">' + esc(ms.t) + "</button>"; }).join("") + "</div></section>" +
+      '<div class="btnrow"><button class="btn go" id="bCek">Periksa penilaian</button></div><div id="out"></div>' + nextBtn(m);
+  },
+  wire: function (m) {
+    var nilai = ((S.m[m.id] && S.m[m.id].data && S.m[m.id].data.nilai) || []).map(function (x) { return (x || []).slice(); });
+    var pilih = (S.m[m.id] && S.m[m.id].data && S.m[m.id].data.pilih);
+    function paint() {
+      for (var i = 0; i < m.masalah.length; i++) {
+        var r = nilai[i] || [], t = 0, full = true;
+        for (var j = 0; j < m.kriteria.length; j++) { if (r[j]) t += r[j]; else full = false; }
+        el("tot" + i).textContent = full ? t : "\u2014";
+      }
+    }
+    paint();
+    el("tp").onchange = function (e) {
+      var s = e.target; if (!s.getAttribute("data-i")) return;
+      var i = +s.getAttribute("data-i"), j = +s.getAttribute("data-j");
+      if (!nilai[i]) nilai[i] = [];
+      nilai[i][j] = s.value === "" ? null : +s.value;
+      paint();
+    };
+    el("pilih").onclick = function (e) {
+      var b = e.target.closest("button[data-p]"); if (!b) return;
+      pilih = +b.getAttribute("data-p");
+      var bs = el("pilih").querySelectorAll("button");
+      for (var i = 0; i < bs.length; i++) bs[i].setAttribute("aria-pressed", bs[i] === b ? "true" : "false");
+    };
+    if (pilih != null) {
+      var b0 = el("pilih").querySelector('button[data-p="' + pilih + '"]');
+      if (b0) b0.setAttribute("aria-pressed", "true");
+    }
+    el("bCek").onclick = function () {
+      var cs = [], dekat = 0, maxTot = -1, best = 0;
+      for (var i = 0; i < m.masalah.length; i++) {
+        var ms = m.masalah[i], r = nilai[i] || [], beda = 0, isi = 0;
+        for (var j = 0; j < m.kriteria.length; j++) { if (r[j]) { isi++; beda += Math.abs(r[j] - ms.v[j]); } }
+        var g = isi === m.kriteria.length ? Math.max(0, 1 - beda / 4) : 0;
+        dekat += g;
+        cs.push(mk(1, g, ms.t + " \u2014 acuan " + ms.v.join("/") + (isi === m.kriteria.length ? ", milikmu " + r.join("/") : ", belum lengkap"), ms.why));
+        var tt2 = ms.v[0] + ms.v[1] + ms.v[2];
+        if (tt2 > maxTot) { maxTot = tt2; best = i; }
+      }
+      var sPen = dekat / m.masalah.length;
+      var sPil = pilih === best ? 1 : 0;
+      var sc = Math.round((sPen * 65 + sPil * 35));
+      cs.push(mk(1, sPil, "Pilihan untuk dikerjakan lebih dulu",
+        sPil ? "Sesuai dengan total tertinggi." : "Menurut acuan, yang paling layak adalah: " + m.masalah[best].t + ". Perhatikan bahwa yang paling sering dikeluhkan bukan yang paling ada uangnya."));
+      el("out").innerHTML = scoreBox(sc, "penilaian 65 \u00b7 pilihan akhir 35", cs) +
+        '<div class="note">Acuan di atas bukan kebenaran mutlak \u2014 itu hasil pengamatan yang bisa kamu bantah <b>kalau kamu punya data</b>. Justru itu pekerjaan misi berikutnya.</div>';
+      done(m, sc, { nilai: nilai, pilih: pilih });
+    };
+    wireNext(m);
+  }
+};
+
+/* =========================== VALIDASI (misi 6) =========================== */
+var vVal = {
+  view: function (m) {
+    var d = (S.m[m.id] && S.m[m.id].data) || {};
+    return '<section class="card"><div class="alloc">' + m.cara.map(function (c) {
+      var v = d[c.k] != null ? d[c.k] : 0;
+      return '<div class="arow"><div class="nm">' + esc(c.nm) + "<small>" + esc(c.note) + "</small></div>" +
+        '<input type="range" id="r_' + c.k + '" min="0" max="100" step="5" value="' + v + '" aria-label="' + esc(c.nm) + '">' +
+        '<output id="o_' + c.k + '">' + v + "</output></div>";
+    }).join("") + '</div><p class="u-sans" id="bud"></p><div class="sov" id="sov"></div></section>' +
+      '<div class="btnrow"><button class="btn go" id="bCek" disabled>Kunci strategi</button></div><div id="out"></div>' + nextBtn(m);
+  },
+  wire: function (m) {
+    function vals() { var o = {}; for (var i = 0; i < m.cara.length; i++) o[m.cara[i].k] = +el("r_" + m.cara[i].k).value; return o; }
+    var MAX = 3.05;
+    function calc(o) {
+      var raw = 0, parts = [], notes = [];
+      for (var i = 0; i < m.cara.length; i++) {
+        var c = m.cara[i], p = o[c.k] || 0, v = 0;
+        if (c.min && p > 0 && p < c.min) notes.push(c.nm + ": " + p + " satuan belum cukup, minimumnya " + c.min + " \u2014 hasilnya nol.");
+        else {
+          v = c.cap * Math.min(1, p / c.sat);
+          if (p > c.sat) notes.push(c.nm + ": sudah penuh di " + c.sat + " satuan, " + (p - c.sat) + " satuan terbuang.");
+        }
+        raw += v; parts.push({ nm: c.nm, v: v });
+      }
+      return { score: Math.round(Math.min(100, raw / MAX)), parts: parts, notes: notes };
+    }
+    function paint() {
+      var o = vals(), used = 0;
+      for (var i = 0; i < m.cara.length; i++) { el("o_" + m.cara[i].k).value = o[m.cara[i].k]; used += o[m.cara[i].k]; }
+      var r = calc(o), mx = 1;
+      for (var j = 0; j < r.parts.length; j++) mx = Math.max(mx, r.parts[j].v);
+      el("bud").innerHTML = "Terpakai <b>" + used + "</b> dari 100 satuan. " +
+        (used > 100 ? '<span style="color:var(--bad)">Kelebihan ' + (used - 100) + "</span>" : used < 100 ? "Sisa " + (100 - used) : "Pas.");
+      el("sov").innerHTML = r.parts.map(function (p) {
+        return '<div class="sovrow"><span>' + esc(p.nm) + '</span><div class="bar"><i style="width:' + Math.round(p.v / mx * 100) + '%"></i></div></div>';
+      }).join("") + '<p class="u-sans">Kekuatan bukti: <b>' + (used > 100 ? 0 : r.score) + "</b>/100</p>" +
+        (used <= 100 && r.notes.length ? '<p class="hint">' + esc(r.notes.join(" ")) + "</p>" : "");
+      el("bCek").disabled = used !== 100;
+    }
+    for (var i = 0; i < m.cara.length; i++) el("r_" + m.cara[i].k).oninput = paint;
+    paint();
+    el("bCek").onclick = function () {
+      var o = vals(), r = calc(o), cs = [];
+      var kuat = (o.prapesan >= 15 ? 1 : 0) + (o.proto >= 15 ? 1 : 0) + (o.wawancara >= 10 ? 1 : 0);
+      cs.push(mk(45, r.score / 100, "Kekuatan bukti keseluruhan: " + r.score + "/100",
+        r.notes.length ? "Ada satuan yang tidak bekerja \u2014 lihat catatan di atas." : ""));
+      cs.push(mk(35, kuat / 3, "Cara pembuktian terkuat dipakai: " + kuat + " dari 3",
+        kuat === 3 ? "Wawancara, prototipe, dan pra-pesan semuanya mencapai ambang minimum." :
+          "Bukti terkuat datang dari prototipe dan pra-pesan. Keduanya butuh minimum 15 satuan supaya menghasilkan apa pun."));
+      cs.push(mk(20, o.teman <= 10 ? 1 : 0, "Porsi pendapat orang dekat: " + o.teman + " satuan",
+        o.teman > 10 ? "Di atas 10 satuan terbuang, karena nilainya sudah penuh. Orang dekat menjawab untuk menyenangkanmu." : ""));
+      var sc = total(cs);
+      el("out").innerHTML = scoreBox(sc, "kekuatan bukti 45 \u00b7 cara terkuat 35 \u00b7 disiplin 20", cs) +
+        '<div class="note"><b>Untuk laporan tugas:</b> tulis asumsi apa yang diuji tiap cara, dan apa yang akan membuatmu berhenti. Rencana yang tidak punya titik berhenti bukan pengujian, hanya pembenaran.</div>';
+      var data = {}; for (var k in o) data[k] = o[k];
+      done(m, sc, data);
+    };
+    wireNext(m);
+  }
+};
+
+/* =========================== KELAYAKAN (misi 8) =========================== */
+var vKel = {
+  view: function (m) {
+    var d = (S.m[m.id] && S.m[m.id].data) || {}, D = m.data;
+    return '<section class="card"><h3>Data rencana usaha</h3><table class="t">' +
+      '<tr><td>Modal awal</td><td class="n">' + rp(D.modal) + "</td></tr>" +
+      '<tr><td>Harga jasa per unit</td><td class="n">' + rp(D.harga) + "</td></tr>" +
+      '<tr><td>Biaya variabel per unit</td><td class="n">' + rp(D.variabel) + "</td></tr>" +
+      '<tr><td>Biaya tetap per bulan</td><td class="n">' + rp(D.tetap) + "</td></tr>" +
+      '<tr><td>Perkiraan pesanan per bulan</td><td class="n">' + D.aktual + " unit</td></tr></table></section>" +
+      '<section class="card"><h3>A. Hitung</h3><p class="hint">Titik boleh dipakai sebagai pemisah ribuan maupun desimal \u2014 keduanya diterima.</p>' +
+      m.soal.map(function (s) {
+        return '<label class="fl" for="' + s.k + '">' + esc(s.t) + '</label><input type="text" id="' + s.k + '" value="' + esc(d[s.k] || "") + '">';
+      }).join("") + "</section>" +
+      '<section class="card" id="tf"><h3>B. Tafsirkan hasilnya</h3>' +
+      m.tafsir.map(function (t, i) {
+        return '<div class="q" data-i="' + i + '"><p class="stem">' + esc(t.stem) + '</p><div class="opts">' +
+          t.opts.map(function (o, j) {
+            return '<button data-q="' + i + '" data-o="' + j + '" aria-pressed="' + ((d.tf || [])[i] === j ? "true" : "false") + '">' + esc(o) + "</button>";
+          }).join("") + '</div><p class="why" hidden></p></div>';
+      }).join("") + "</section>" +
+      '<div class="btnrow"><button class="btn go" id="bCek">Periksa hitungan</button></div><div id="out"></div>' + nextBtn(m);
+  },
+  wire: function (m) {
+    var tf = ((S.m[m.id] && S.m[m.id].data && S.m[m.id].data.tf) || []).slice();
+    el("tf").onclick = function (e) {
+      var b = e.target.closest("button[data-q]"); if (!b) return;
+      var qi = +b.getAttribute("data-q"); tf[qi] = +b.getAttribute("data-o");
+      var row = el("tf").querySelectorAll('.q[data-i="' + qi + '"] .opts button');
+      for (var i = 0; i < row.length; i++) row[i].setAttribute("aria-pressed", row[i] === b ? "true" : "false");
+    };
+    el("bCek").onclick = function () {
+      var cs = [], data = { tf: tf };
+      for (var i = 0; i < m.soal.length; i++) {
+        var s = m.soal[i];
+        data[s.k] = el(s.k).value;
+        var ok = okNum(el(s.k).value, s.jwb, s.tol);
+        cs.push(mk(12, ok ? 1 : 0, s.t, ok ? "tepat" : s.why));
+      }
+      var tb = 0;
+      for (var q = 0; q < m.tafsir.length; q++) {
+        var bs = el("tf").querySelectorAll('.q[data-i="' + q + '"] .opts button');
+        for (var z = 0; z < bs.length; z++) {
+          bs[z].classList.remove("right", "wrong");
+          if (z === m.tafsir[q].ans) bs[z].classList.add("right");
+          else if (tf[q] === z) bs[z].classList.add("wrong");
+        }
+        var w = el("tf").querySelector('.q[data-i="' + q + '"] .why');
+        w.hidden = false; w.textContent = m.tafsir[q].why;
+        if (tf[q] === m.tafsir[q].ans) tb++;
+      }
+      cs.push(mk(40, tb / m.tafsir.length, "Tafsir hasil: " + tb + " dari " + m.tafsir.length + " tepat", ""));
+      var sc = total(cs);
+      el("out").innerHTML = scoreBox(sc, "lima hitungan 60 \u00b7 tafsir 40", cs);
+      done(m, sc, data);
+    };
+    wireNext(m);
+  }
+};
+
+/* =========================== PASAR (misi 9) =========================== */
+var vPas = {
+  view: function (m) {
+    var d = (S.m[m.id] && S.m[m.id].data && S.m[m.id].data.p) || {};
+    return '<section class="card">' + m.grup.map(function (g) {
+      return "<h3>" + esc(g.t) + '</h3><div class="chips" data-g="' + g.k + '">' +
+        g.opt.map(function (o) {
+          return '<button class="chip" data-g="' + g.k + '" data-k="' + o.k + '" aria-pressed="' + (d[g.k] === o.k ? "true" : "false") + '">' + esc(o.t) + "</button>";
+        }).join("") + "</div>";
+    }).join("") + "</section>" +
+      '<div class="btnrow"><button class="btn go" id="bCek">Periksa keselarasan</button></div><div id="out"></div>' + nextBtn(m);
+  },
+  wire: function (m) {
+    var p = {}; var d = (S.m[m.id] && S.m[m.id].data && S.m[m.id].data.p) || {};
+    for (var k in d) p[k] = d[k];
+    el("stage").querySelector(".card").onclick = function (e) {
+      var b = e.target.closest("button[data-k]"); if (!b) return;
+      var g = b.getAttribute("data-g");
+      p[g] = b.getAttribute("data-k");
+      var bs = el("stage").querySelectorAll('button[data-g="' + g + '"][data-k]');
+      for (var i = 0; i < bs.length; i++) bs[i].setAttribute("aria-pressed", bs[i] === b ? "true" : "false");
+    };
+    el("bCek").onclick = function () {
+      if (!p.seg || !p.pos || !p.har || !p.tmp || !p.pro) { toast("Pilih satu di setiap bagian."); return; }
+      var cs = [];
+      cs.push(mk(20, p.seg === "s3" ? 0 : 1, "Segmen cukup terfokus",
+        p.seg === "s3" ? "\u201cSemua orang yang punya komputer\u201d bukan segmen. Tanpa fokus, pesan pemasaranmu tidak menonjol bagi siapa pun." : ""));
+
+      var posHarga = (p.pos === "p1" && p.har === "h1") || (p.pos === "p2" && p.har !== "h1") || (p.pos === "p3" && p.har !== "h1");
+      cs.push(mk(25, posHarga ? 1 : 0, "Harga mendukung posisi",
+        posHarga ? "" : (p.pos === "p1" ? "Posisi termurah menuntut harga di bawah pasar, kalau tidak janjinya tidak dipercaya." :
+          "Janji cepat, bergaransi, atau tepercaya tidak bisa ditepati dengan harga di bawah pasar. Garansi dan penggantian memerlukan margin.")));
+
+      var posTempat = (p.pos === "p2" || p.pos === "p3") ? p.tmp !== "t1" : true;
+      cs.push(mk(25, posTempat ? 1 : 0, "Tempat dan saluran mendukung posisi",
+        posTempat ? "" : "Tanpa tempat tetap, janji cepat dan bergaransi sulit ditepati: pelanggan tidak tahu ke mana datang kalau ada masalah."));
+
+      var segPro = (p.seg === "s1" && p.pro !== "r3") || (p.seg === "s2" && p.pro !== "r1") || p.seg === "s3";
+      cs.push(mk(20, segPro ? 1 : 0, "Promosi menjangkau segmen yang dipilih",
+        segPro ? "" : (p.seg === "s1" ? "Penawaran ke bagian umum kantor tidak menjangkau mahasiswa." :
+          "Sebar potongan harga besar-besaran tidak cocok untuk kantor: keputusan mereka pada kepastian dan penagihan resmi, bukan diskon.")));
+
+      var diskonBahaya = p.pro === "r1" && p.pos !== "p1";
+      cs.push(mk(10, diskonBahaya ? 0 : 1, "Promosi tidak merusak posisi",
+        diskonBahaya ? "Potongan harga besar-besaran menarik pelanggan yang datang karena murah, lalu pergi saat harga normal. Posisi yang kamu bangun ikut turun." : ""));
+
+      var sc = total(cs);
+      el("out").innerHTML = scoreBox(sc, "yang dinilai adalah keselarasan, bukan pilihan favorit", cs) +
+        '<div class="note">Tidak ada satu kombinasi \u201cpaling benar\u201d di misi ini. Ada beberapa strategi yang selaras, dan banyak yang saling bertentangan. Untuk laporan tugas, tuliskan satu kalimat posisi lalu tunjukkan bagaimana tiap keputusan menopangnya.</div>';
+      done(m, sc, { p: p });
+    };
+    wireNext(m);
+  }
+};
+
+/* =========================== BMC (misi 10) =========================== */
+var vBmc = {
+  view: function (m) {
+    var d = (S.m[m.id] && S.m[m.id].data) || {}, as = d.as || [];
+    return '<section class="card"><h3>A. Tempatkan pernyataan ke bloknya</h3><div class="wrapx"><table class="t" id="tb">' +
+      '<tr><th>Pernyataan</th><th>Blok</th></tr>' +
+      m.kartu.map(function (c, i) {
+        return "<tr><td>" + esc(c.t) + '</td><td><select data-i="' + i + '"><option value="">\u2014 pilih blok \u2014</option>' +
+          m.blokNama.map(function (b, j) { return '<option value="' + j + '"' + (as[i] === j ? " selected" : "") + ">" + esc(b) + "</option>"; }).join("") +
+          "</select></td></tr>";
+      }).join("") + "</table></div></section>" +
+      '<section class="card" id="ck"><h3>B. Pemeriksaan keselarasan model</h3>' +
+      m.cek.map(function (c, i) {
+        return '<div class="q" data-i="' + i + '"><p class="stem">' + esc(c.stem) + '</p><div class="opts">' +
+          c.opts.map(function (o, j) {
+            return '<button data-q="' + i + '" data-o="' + j + '" aria-pressed="' + ((d.ck || [])[i] === j ? "true" : "false") + '">' + esc(o) + "</button>";
+          }).join("") + '</div><p class="why" hidden></p></div>';
+      }).join("") + "</section>" +
+      '<div class="btnrow"><button class="btn go" id="bCek">Periksa kanvas</button></div><div id="out"></div>' + nextBtn(m);
+  },
+  wire: function (m) {
+    var as = ((S.m[m.id] && S.m[m.id].data && S.m[m.id].data.as) || []).slice();
+    var ck = ((S.m[m.id] && S.m[m.id].data && S.m[m.id].data.ck) || []).slice();
+    el("tb").onchange = function (e) {
+      var s = e.target; if (!s.getAttribute("data-i")) return;
+      as[+s.getAttribute("data-i")] = s.value === "" ? null : +s.value;
+    };
+    el("ck").onclick = function (e) {
+      var b = e.target.closest("button[data-q]"); if (!b) return;
+      var qi = +b.getAttribute("data-q"); ck[qi] = +b.getAttribute("data-o");
+      var row = el("ck").querySelectorAll('.q[data-i="' + qi + '"] .opts button');
+      for (var i = 0; i < row.length; i++) row[i].setAttribute("aria-pressed", row[i] === b ? "true" : "false");
+    };
+    el("bCek").onclick = function () {
+      var cs = [], benar = 0, salah = [];
+      for (var i = 0; i < m.kartu.length; i++) {
+        if (as[i] === m.kartu[i].b) benar++;
+        else salah.push(m.kartu[i].t + " \u2192 " + m.blokNama[m.kartu[i].b]);
+      }
+      cs.push(mk(60, benar / m.kartu.length, "Penempatan blok: " + benar + " dari " + m.kartu.length + " tepat",
+        salah.length ? "Yang benar: " + salah.slice(0, 4).join("; ") + (salah.length > 4 ? "; dan lainnya" : "") : ""));
+      var cb = 0;
+      for (var q = 0; q < m.cek.length; q++) {
+        var bs = el("ck").querySelectorAll('.q[data-i="' + q + '"] .opts button');
+        for (var z = 0; z < bs.length; z++) {
+          bs[z].classList.remove("right", "wrong");
+          if (z === m.cek[q].ans) bs[z].classList.add("right");
+          else if (ck[q] === z) bs[z].classList.add("wrong");
+        }
+        var w = el("ck").querySelector('.q[data-i="' + q + '"] .why');
+        w.hidden = false; w.textContent = m.cek[q].why;
+        if (ck[q] === m.cek[q].ans) cb++;
+      }
+      cs.push(mk(40, cb / m.cek.length, "Keselarasan model: " + cb + " dari " + m.cek.length + " tepat", ""));
+      var sc = total(cs);
+      el("out").innerHTML = scoreBox(sc, "penempatan 60 \u00b7 keselarasan 40", cs);
+      done(m, sc, { as: as, ck: ck });
+    };
+    wireNext(m);
+  }
+};
+/* =======================================================================
+   RAPOR, RUBRIK, EKSPOR, PEMBUKA
+   ======================================================================= */
+function nilaiAkhir() {
+  var t = 0;
+  for (var i = 0; i < MISSIONS.length; i++) {
+    var m = MISSIONS[i], r = S.m[m.id];
+    if (r) t += r.score * m.bobot / 100;
+  }
+  return Math.round(t * 10) / 10;
+}
+function pad(s, n) { s = String(s); while (s.length < n) s += " "; return s; }
+
+function laporan() {
+  var L = [];
+  L.push("LAPORAN HASIL LATIHAN \u2014 RUANG USAHA");
+  L.push("Mata kuliah Manajemen dan Kewirausahaan \u00b7 D3 Teknik Komputer");
+  L.push("");
+  L.push("Nama : " + (S.nama || "-"));
+  L.push("NPM  : " + (S.npm || "-"));
+  L.push("");
+  L.push(pad("Misi", 40) + pad("Bobot", 8) + pad("Nilai", 8) + "Percobaan");
+  L.push(new Array(72).join("-"));
+  for (var i = 0; i < MISSIONS.length; i++) {
+    var m = MISSIONS[i], r = S.m[m.id];
+    var t = m.no + ". " + m.title;
+    if (t.length > 38) t = t.slice(0, 37) + "\u2026";
+    L.push(pad(t, 40) + pad(m.bobot + "%", 8) + pad(r ? r.score : "-", 8) + (r ? r.attempts + "\u00d7" : "-"));
+  }
+  L.push(new Array(72).join("-"));
+  L.push(pad("Nilai akhir terbobot", 40) + pad("100%", 8) + nilaiAkhir());
+  L.push("");
+  var got = [];
+  for (var b = 0; b < BADGES.length; b++) if (inArr(S.badges, BADGES[b].id)) got.push(BADGES[b].t);
+  L.push("Badge: " + (got.length ? got.join(", ") : "belum ada"));
+  L.push("");
+  L.push("Catatan: nilai di latihan ini bukan nilai mata kuliah. Angkanya");
+  L.push("menunjukkan seberapa sesuai pekerjaanmu dengan prosedur yang");
+  L.push("diajarkan, dan dipakai untuk berlatih sebelum tugas sebenarnya.");
+  return L.join("\n");
+}
+function rapor() {
+  var rows = MISSIONS.map(function (m) {
+    var r = S.m[m.id];
+    return "<tr><td>" + m.no + "</td><td>" + esc(m.title) + '</td><td class="n">' + m.bobot + '%</td><td class="n">' +
+      (r ? r.score : "\u2014") + '</td><td class="n">' + (r ? (r.score * m.bobot / 100).toFixed(1) : "\u2014") + "</td></tr>";
+  }).join("");
+  modal("<h2>Rapor saya</h2>" +
+    '<div class="card"><label class="fl" for="rn">Nama</label><input type="text" id="rn" value="' + esc(S.nama) + '">' +
+    '<label class="fl" for="rp">NPM</label><input type="text" id="rp" value="' + esc(S.npm) + '"></div>' +
+    '<table class="t"><tr><th>#</th><th>Tugas</th><th class="n">Bobot</th><th class="n">Nilai</th><th class="n">Kontribusi</th></tr>' + rows +
+    '<tfoot><tr><td colspan="4">Nilai akhir terbobot</td><td class="n">' + nilaiAkhir() + "</td></tr></tfoot></table>" +
+    '<textarea class="rep" id="repT" rows="16"></textarea>' +
+    '<div class="btnrow"><button class="btn go" id="rC">Copy laporan</button>' +
+    '<button class="btn ghost" onclick="window.print()">Cetak / PDF</button>' +
+    '<button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+  el("repT").value = laporan();
+  el("rn").oninput = function () { S.nama = this.value; save(); paintRail(); el("repT").value = laporan(); };
+  el("rp").oninput = function () { S.npm = this.value; save(); paintRail(); el("repT").value = laporan(); };
+  el("rC").onclick = function () { copyBox("repT"); };
+}
+
+function rubrik() {
+  var rows = MISSIONS.map(function (m) {
+    var r = S.m[m.id];
+    return "<tr><td>" + m.no + "</td><td>" + esc(m.title) + '</td><td class="n">' + m.sub + '</td><td class="n">' + m.bobot + '%</td><td class="n">' + (r ? r.score : "\u2014") + "</td></tr>";
+  }).join("");
+  modal("<h2>Bobot dan Sub-CPMK</h2>" +
+    "<p>Sepuluh misi ini mengikuti Sub-CPMK 1\u201310 pada RPS. Bobot mingguan di RPS berkisar 10% untuk tiap tahapan, jadi di latihan ini bobotnya dibuat sama rata.</p>" +
+    '<table class="t"><tr><th>#</th><th>Misi</th><th class="n">Sub-CPMK</th><th class="n">Bobot</th><th class="n">Nilai</th></tr>' + rows + "</table>" +
+    "<h3>Yang dinilai otomatis dan yang tidak</h3>" +
+    "<p>Latihan ini menilai ketepatan keputusan: konsep, penggolongan, hitungan kelayakan, keselarasan strategi, dan penempatan blok kanvas. Yang tidak bisa dinilai di sini adalah proposal tertulis dan presentasinya \u2014 dua hal yang justru menjadi tagihan utama pada minggu 14\u201317.</p>" +
+    "<h3>Cara memakainya di kelas</h3>" +
+    "<p>Misi 1\u20136 cocok dikerjakan sebelum ETS sebagai latihan mandiri. Misi 8 berguna sebagai pemanasan sebelum menyusun studi kelayakan asli, karena mahasiswa bisa mengulang hitungan BEP sampai terbiasa. Misi 9 dan 10 paling baik dikerjakan berkelompok, lalu hasilnya dibandingkan antarkelompok: kombinasi yang selaras lebih dari satu, dan itu bahan diskusi yang bagus.</p>" +
+    '<div class="btnrow"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+}
+function panduan() {
+  modal("<h2>Panduan istilah</h2>" +
+    "<h3>Kewirausahaan</h3>" +
+    "<p><b>Wirausaha</b> \u2014 membangun usaha sendiri dan menanggung risikonya.<br>" +
+    "<b>Intrapreneur</b> \u2014 membangun hal baru di dalam perusahaan orang lain.<br>" +
+    "<b>Aset dan liabilitas</b> \u2014 aset memasukkan uang, liabilitas mengeluarkan uang.<br>" +
+    "<b>Pola pikir tumbuh</b> \u2014 kemampuan dianggap bisa dibangun, kegagalan diperlakukan sebagai data.</p>" +
+    "<h3>Peluang dan pengujian</h3>" +
+    "<p><b>SCAMPER</b> \u2014 cara menghasilkan variasi: ganti, gabung, sesuaikan, ubah fungsi, hilangkan, balik.<br>" +
+    "<b>MVP</b> \u2014 versi paling sederhana yang sudah bisa diuji ke pelanggan sungguhan.<br>" +
+    "<b>Pra-pesan</b> \u2014 pembayaran sebelum barang atau jasa tersedia; bukti minat paling kuat.<br>" +
+    "<b>Asumsi</b> \u2014 hal yang kamu percaya benar tetapi belum diuji. Setiap rencana usaha berisi banyak.</p>" +
+    "<h3>Kelayakan</h3>" +
+    "<p><b>Margin kontribusi</b> \u2014 harga jual dikurangi biaya variabel per unit.<br>" +
+    "<b>BEP</b> \u2014 titik pulang pokok: biaya tetap dibagi margin kontribusi.<br>" +
+    "<b>Payback period</b> \u2014 lama modal awal kembali, dihitung dari laba bersih per bulan.<br>" +
+    "<b>Biaya tetap dan variabel</b> \u2014 tetap tidak berubah walau produksi nol; variabel mengikuti jumlah unit.</p>" +
+    "<h3>Pemasaran dan model bisnis</h3>" +
+    "<p><b>STP</b> \u2014 Segmentasi, Targeting, Positioning.<br>" +
+    "<b>Bauran pemasaran</b> \u2014 produk, harga, tempat, promosi.<br>" +
+    "<b>Business Model Canvas</b> \u2014 sembilan blok yang menjelaskan cara usaha menciptakan dan menangkap nilai.<br>" +
+    "<b>Business plan</b> \u2014 dokumen rencana lengkap; kanvas adalah ringkasan modelnya, bukan penggantinya.</p>" +
+    '<div class="btnrow"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+}
+
+/* ---------------- ekspor / impor ---------------- */
+function copyBox(id) {
+  var ta = el(id);
+  ta.focus(); ta.select();
+  try { ta.setSelectionRange(0, ta.value.length); } catch (e) {}
+  var ok = false;
+  try { ok = document.execCommand("copy"); } catch (e2) { ok = false; }
+  if (!ok && navigator.clipboard) {
+    navigator.clipboard.writeText(ta.value).then(function () { toast("Tersalin."); },
+      function () { toast("Tekan lama di kotak teks, lalu Select All \u2192 Copy."); });
+    return;
+  }
+  toast(ok ? "Tersalin. Tempel ke dokumen atau LMS." : "Tekan lama di kotak teks, lalu Select All \u2192 Copy.");
+}
+function exportDialog() {
+  var json = JSON.stringify(S, null, 2);
+  var name = "ruangusaha-" + (S.npm || "siswa").replace(/[^a-zA-Z0-9]+/g, "") + "-" + new Date().toISOString().slice(0, 10) + ".json";
+  modal("<h2>Export jawaban</h2><p>Di iPhone dan iPad tombol download biasanya tidak berfungsi \u2014 pakai Copy, lalu tempel ke WhatsApp, email, atau kolom tugas di LMS.</p>" +
+    '<div class="btnrow"><button class="btn go" id="eC">Copy semua teks</button><button class="btn ghost" id="eD">Download .json</button></div>' +
+    '<textarea id="eT" rows="8">' + esc(json) + "</textarea>" +
+    '<p class="hint">Nama berkas: ' + esc(name) + "</p>" +
+    '<div class="btnrow"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+  el("eC").onclick = function () { copyBox("eT"); };
+  el("eD").onclick = function () {
+    try {
+      var b = new Blob([json], { type: "application/json" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(b); a.download = name;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+      toast("Berkas " + name + " diunduh.");
+    } catch (e) { toast("Download tidak didukung di browser ini. Pakai Copy."); }
+  };
+}
+function applyImport(txt) {
+  try {
+    var o = JSON.parse(txt);
+    if (!o || o.v !== 1) throw 0;
+    S = o; if (!S.m) S.m = {}; if (!S.badges) S.badges = [];
+    save(); closeModal(); paintRail(); go(S.cur || MISSIONS[0].id); toast("Jawaban dimuat.");
+  } catch (e) { toast("Teks tidak dikenali. Pastikan seluruh isi berkas .json tersalin."); }
+}
+function importDialog() {
+  modal("<h2>Import jawaban</h2><p>Pilih berkas .json, atau tempel isinya ke kotak di bawah.</p>" +
+    '<input type="file" id="iF" accept="application/json,text/plain,.json" style="margin-bottom:12px">' +
+    '<textarea id="iT" rows="6" placeholder="Tempel isi berkas .json di sini."></textarea>' +
+    '<div class="btnrow"><button class="btn go" id="iG">Muat</button><button class="btn ghost" onclick="closeModal()">Batal</button></div>');
+  el("iF").onchange = function () {
+    if (!this.files || !this.files[0]) return;
+    var r = new FileReader();
+    r.onload = function () { applyImport(r.result); };
+    r.onerror = function () { toast("Berkas tidak bisa dibaca. Pakai cara tempel teks."); };
+    r.readAsText(this.files[0]);
+  };
+  el("iG").onclick = function () {
+    var v = el("iT").value.trim();
+    if (!v) { toast("Kotaknya masih kosong."); return; }
+    applyImport(v);
+  };
+}
+
+/* ---------------- pembuka ---------------- */
+function pembuka() {
+  cur = null; paintRail();
+  el("stage").innerHTML =
+    '<div class="tag">Sebelum mulai</div><h1>Sepuluh keputusan membangun usaha</h1>' +
+    '<p class="goal" style="font-size:1.12rem">Satu semester Manajemen dan Kewirausahaan, dikerjakan sebagai rangkaian keputusan: memisahkan mitos dari kenyataan, membaca masalah jadi peluang, menguji asumsi dengan usaha terbatas, menghitung titik pulang pokok, menyelaraskan strategi pemasaran, dan menyusun model bisnis. Kasusnya memakai usaha berbasis komputer, bukan contoh dagang umum.</p>' +
+    '<div class="card"><h3>Isi identitas dulu</h3><p class="hint">Dipakai di rapor dan berkas yang kamu kumpulkan.</p>' +
+    '<label class="fl" for="pn">Nama</label><input type="text" id="pn" value="' + esc(S.nama) + '">' +
+    '<label class="fl" for="pp">NPM</label><input type="text" id="pp" value="' + esc(S.npm) + '"></div>' +
+    '<div class="note"><b>Satu hal yang perlu disepakati dulu.</b> Beberapa misi tidak punya satu jawaban paling benar \u2014 Misi 9 misalnya punya beberapa strategi yang sama-sama selaras. Yang dinilai adalah apakah keputusanmu saling mendukung dan bisa kamu pertahankan alasannya, bukan apakah sama dengan kunci. Nilai di sini juga bukan nilai mata kuliah.</div>' +
+    '<div class="btnrow"><button class="btn go" id="bGo">Mulai Misi 1</button>' +
+    (Object.keys(S.m).length ? '<button class="btn ghost" id="bLanjut">Lanjutkan yang terakhir</button>' : "") + "</div>";
+  el("bGo").onclick = function () {
+    S.nama = el("pn").value; S.npm = el("pp").value; save(); go(MISSIONS[0].id);
+  };
+  if (el("bLanjut")) el("bLanjut").onclick = function () {
+    S.nama = el("pn").value; S.npm = el("pp").value; save(); go(S.cur || MISSIONS[0].id);
+  };
+}
+
+/* ---------------- init ---------------- */
+load();
+el("modal").addEventListener("click", function (e) { if (e.target === el("modal")) closeModal(); });
+document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
+document.addEventListener("click", function (e) {
+  var b = e.target.closest("button[data-go]");
+  if (b && !b.disabled) { go(b.getAttribute("data-go")); el("stage").focus(); }
+});
+el("btnRubrik").onclick = rubrik;
+el("btnPanduan").onclick = panduan;
+el("btnRapor").onclick = rapor;
+el("btnExport").onclick = exportDialog;
+el("btnImport").onclick = importDialog;
+el("btnReset").onclick = function () {
+  modal("<h2>Kosongkan semua?</h2><p>Seluruh jawaban, nilai, dan badge di browser ini akan dihapus dan tidak bisa dikembalikan. Export dulu kalau masih dibutuhkan.</p>" +
+    '<div class="btnrow"><button class="btn" id="rz">Ya, kosongkan</button><button class="btn ghost" onclick="closeModal()">Batal</button></div>');
+  el("rz").onclick = function () { S = fresh(); save(); closeModal(); pembuka(); };
+};
+if (S.nama || Object.keys(S.m).length) { paintRail(); go(S.cur || MISSIONS[0].id); } else pembuka();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab Tiga Engine — Copywriting &amp; SEO / AEO / GEO</title>
+<style>
+/* =========================================================
+   LAB TIGA ENGINE — design tokens
+   paper  #F1F2EC   kertas kerja (oat dingin)
+   ink    #17202B   slate navy
+   crawl  #2547C8   era SEO (biru tautan 2004)
+   answer #B4700E   era AEO (kotak jawaban)
+   synth  #7B2D7A   era GEO (sintesis)
+   ========================================================= */
+:root{
+  --paper:#F1F2EC; --card:#FBFBF7; --ink:#17202B; --ink-soft:#4A5563;
+  --rule:#CDD1C2; --crawl:#2547C8; --answer:#B4700E; --synth:#7B2D7A;
+  --good:#2E6B45; --bad:#A32020;
+  --sans:"Arial Narrow","Helvetica Neue Condensed","Liberation Sans Narrow",system-ui,sans-serif;
+  --serif:Georgia,"Iowan Old Style","Palatino Linotype",serif;
+  --mono:ui-monospace,"SFMono-Regular","Consolas","Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--ink); font-family:var(--serif);
+  font-size:17px; line-height:1.62; -webkit-text-size-adjust:100%;
+}
+h1,h2,h3,h4,.u-sans{font-family:var(--sans); letter-spacing:-.01em; font-weight:700; line-height:1.08}
+h1{font-size:2.6rem;margin:0}
+h2{font-size:1.9rem;margin:0 0 .4rem}
+h3{font-size:1.25rem;margin:1.6rem 0 .3rem}
+p{margin:0 0 .9em; max-width:68ch}
+a{color:var(--crawl)}
+button:focus{outline:2px solid var(--synth); outline-offset:2px}
+:focus-visible{outline:3px solid var(--synth); outline-offset:2px}
+
+/* ---------- layout ---------- */
+.wrap{display:grid; grid-template-columns:266px minmax(0,1fr); min-height:100vh}
+.rail{
+  background:var(--ink); color:#E7EAE2; padding:20px 18px 40px;
+  position:sticky; top:0; align-self:start; height:100vh; overflow:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.stage{padding:34px 40px 90px; max-width:960px}
+
+/* ---------- rail ---------- */
+.brandmark{font-family:var(--sans); font-size:1.45rem; line-height:1; margin-bottom:2px}
+.brandmark span{display:block; font-size:.72rem; font-family:var(--mono); color:#9AA69B; letter-spacing:.02em; margin-top:6px}
+.whoami{margin:16px 0; padding:10px 12px; background:#22303F; border-radius:3px; font-size:.86rem; font-family:var(--sans)}
+.whoami b{display:block; font-size:1.05rem}
+.whoami em{color:#9AA69B; font-style:normal; font-family:var(--mono); font-size:.74rem}
+.xpbar{height:7px; background:#0E151D; border-radius:99px; margin-top:9px; overflow:hidden}
+.xpbar i{display:block; height:100%; background:#9ED37A; width:0; transition:width .6s ease}
+.eraband{margin:18px 0 6px; font-family:var(--sans); font-size:.82rem; color:#8E9A8F; display:flex; gap:7px; align-items:center}
+.eraband:before{content:""; width:11px; height:11px; border-radius:2px; background:var(--era)}
+.mlist{list-style:none; margin:0; padding:0}
+.mlist button{
+  width:100%; text-align:left; background:none; border:0; color:#D8DDD3; cursor:pointer;
+  font-family:var(--sans); font-size:.95rem; padding:6px 8px 6px 26px; border-radius:3px;
+  position:relative; line-height:1.25;
+}
+.mlist button:hover{background:#22303F}
+.mlist button[aria-current="true"]{background:#2C3C4E; color:#fff}
+.mlist button:before{
+  content:attr(data-n); position:absolute; left:6px; top:6px; font-family:var(--mono); font-size:.72rem; color:#7E8A80;
+}
+.mlist button.done:before{content:"\2713"; color:#9ED37A}
+.mlist button.locked{opacity:.42; cursor:not-allowed}
+.railtools{margin-top:22px; border-top:1px solid #2C3C4E; padding-top:14px; display:grid; gap:6px}
+.railtools button{
+  background:none;border:1px solid #3A4C60;color:#C9D0C6;font-family:var(--sans);font-size:.88rem;
+  padding:6px 9px;border-radius:3px;cursor:pointer;text-align:left
+}
+.railtools button:hover{background:#22303F;color:#fff}
+
+/* ---------- era spine on stage ---------- */
+.eratag{font-family:var(--sans); font-size:.95rem; color:var(--era); display:flex; align-items:center; gap:8px; margin-bottom:10px}
+.eratag:before{content:""; width:34px; height:4px; background:var(--era)}
+.mtitle{display:flex; gap:12px; align-items:baseline; margin-bottom:6px}
+.mtitle .no{font-family:var(--mono); font-size:1rem; color:var(--ink-soft)}
+.goal{font-family:var(--sans); font-size:1.06rem; color:var(--ink-soft); max-width:62ch; margin-bottom:22px}
+
+/* ---------- content blocks ---------- */
+.brief{border-left:4px solid var(--rule); padding-left:20px; margin:0 0 26px}
+ol.steps{counter-reset:s; list-style:none; padding:0; margin:0 0 24px; max-width:68ch}
+ol.steps li{counter-increment:s; position:relative; padding-left:40px; margin-bottom:12px}
+ol.steps li:before{
+  content:counter(s); position:absolute; left:0; top:2px; width:26px; height:26px;
+  background:var(--era); color:#fff; font-family:var(--mono); font-size:.82rem;
+  display:grid; place-items:center; border-radius:50%;
+}
+.tip{background:#E6E9DC; border-radius:3px; padding:12px 16px; font-size:.94rem; margin:0 0 22px; max-width:68ch}
+.tip b{font-family:var(--sans)}
+
+/* ---------- writing surface ---------- */
+.surface{background:var(--card); border:1px solid var(--rule); border-radius:4px; padding:18px; margin-bottom:18px}
+label.fl{display:block; font-family:var(--sans); font-size:.95rem; margin-bottom:4px}
+label.fl small{color:var(--ink-soft); font-family:var(--mono); font-size:.74rem; margin-left:6px}
+textarea,input[type=text],select{
+  width:100%; font-family:var(--serif); font-size:1rem; line-height:1.55; color:var(--ink);
+  background:#fff; border:1px solid var(--rule); border-radius:3px; padding:10px 12px; margin-bottom:14px;
+}
+textarea{min-height:150px; resize:vertical}
+select{font-family:var(--sans)}
+.counter{font-family:var(--mono); font-size:.76rem; color:var(--ink-soft); margin:-10px 0 14px}
+.counter.over{color:var(--bad)}
+
+.btn{
+  font-family:var(--sans); font-size:1rem; background:var(--ink); color:#fff; border:0;
+  padding:10px 20px; border-radius:3px; cursor:pointer;
+}
+.btn:hover{background:#0E151D}
+.btn.ghost{background:none; color:var(--ink); border:1px solid var(--ink)}
+.btn.ghost:hover{background:#E6E9DC}
+.btn:disabled{opacity:.45; cursor:not-allowed}
+.btnrow{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:26px}
+
+/* ---------- SERP preview ---------- */
+.serp{background:#fff; border:1px solid var(--rule); border-radius:4px; padding:16px 18px; margin-bottom:18px; font-family:Arial,Helvetica,sans-serif}
+.serp .url{font-size:.78rem; color:#1a6b2b}
+.serp .t{font-size:1.22rem; color:#1a0dab; line-height:1.3; margin:2px 0 3px}
+.serp .d{font-size:.86rem; color:#4d5156; line-height:1.45}
+
+/* ---------- AI answer preview ---------- */
+.aibox{border:1px solid var(--synth); border-radius:4px; padding:16px 18px; margin-bottom:18px; background:#FBF6FB}
+.aibox h4{font-family:var(--sans); color:var(--synth); margin:0 0 8px; font-size:1rem}
+.aibox .cite{background:#EBD9EB; border-radius:2px; padding:0 3px}
+.aibox .src{font-family:var(--mono); font-size:.76rem; color:var(--synth); margin-top:10px}
+
+/* ---------- engine console ---------- */
+.console{border:1px solid var(--ink); border-radius:4px; overflow:hidden; margin-bottom:22px}
+.console>header{background:var(--ink); color:#E7EAE2; font-family:var(--sans); font-size:.95rem; padding:8px 14px; display:flex; justify-content:space-between}
+.meters{display:grid; grid-template-columns:repeat(3,1fr); gap:0; background:var(--card)}
+.meter{padding:14px; border-right:1px solid var(--rule)}
+.meter:last-child{border-right:0}
+.meter .en{font-family:var(--sans); font-size:.92rem; color:var(--m)}
+.meter .yr{font-family:var(--mono); font-size:.7rem; color:var(--ink-soft); display:block}
+.meter .sc{font-family:var(--sans); font-size:2.35rem; line-height:1; margin:6px 0 4px}
+.meter .track{height:8px; background:#E2E5DA; border-radius:99px; overflow:hidden}
+.meter .track i{display:block; height:100%; width:0; background:var(--m); transition:width .7s cubic-bezier(.2,.7,.3,1)}
+.meter .vd{font-family:var(--mono); font-size:.72rem; color:var(--ink-soft); margin-top:6px}
+.checks{background:var(--card); border-top:1px solid var(--rule); padding:12px 14px}
+.checks h5{font-family:var(--sans); font-size:.92rem; margin:8px 0 4px; color:var(--m)}
+.checks ul{list-style:none; margin:0; padding:0}
+.checks li{font-size:.9rem; padding:3px 0 3px 24px; position:relative; max-width:74ch}
+.checks li:before{position:absolute; left:2px; font-family:var(--mono); font-size:.84rem}
+.checks li.ok:before{content:"\2713"; color:var(--good)}
+.checks li.part:before{content:"~"; color:var(--answer)}
+.checks li.no:before{content:"\00D7"; color:var(--bad)}
+.checks li i{color:var(--ink-soft); font-style:italic}
+
+/* ---------- quiz / decide ---------- */
+.q{border-bottom:1px solid var(--rule); padding:14px 0}
+.q:last-child{border-bottom:0}
+.q p.stem{font-size:1.05rem; margin-bottom:8px}
+.q p.stem b{font-family:var(--mono); font-size:.95rem; background:#E6E9DC; padding:1px 5px; border-radius:2px}
+.opts{display:flex; gap:8px; flex-wrap:wrap}
+.opts button{
+  font-family:var(--sans); font-size:.94rem; background:#fff; border:1px solid var(--rule);
+  padding:7px 13px; border-radius:99px; cursor:pointer
+}
+.opts button[aria-pressed="true"]{background:var(--ink); color:#fff; border-color:var(--ink)}
+.opts button.right{background:#DCEBE0; border-color:var(--good); color:var(--good)}
+.opts button.wrong{background:#F4DCDC; border-color:var(--bad); color:var(--bad)}
+.why{font-size:.9rem; color:var(--ink-soft); margin-top:8px}
+
+/* ---------- allocation ---------- */
+.alloc{display:grid; gap:12px; margin-bottom:8px}
+.arow{display:grid; grid-template-columns:190px 1fr 52px; gap:12px; align-items:center}
+.arow .nm{font-family:var(--sans); font-size:.95rem}
+.arow .nm small{display:block; color:var(--ink-soft); font-family:var(--serif); font-size:.8rem; line-height:1.3}
+.arow output{font-family:var(--mono); font-size:.9rem; text-align:right}
+input[type=range]{width:100%; accent-color:var(--synth)}
+.budget{font-family:var(--sans); font-size:1.05rem; margin:10px 0 18px}
+.budget b{font-family:var(--mono)}
+.sov{display:grid; gap:5px; margin:14px 0 4px}
+.sovrow{display:grid; grid-template-columns:150px 1fr; gap:10px; align-items:center; font-size:.9rem}
+.sovrow .bar{height:16px; background:#E2E5DA; border-radius:2px; overflow:hidden}
+.sovrow .bar i{display:block; height:100%; background:var(--synth); width:0; transition:width .5s ease}
+
+/* ---------- badges, report, modal ---------- */
+.badges{display:flex; gap:8px; flex-wrap:wrap; margin:6px 0 0}
+.badge{font-family:var(--sans); font-size:.8rem; border:1px solid #3A4C60; color:#9AA69B; padding:3px 8px; border-radius:99px}
+.badge.on{background:#9ED37A; color:#17202B; border-color:#9ED37A}
+.modal{position:fixed; top:0; right:0; bottom:0; left:0; background:rgba(23,32,43,.72); display:grid; place-items:center; padding:20px; z-index:50}
+.modal[hidden]{display:none}
+.sheet{background:var(--paper); border-radius:5px; padding:28px; max-width:720px; width:100%; max-height:88vh; overflow:auto}
+table.rc{width:100%; border-collapse:collapse; font-size:.92rem; margin:14px 0}
+table.rc th,table.rc td{border-bottom:1px solid var(--rule); padding:6px 8px; text-align:left}
+table.rc th{font-family:var(--sans)}
+table.rc td.n{font-family:var(--mono); text-align:right}
+.toast{
+  position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--ink); color:#fff;
+  font-family:var(--sans); padding:10px 18px; border-radius:3px; z-index:60
+}
+.toast[hidden]{display:none}
+
+/* ---------- onboarding ---------- */
+.hero{display:grid; gap:26px; max-width:780px}
+.picks{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px}
+.pick{background:var(--card); border:1px solid var(--rule); border-radius:4px; padding:14px; text-align:left; cursor:pointer; font:inherit}
+.pick:hover{border-color:var(--ink)}
+.pick[aria-pressed="true"]{border-color:var(--synth); box-shadow:inset 0 0 0 2px var(--synth)}
+.pick b{font-family:var(--sans); font-size:1.1rem; display:block}
+.pick small{color:var(--ink-soft); font-family:var(--mono); font-size:.74rem}
+
+@media (max-width:820px){
+  .wrap{grid-template-columns:1fr}
+  .rail{position:static; height:auto; padding-bottom:18px}
+  .stage{padding:22px 18px 70px}
+  h1{font-size:2rem} h2{font-size:1.5rem}
+  .meters{grid-template-columns:1fr}
+  .meter{border-right:0; border-bottom:1px solid var(--rule)}
+  .arow{grid-template-columns:1fr 60px; }
+  .arow input[type=range]{grid-column:1/-1}
+  .sovrow{grid-template-columns:110px 1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{
+  .rail,.btnrow,.railtools,.modal{display:none!important}
+  body{background:#fff} .stage{max-width:none;padding:0}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="rail" aria-label="Peta misi">
+    <div class="brandmark">LAB TIGA ENGINE<span>copywriting &middot; seo &middot; aeo &middot; geo</span></div>
+    <div class="whoami" id="whoami"></div>
+    <div id="mapnav"></div>
+    <div class="railtools">
+      <button id="btnSandbox">Sandbox</button>
+      <button id="btnReport">Rapor saya</button>
+      <button id="btnExport">Export jawaban (.json)</button>
+      <button id="btnImport">Import jawaban</button>
+      <button id="btnTeacher">Catatan pengajar</button>
+      <button id="btnReset">Reset progres</button>
+    </div>
+  </nav>
+  <main class="stage" id="stage" tabindex="-1"></main>
+</div>
+<div class="modal" id="modal" hidden><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast" hidden></div>
+<script>
+/* =======================================================================
+   LAB TIGA MESIN — mesin simulasi
+   Semua data tersimpan di localStorage browser siswa. Tanpa internet.
+   ======================================================================= */
+"use strict";
+
+var KEY = "labtigaengine.v1";
+var ERAS = {
+  1: { name: "Era 1 \u2014 SEO: crawling & ranking (1998\u20132015)", color: "var(--crawl)" },
+  2: { name: "Era 2 \u2014 AEO: answer engine (2016\u20132022)", color: "var(--answer)" },
+  3: { name: "Era 3 \u2014 GEO: generative engine (2023\u2192)", color: "var(--synth)" }
+};
+var LEVELS = [
+  { at: 0, t: "Anak Magang" }, { at: 150, t: "Copywriter Junior" },
+  { at: 350, t: "SEO Specialist" }, { at: 550, t: "AEO Strategist" },
+  { at: 750, t: "GEO Architect" }, { at: 900, t: "Kepala Lab" }
+];
+var BADGES = [
+  { id: "intent", t: "Baca Intent" }, { id: "serp", t: "Tukang SERP" },
+  { id: "framework", t: "Framework Rapi" }, { id: "bluf", t: "Jawaban Duluan" },
+  { id: "snippet", t: "Ahli Snippet" }, { id: "voice", t: "Suara Manusia" },
+  { id: "citation", t: "Magnet Citation" }, { id: "entity", t: "Arsitek Entity" },
+  { id: "triple", t: "Lolos Tiga Engine" }, { id: "honest", t: "Pemasar Jujur" }
+];
+
+var PRESETS = [
+  { brand: "Pempek Ny. Lina", cat: "toko pempek", city: "Palembang", kw: "pempek kulit asli palembang",
+    fact: "direbus 2 kali, tanpa pengawet, kirim ke 14 kota" },
+  { brand: "LensaKu Rental", cat: "rental kamera", city: "Palembang", kw: "rental kamera palembang",
+    fact: "48 unit kamera, sewa mulai 12 jam, gratis antar dalam kota" },
+  { brand: "Kilap Sepatu", cat: "jasa cuci sepatu", city: "Palembang", kw: "jasa cuci sepatu palembang",
+    fact: "selesai 24 jam, 6.400 pasang tertangani sejak 2021" }
+];
+
+/* ---------------- state ---------------- */
+var S = null;
+function freshState() {
+  return { v: 1, brand: null, xp: 0, badges: [], m: {}, art: {}, log: [], started: Date.now() };
+}
+function load() {
+  try { var r = localStorage.getItem(KEY); S = r ? JSON.parse(r) : freshState(); }
+  catch (e) { S = freshState(); }
+  if (!S || S.v !== 1) S = freshState();
+  if (!S.m) S.m = {}; if (!S.art) S.art = {}; if (!S.badges) S.badges = [];
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) { toast("Browser menolak menyimpan. Pakai tombol Export jawaban."); }
+}
+function award(id) {
+  if (S.badges.indexOf(id) < 0) {
+    S.badges.push(id);
+    var b = BADGES.filter(function (x) { return x.id === id; })[0];
+    if (b) toast("Badge baru: " + b.t);
+  }
+}
+function levelOf(xp) {
+  var out = LEVELS[0];
+  for (var i = 0; i < LEVELS.length; i++) if (xp >= LEVELS[i].at) out = LEVELS[i];
+  return out;
+}
+function finish(id, score, data) {
+  var prev = S.m[id] ? S.m[id].score : 0;
+  var xp = Math.round(score);
+  S.m[id] = { score: Math.max(prev, xp), attempts: ((S.m[id] && S.m[id].attempts) || 0) + 1, data: data || {}, at: Date.now() };
+  S.xp = 0;
+  for (var k in S.m) S.xp += S.m[k].score;
+  S.log.push({ id: id, score: xp, at: Date.now() });
+  save(); paintRail();
+}
+
+/* ---------------- dom helpers ---------------- */
+function el(id) { return document.getElementById(id); }
+function h(html) { var d = document.createElement("div"); d.innerHTML = html; return d; }
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
+var toastTimer = null;
+function toast(msg) {
+  var t = el("toast"); t.textContent = msg; t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.hidden = true; }, 3200);
+}
+function modal(html) { el("sheet").innerHTML = html; el("modal").hidden = false; }
+function closeModal() { el("modal").hidden = true; }
+
+/* ---------------- analisis teks ---------------- */
+var FLUFF = ["terbaik", "sangat", "luar biasa", "revolusioner", "nomor satu", "no.1", "terdepan",
+  "berkualitas tinggi", "harga bersaing", "profesional dan", "amanah", "amazing", "terpercaya di hati",
+  "solusi terpadu", "world class", "kekinian banget", "dijamin puas", "paling murah"];
+var HEDGE = ["mungkin", "kurang lebih", "sekitar-sekitar", "agak", "bisa jadi"];
+
+function words(t) { return (t || "").trim().split(/\s+/).filter(Boolean); }
+function wc(t) { return words(t).length; }
+function sentences(t) {
+  var chunk = (t || "").replace(/([.!?])(\s|$)/g, "$1\u0001").split(/\u0001|\n+/);
+  return chunk.map(function (s) { return s.trim(); }).filter(function (s) { return s.length > 1; });
+}
+function low(t) { return (t || "").toLowerCase(); }
+function has(t, sub) { return low(t).indexOf(low(sub)) >= 0; }
+function countOf(t, sub) {
+  if (!sub) return 0;
+  var n = 0, i = 0, a = low(t), b = low(sub);
+  while ((i = a.indexOf(b, i)) >= 0) { n++; i += b.length; }
+  return n;
+}
+function kwTokens(kw) { return words(low(kw)).filter(function (w) { return w.length > 3; }); }
+function reEsc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+/* cocokkan frasa kunci walau diselipi kata kecil: "cuci sepatu di Palembang" */
+function countLoose(t, kw) {
+  var ts = words(low(kw)).map(reEsc);
+  if (!ts.length) return 0;
+  try {
+    var re = new RegExp(ts.join("(?:\\s+\\S+){0,2}\\s+"), "gi");
+    return ((t || "").match(re) || []).length;
+  } catch (e) { return countOf(t, kw); }
+}
+function tokenHits(t, kw) {
+  var ts = kwTokens(kw), a = low(t), n = 0;
+  for (var i = 0; i < ts.length; i++) if (a.indexOf(ts[i]) >= 0) n++;
+  return ts.length ? n / ts.length : 0;
+}
+function avgSentLen(t) {
+  var ss = sentences(t); if (!ss.length) return 0;
+  var tot = 0; for (var i = 0; i < ss.length; i++) tot += wc(ss[i]);
+  return tot / ss.length;
+}
+function fluffFound(t) {
+  var a = low(t), out = [];
+  for (var i = 0; i < FLUFF.length; i++) if (a.indexOf(FLUFF[i]) >= 0) out.push(FLUFF[i]);
+  return out;
+}
+function hasNumber(t) { return /\d/.test(t || ""); }
+function hasQuantClaim(t) {
+  return /\d+([.,]\d+)?\s*(%|persen|jam|menit|hari|bulan|tahun|km|kg|gram|ml|porsi|pasang|unit|orang|pelanggan|kota|ribu|juta|rb|k\b)/i.test(t || "")
+    || /(rp|idr)\s?\d/i.test(t || "");
+}
+function hasYear(t) { return /\b(19|20)\d{2}\b/.test(t || ""); }
+function hasSource(t) {
+  return /(menurut|berdasarkan|data|survei|riset|studi|laporan|catatan internal|sumber:)/i.test(t || "");
+}
+function questionLines(t) {
+  return (t || "").split(/\n+/).filter(function (l) {
+    return /\?\s*$/.test(l.trim()) || /^(apa|apakah|bagaimana|berapa|mengapa|kenapa|kapan|di mana|dimana|bisakah|amankah)\b/i.test(l.trim());
+  });
+}
+function hasList(t) {
+  var lines = (t || "").split(/\n+/), n = 0;
+  for (var i = 0; i < lines.length; i++) if (/^\s*([-*\u2022]|\d+[.)])\s+/.test(lines[i])) n++;
+  return n >= 2;
+}
+function hasSubhead(t) {
+  var lines = (t || "").split(/\n+/), n = 0;
+  for (var i = 0; i < lines.length; i++) {
+    var l = lines[i].trim();
+    if (l && wc(l) <= 9 && !/[.!]$/.test(l)) n++;
+  }
+  return n >= 1 && (t || "").split(/\n/).length > 2;
+}
+function properNouns(t) {
+  var ws = words(t || ""), n = 0;
+  for (var i = 1; i < ws.length; i++) if (/^[A-Z][a-zA-Z]{2,}/.test(ws[i])) n++;
+  return n;
+}
+function firstSentence(t) { var s = sentences(t); return s.length ? s[0] : ""; }
+function brandSpellingConsistent(t, brand) {
+  if (!brand) return true;
+  var c = countOf(t, brand);
+  var loose = countOf(low(t), low(brand).split(" ")[0]);
+  return c > 0 && loose <= c + 1;
+}
+/* kalimat paling "bisa dikutip": pendek, ada merek, ada angka */
+function bestQuotable(t, brand) {
+  var ss = sentences(t), best = null, bs = -1;
+  for (var i = 0; i < ss.length; i++) {
+    var s = ss[i], n = wc(s), sc = 0;
+    if (n >= 8 && n <= 28) sc += 3; else if (n <= 34) sc += 1;
+    if (brand && has(s, brand)) sc += 3;
+    if (hasQuantClaim(s)) sc += 4;
+    if (hasYear(s)) sc += 1;
+    if (fluffFound(s).length) sc -= 3;
+    if (sc > bs) { bs = sc; best = s; }
+  }
+  return { s: best || "", score: bs };
+}
+/* =======================================================================
+   TIGA ENGINE PENILAI
+   Teks yang SAMA dibaca tiga engine dengan kriteria berbeda.
+   Itu inti pelajarannya: tulisannya tidak berubah, pembacanya berubah.
+   Tiap check: {w:bobot, got:0..1, t:label, why:penjelasan}
+   ======================================================================= */
+
+function mk(w, got, t, why) { return { w: w, got: Math.max(0, Math.min(1, got)), t: t, why: why || "" }; }
+function total(cs) {
+  var sum = 0, max = 0;
+  for (var i = 0; i < cs.length; i++) { sum += cs[i].w * cs[i].got; max += cs[i].w; }
+  return max ? Math.round(sum / max * 100) : 0;
+}
+
+/* ---------- ENGINE 1: CrawlBot (SEO klasik) ---------- */
+function engSEO(t, ctx) {
+  var kw = (ctx && ctx.kw) || "", n = wc(t), cs = [];
+  var head = words(t).slice(0, 18).join(" ");
+  var exact = countOf(t, kw), loose = Math.max(exact, countLoose(t, kw));
+  var dens = n ? loose / n * 100 : 0;
+
+  cs.push(mk(20, has(head, kw) ? 1 : (countLoose(head, kw) ? .85 : (tokenHits(head, kw) >= .6 ? .5 : 0)),
+    "Keyword ada di 18 kata pertama",
+    has(head, kw) ? "" : "Crawler membaca dari atas. Pindahkan keyword ke kalimat pertama."));
+
+  cs.push(mk(20, loose === 0 ? 0 : (loose === 1 ? .55 : (loose <= 8 ? 1 : .75)),
+    "Keyword muncul " + loose + "\u00d7 (density " + dens.toFixed(1) + "%)",
+    loose === 0 ? "Keyword-nya belum ada di teks." :
+      loose > 5 ? "Sesering ini masih dinaikkan search engine 2004 \u2014 dan itu justru masalahnya. Bandingkan dengan nilai dua engine lain." :
+        "Wajar: 2\u20135 kali."));
+
+  cs.push(mk(15, tokenHits(t, kw),
+    "Variasi keyword terpakai " + Math.round(tokenHits(t, kw) * 100) + "%",
+    "Pakai sinonim dan potongan keyword, jangan frasa yang sama terus."));
+
+  cs.push(mk(15, n >= 110 ? 1 : (n >= 60 ? .65 : (n >= 30 ? .3 : 0)),
+    "Panjang teks " + n + " kata",
+    n < 60 ? "Era ini menganggap teks panjang lebih layak. Target minimal 110 kata." : ""));
+
+  cs.push(mk(10, hasSubhead(t) ? 1 : 0, "Ada heading atau subjudul",
+    hasSubhead(t) ? "" : "Tulis subjudul pendek di baris sendiri, tanpa titik."));
+
+  cs.push(mk(10, hasList(t) ? 1 : 0, "Ada bullet list",
+    hasList(t) ? "" : "Awali minimal 2 baris dengan \u201c- \u201d."));
+
+  cs.push(mk(10, (ctx && ctx.brand && has(t, ctx.brand)) ? 1 : 0, "Nama brand disebut",
+    "Brand yang tidak pernah disebut tidak bisa dikenali."));
+
+  return { key: "seo", name: "CrawlBot", year: "search engine 2004", color: "var(--crawl)", checks: cs, score: total(cs) };
+}
+
+/* ---------- ENGINE 2: SnippetBot (AEO) ---------- */
+function engAEO(t, ctx) {
+  var kw = (ctx && ctx.kw) || "", q = (ctx && ctx.q) || "", cs = [];
+  var f = firstSentence(t), fn = wc(f), asl = avgSentLen(t);
+  var direct = fn > 0 && fn <= 30 && (tokenHits(f, kw) >= .5) &&
+    /(adalah|merupakan|yaitu|bisa|dapat|butuh|perlu|memakan|berkisar|mulai dari|sekitar|\d)/i.test(f);
+  var first60 = words(t).slice(0, 60).join(" ");
+
+  cs.push(mk(25, direct ? 1 : (fn <= 30 && tokenHits(f, kw) >= .5 ? .5 : 0),
+    "Kalimat pertama langsung menjawab (" + fn + " kata)",
+    direct ? "" : "Pola: [subjek] + adalah/butuh/mulai dari + [angka]. Maksimal 30 kata, tanpa basa-basi."));
+
+  cs.push(mk(15, hasQuantClaim(first60) ? 1 : (hasNumber(first60) ? .5 : 0),
+    "Ada angka di 60 kata pertama",
+    "Featured snippet lebih sering mengambil jawaban yang terukur: 24 jam, Rp35.000, 3 langkah."));
+
+  cs.push(mk(15, questionLines(t).length >= 1 ? 1 : 0,
+    "Ada heading berbentuk pertanyaan (" + questionLines(t).length + ")",
+    q ? "Samakan dengan pertanyaan aslinya: \u201c" + q + "\u201d" : "Tulis heading persis seperti orang bertanya."));
+
+  cs.push(mk(15, hasList(t) ? 1 : (hasSubhead(t) ? .4 : 0),
+    "Struktur siap snippet: list, langkah, atau tabel",
+    "Snippet tipe list dan tabel diambil langsung dari struktur halaman."));
+
+  cs.push(mk(10, asl === 0 ? 0 : (asl <= 18 ? 1 : (asl <= 24 ? .6 : .2)),
+    "Kalimat rata-rata " + asl.toFixed(0) + " kata",
+    asl > 24 ? "Terlalu panjang untuk diambil utuh. Pecah jadi 18\u201320 kata." : ""));
+
+  var fl = fluffFound(t);
+  cs.push(mk(10, fl.length === 0 ? 1 : (fl.length <= 2 ? .4 : 0),
+    "Bebas kata fluff" + (fl.length ? " (ada: " + fl.join(", ") + ")" : ""),
+    fl.length ? "\u201cTerbaik\u201d dan \u201cterpercaya\u201d tidak bisa diverifikasi, jadi tidak diambil." : ""));
+
+  cs.push(mk(10, (tokenHits(t, kw) >= .8 ? 1 : tokenHits(t, kw)),
+    "Sesuai search intent",
+    "Jawab pertanyaan yang dicari orang, bukan pertanyaan yang ingin kamu jawab."));
+
+  return { key: "aeo", name: "SnippetBot", year: "answer engine 2019", color: "var(--answer)", checks: cs, score: total(cs) };
+}
+
+/* ---------- ENGINE KHUSUS: VoiceBot (dipakai Misi 6) ----------
+   Jawaban voice search dinilai dengan kriteria sendiri. Memakai engine AEO
+   biasa tidak adil: satu kalimat tidak mungkin punya heading dan list. */
+function engVoice(t, ctx) {
+  var brand = (ctx && ctx.brand) || "", city = (ctx && ctx.city) || "", cs = [];
+  var n = wc(t), ss = sentences(t).length, fl = fluffFound(t);
+  var hardToSay = /\d{1,3}\.\d{3}|[\/()&%*]|\b(dll|dsb|min|maks|pcs|hrs|tsb)\b/i.test(t);
+  var contact = /(hubungi|whatsapp|wa|kunjungi|antar|jemput|konsultasi|reservasi|pesan|booking|gerai|alamat|datang)/i.test(t);
+
+  cs.push(mk(25, n === 0 ? 0 : (n <= 30 ? 1 : (n <= 36 ? .5 : 0)),
+    "Panjang " + n + " kata",
+    n > 30 ? "Asisten suara memotong jawaban panjang. Maksimal 30 kata." : ""));
+
+  cs.push(mk(15, ss === 1 ? 1 : (ss === 2 ? .5 : 0),
+    "Jumlah kalimat: " + ss,
+    ss > 1 ? "Satu kalimat saja. Yang dibacakan hanya satu." : ""));
+
+  cs.push(mk(15, brand && has(t, brand) ? 1 : 0, "Nama brand disebut",
+    "Suara tidak bisa menampilkan logo. Nama harus terucap."));
+
+  cs.push(mk(10, city && has(t, city) ? 1 : 0, "Kota disebut",
+    "Voice search hampir selalu lokal."));
+
+  cs.push(mk(15, hasQuantClaim(t) ? 1 : (hasNumber(t) ? .5 : 0), "Ada angka konkret",
+    "Harga, durasi, atau jumlah \u2014 sesuatu yang bisa diingat sambil menyetir."));
+
+  cs.push(mk(10, hardToSay ? 0 : 1, "Mudah diucapkan",
+    hardToSay ? "Ada format yang aneh kalau dibacakan: Rp35.000, tanda kurung, atau singkatan seperti dll." : ""));
+
+  cs.push(mk(10, contact ? 1 : 0, "Ada alasan untuk tetap menghubungi",
+    "Zero-click hanya rugi kalau tidak ada langkah berikutnya."));
+
+  cs.push(mk(10, fl.length === 0 ? 1 : 0, "Bebas kata fluff" + (fl.length ? " (" + fl.join(", ") + ")" : ""),
+    fl.length ? "Terdengar seperti iklan kalau dibacakan." : ""));
+
+  return { key: "voice", name: "VoiceBot", year: "voice assistant", color: "var(--answer)", checks: cs, score: total(cs) };
+}
+
+/* ---------- ENGINE 3: SynthEngine (GEO) ---------- */
+function engGEO(t, ctx) {
+  var brand = (ctx && ctx.brand) || "", cat = (ctx && ctx.cat) || "", city = (ctx && ctx.city) || "", cs = [];
+  var ent = (brand && has(t, brand) ? 1 : 0) + (cat && has(t, cat) ? 1 : 0) + (city && has(t, city) ? 1 : 0);
+  var quot = bestQuotable(t, brand);
+  var fl = fluffFound(t);
+  var offsite = (ctx && typeof ctx.offsite === "number") ? ctx.offsite : (S.art.offsite || 0);
+
+  cs.push(mk(20, ent / 3,
+    "Entity jelas: brand + kategori + kota (" + ent + "/3)",
+    ent < 3 ? "AI menyusun jawaban dari entity. Sebut \u201c" + (brand || "brand") + ", " + (cat || "kategori") + " di " + (city || "kota") + "\u201d secara eksplisit." : ""));
+
+  cs.push(mk(20, hasQuantClaim(t) ? 1 : (hasNumber(t) ? .4 : 0),
+    "Ada data atau angka yang bisa dikutip",
+    hasQuantClaim(t) ? "" : "Kalimat tanpa angka hampir tidak pernah dikutip \u2014 tidak ada isi yang bisa diambil."));
+
+  cs.push(mk(15, (hasSource(t) ? .6 : 0) + (hasYear(t) ? .4 : 0),
+    "Ada sumber data dan tahun",
+    "Sebut asal datanya dan tahunnya."));
+
+  cs.push(mk(15, quot.score >= 8 ? 1 : (quot.score >= 5 ? .6 : (quot.score >= 2 ? .3 : 0)),
+    "Ada kalimat yang tetap utuh kalau dikutip sendiri",
+    quot.s ? "Kandidat terkuat: \u201c" + quot.s.slice(0, 110) + "\u201d" : "Tulis satu kalimat yang tetap masuk akal kalau dipotong dari paragrafnya."));
+
+  cs.push(mk(15, Math.min(1, offsite / 55),
+    "Off-page signal (" + offsite + "/100 dari Misi 8)",
+    offsite ? "" : "Selesaikan Misi 8 dulu. AI juga membaca review, forum, dan media \u2014 bukan hanya website-mu."));
+
+  cs.push(mk(10, fl.length === 0 ? 1 : 0,
+    "Tanpa klaim superlatif tanpa bukti" + (fl.length ? " (" + fl.join(", ") + ")" : ""),
+    fl.length ? "Kata seperti ini dibuang saat AI menyusun jawaban." : ""));
+
+  var rep = Math.max(countOf(t, ctx && ctx.kw), countLoose(t, (ctx && ctx.kw) || ""));
+  cs.push(mk(10, rep <= 4 ? 1 : (rep <= 6 ? .5 : 0),
+    "Keyword tidak diulang berlebihan (" + rep + "\u00d7)",
+    rep > 4 ? "Teks yang mengulang frasa yang sama dianggap tidak menambah informasi baru." : ""));
+
+  cs.push(mk(5, brandSpellingConsistent(t, brand) ? 1 : 0,
+    "Penulisan brand konsisten",
+    "Pakai satu ejaan. \u201cKilap Sepatu\u201d dan \u201cKilapSepatu\u201d dibaca sebagai dua entity berbeda."));
+
+  return { key: "geo", name: "SynthEngine", year: "generative engine 2026", color: "var(--synth)", checks: cs, score: total(cs) };
+}
+
+function runAll(t, ctx) { return [engSEO(t, ctx), engAEO(t, ctx), engGEO(t, ctx)]; }
+function ctxNow(extra) {
+  var b = S.brand || {};
+  var c = { brand: b.brand, cat: b.cat, city: b.city, kw: b.kw, q: b.q };
+  if (extra) for (var k in extra) c[k] = extra[k];
+  return c;
+}
+
+/* ---------- tampilan hasil ---------- */
+function metersHTML(res) {
+  return '<div class="meters">' + res.map(function (r) {
+    return '<div class="meter" style="--m:' + r.color + '">' +
+      '<div class="en">' + r.name + '<span class="yr">' + r.year + '</span></div>' +
+      '<div class="sc">' + r.score + '<span style="font-size:.9rem;color:var(--ink-soft)">/100</span></div>' +
+      '<div class="track"><i style="width:' + r.score + '%"></i></div>' +
+      '<div class="vd">' + verdict(r.score) + '</div></div>';
+  }).join("") + '</div>';
+}
+function consoleHTML(res, caption) {
+  var checks = res.map(function (r) {
+    return '<div style="--m:' + r.color + '"><h5>Penilaian ' + r.name + ":</h5><ul>" +
+      r.checks.map(function (c) {
+        var cls = c.got >= .99 ? "ok" : (c.got > 0 ? "part" : "no");
+        return '<li class="' + cls + '">' + esc(c.t) + (c.why && c.got < .99 ? " <i>" + esc(c.why) + "</i>" : "") + "</li>";
+      }).join("") + "</ul></div>";
+  }).join("");
+  return '<section class="console"><header><span>Hasil tiga engine</span><span>' + (caption || "teks sama, tiga pembaca") + "</span></header>" +
+    metersHTML(res) + '<div class="checks">' + checks + "</div></section>";
+}
+function verdict(s) {
+  if (s >= 85) return "tampil di atas";
+  if (s >= 70) return "layak tampil";
+  if (s >= 50) return "terindeks, tenggelam";
+  if (s >= 25) return "hampir tidak terlihat";
+  return "dilewati";
+}
+/* =======================================================================
+   DAFTAR MISI
+   ---------------------------------------------------------------------
+   MENAMBAH MISI SENDIRI: salin satu objek di bawah, ubah id (harus unik),
+   era (1/2/3), no, title, goal, brief, steps, tip, lalu pilih kind:
+     "quiz"     -> butuh: qs[{stem,opts,ans,why}]
+     "serp"     -> tanpa konfigurasi tambahan
+     "write"    -> butuh: fields[{k,label,hint,ph,rows}], show:["seo","aeo","geo"],
+                   pass:{aeo:70}, seed:"kunciArtefak"
+     "faq"      -> tanpa konfigurasi tambahan
+     "allocate" -> butuh: channels[{k,nm,note,mult}]
+     "decide"   -> butuh: qs[{stem,opts,ans,why}]
+   Urutan di menu kiri mengikuti urutan array ini. Tidak perlu ubah kode lain.
+   ======================================================================= */
+
+var MISSIONS = [
+{
+  id: "m1", era: 1, no: 1, title: "Baca search intent dulu",
+  goal: "Sebelum menulis satu kata, tentukan orang itu mau tahu, mau bandingkan, atau mau beli.",
+  brief:
+    "<p>Copywriting SEO paling sering gagal bukan karena kalimatnya jelek, tapi karena menjawab pertanyaan yang tidak ditanyakan. Halaman jualan dipasang di keyword orang yang baru cari info. Artikel panjang dipasang di keyword orang yang sudah siap bayar.</p>" +
+    "<p>Ada empat jenis search intent, dan empatnya masih dipakai sampai sekarang:</p>" +
+    "<p><b>Informational</b> \u2014 mau tahu sesuatu.<br><b>Navigational</b> \u2014 cari brand atau tempat tertentu.<br><b>Commercial</b> \u2014 sedang bandingkan pilihan.<br><b>Transactional</b> \u2014 siap beli atau pesan sekarang.</p>",
+  steps: [
+    "Tulis keyword-nya persis seperti yang diketik orang, termasuk yang tidak baku.",
+    "Tanya: kalau jawabannya muncul dalam 3 detik, orang ini sudah puas atau masih butuh buka halaman?",
+    "Pilih satu intent yang paling dominan. Kalau ragu antara dua, ambil yang lebih dekat ke transaksi.",
+    "Baru tentukan bentuk halamannya: artikel, halaman perbandingan, atau landing page."
+  ],
+  tip: "<b>Kenapa ini makin penting di era AI:</b> keyword informational sekarang sering dijawab langsung oleh AI, jadi halaman info murni yang paling dulu kehilangan klik. Keyword commercial dan transactional masih mengirim orang ke website.",
+  kind: "quiz",
+  qs: [
+    { stem: "cara goreng pempek biar tidak meletus", opts: ["Informational", "Navigational", "Commercial", "Transactional"], ans: 0,
+      why: "Orang ini sedang di dapur, bukan di kasir. Jawab sampai tuntas, jangan jualan di paragraf pertama." },
+    { stem: "pempek ny lina jakabaring", opts: ["Informational", "Navigational", "Commercial", "Transactional"], ans: 1,
+      why: "Nama brand + lokasi berarti dia sudah tahu mau ke mana. Yang dia butuh alamat, jam buka, dan link peta." },
+    { stem: "pempek kulit vs pempek lenjer bagusnya yang mana", opts: ["Informational", "Navigational", "Commercial", "Transactional"], ans: 2,
+      why: "Kata pembanding (vs, bagusnya) menandakan intent commercial. Sajikan tabel perbandingan, bukan esai." },
+    { stem: "pesan pempek kulit kirim hari ini palembang", opts: ["Informational", "Navigational", "Commercial", "Transactional"], ans: 3,
+      why: "Ada aksi dan batas waktu. Harga, ongkir, dan batas jam pesan harus terlihat tanpa scroll." },
+    { stem: "harga pempek kulit per kilo 2026", opts: ["Informational", "Navigational", "Commercial", "Transactional"], ans: 2,
+      why: "Keyword harga hampir selalu commercial: dia sedang bandingkan sebelum memutuskan. Tulis angka aslinya di depan." }
+  ]
+},
+{
+  id: "m2", era: 1, no: 2, title: "Title tag dan meta description",
+  goal: "Tulis dua baris yang muncul di hasil pencarian \u2014 ruang iklan gratis yang panjangnya dibatasi.",
+  brief:
+    "<p>Di hasil pencarian, dua bagian ini adalah seluruh tampilan halamanmu. Title tag terpotong sekitar <b>60 karakter</b>, meta description sekitar <b>155 karakter</b>. Lebih dari itu, sisanya jadi titik tiga.</p>" +
+    "<p>Rumus title yang masih dipakai sampai sekarang:</p>" +
+    "<p><b>[keyword] + [pembeda konkret] + [brand]</b><br>contoh: <i>Rental Kamera Palembang \u2014 Antar Gratis, Sewa 12 Jam | LensaKu</i></p>" +
+    "<p>Meta description bukan ringkasan halaman. Isinya satu manfaat yang terukur, satu penghilang keraguan, dan satu call to action.</p>",
+  steps: [
+    "Mulai title dengan keyword, bukan nama brand \u2014 kecuali brand-nya sudah dicari orang.",
+    "Masukkan satu pembeda yang bisa dibuktikan: angka, lama pengerjaan, area layanan, atau harga.",
+    "Jaga title maksimal 60 karakter dan description maksimal 155 karakter. Hitungannya karakter, bukan kata.",
+    "Baca ulang: kalau description ini muncul di sebelah 9 kompetitor, kenapa orang pilih punyamu?"
+  ],
+  tip: "<b>Yang berubah:</b> di featured snippet dan jawaban AI, title-mu sering tidak ditampilkan sama sekali \u2014 yang diambil justru isi halaman. Title tetap penting untuk klik, tapi sekarang tidak cukup.",
+  kind: "serp"
+},
+{
+  id: "m3", era: 1, no: 3, title: "Pilih satu framework copywriting",
+  goal: "Tulis isi halaman pakai satu framework, lalu lihat penilaian CrawlBot.",
+  brief:
+    "<p>Copywriter tidak menulis dari nol. Mereka mengisi framework yang sudah terbukti. Empat yang paling sering dipakai:</p>" +
+    "<p><b>PAS</b> \u2014 Problem, Agitate, Solution. Sebut masalahnya, jelaskan akibatnya, tawarkan solusi. Paling cocok untuk jasa.<br>" +
+    "<b>AIDA</b> \u2014 Attention, Interest, Desire, Action. Klasik untuk produk baru.<br>" +
+    "<b>FAB</b> \u2014 Feature, Advantage, Benefit. Mengubah spesifikasi jadi keuntungan pembaca.<br>" +
+    "<b>4C</b> \u2014 Clear, Concise, Compelling, Credible. Bukan urutan, tapi checklist terakhir sebelum publish.</p>" +
+    "<p>Tugasmu: satu blok isi 120\u2013200 kata pakai salah satu framework, dengan keyword yang sudah kamu pilih.</p>",
+  steps: [
+    "Pilih framework di bawah. Tulis nama tahapnya dulu sebagai kerangka, baru isi kalimatnya.",
+    "Taruh keyword di kalimat pertama secara wajar, lalu 1\u20133 kali lagi di sisa teks.",
+    "Tambahkan satu subjudul pendek di baris sendiri dan satu bullet list (awali dengan \u201c- \u201d).",
+    "Hapus semua kata yang tidak bisa dibuktikan. \u201cTerbaik\u201d bukan bukti, \u201c24 jam\u201d bukti."
+  ],
+  tip: "<b>Perhatikan hasilnya nanti:</b> teks yang nilainya bagus di CrawlBot bisa dapat nilai rendah di dua engine lain. Itu bukan kesalahanmu \u2014 itu yang akan kita perbaiki di Era 2 dan 3.",
+  kind: "write",
+  framework: true,
+  seed: null,
+  fields: [{ k: "body", label: "Isi halaman", hint: "120\u2013200 kata", ph: "Tulis di sini. Tekan Enter untuk subjudul dan baris bullet list.", rows: 11 }],
+  show: ["seo", "aeo", "geo"], pass: { seo: 70 }, artKey: "body"
+},
+{
+  id: "m4", era: 2, no: 4, title: "Dari ranking ke jawaban",
+  goal: "Tulis ulang teks Misi 3 dengan pola jawaban di depan, lalu bandingkan nilainya.",
+  brief:
+    "<p>Sekitar 2016, search engine tidak lagi hanya mengurutkan sepuluh link. Ia mulai mengambil satu jawaban dan menaruhnya di atas hasil pencarian \u2014 itu yang kita sebut featured snippet. Akibatnya: paragraf pembuka yang bertele-tele tidak akan pernah diambil, sebagus apa pun isi halamannya.</p>" +
+    "<p>Polanya dipinjam dari jurnalistik dan militer: <b>BLUF</b>, <i>bottom line up front</i>. Kesimpulan dulu, penjelasan belakangan. Di jurnalistik namanya piramida terbalik.</p>" +
+    "<p>Blok jawaban yang sering diambil punya bentuk yang sangat khas: <b>40\u201360 kata</b>, kalimat pertama menjawab langsung, ada angka, tanpa syarat bertumpuk.</p>",
+  steps: [
+    "Ambil pertanyaan yang paling mungkin diketik orang, tulis jadi heading \u2014 lengkap dengan tanda tanya.",
+    "Kalimat pertama: [subjek] + adalah / butuh / mulai dari + [angka]. Maksimal 30 kata.",
+    "Dua sampai empat kalimat berikutnya: syarat, pengecualian, atau langkah. Tetap maksimal 20 kata per kalimat.",
+    "Narasi dan bujukan taruh setelah itu. Buang pembuka seperti \u201cdi era digital saat ini\u201d."
+  ],
+  tip: "<b>Cara cek cepat:</b> tutup semua kecuali kalimat pertama. Kalau kalimat itu saja sudah cukup menjawab, kamu lolos. Kalau masih menggantung, engine juga menganggapnya menggantung.",
+  kind: "write",
+  seed: "body",
+  fields: [
+    { k: "q", label: "Pertanyaan yang kamu targetkan", hint: "tulis seperti orang bertanya", ph: "Berapa lama cuci sepatu kulit di Palembang?", rows: 2 },
+    { k: "ans", label: "Tulis ulang dengan jawaban di depan", hint: "120\u2013200 kata", ph: "", rows: 11 }
+  ],
+  show: ["seo", "aeo", "geo"], pass: { aeo: 70 }, artKey: "ans", compare: true
+},
+{
+  id: "m5", era: 2, no: 5, title: "FAQ dan schema markup",
+  goal: "Buat blok FAQ yang layak jadi snippet, lalu lihat bedanya saat schema dinyalakan.",
+  brief:
+    "<p>Featured snippet punya tiga bentuk: <b>paragraf</b> (untuk pertanyaan \u201capa\u201d dan \u201ckenapa\u201d), <b>numbered list</b> (untuk \u201cbagaimana\u201d), dan <b>tabel</b> (untuk \u201cberapa\u201d dan perbandingan). Bentuk pertanyaan menentukan bentuk jawabannya.</p>" +
+    "<p>Di atas itu ada <b>schema markup</b> (structured data dari schema.org): kode penanda di HTML yang memberi tahu search engine mana pertanyaan, mana jawaban, mana harga, mana penulisnya. Schema tidak membuat tulisan jelek jadi bagus. Schema membuat tulisan bagus lebih mudah dibaca mesin.</p>" +
+    "<p>Tulis tiga pasang pertanyaan dan jawaban. Pertanyaannya pakai bahasa pelanggan, bukan bahasa brosur.</p>",
+  steps: [
+    "Ambil tiga pertanyaan yang paling sering masuk lewat WhatsApp. Itu riset gratis.",
+    "Satu pertanyaan satu jawaban. Jangan gabung dua pertanyaan dalam satu paragraf.",
+    "Jawab 40\u201360 kata, kalimat pertama langsung ke inti, sertakan angka kalau ada.",
+    "Nyalakan FAQ schema di bawah, lihat bedanya di preview hasil pencarian."
+  ],
+  tip: "<b>Jangan salah paham soal schema:</b> ini hanya penanda. Memasang FAQPage di halaman kosong tidak menaikkan apa pun, dan memasang review schema untuk review yang tidak ada bisa membuat situs dapat penalti.",
+  kind: "faq"
+},
+{
+  id: "m6", era: 2, no: 6, title: "Voice search dan zero-click",
+  goal: "Padatkan jawabanmu jadi satu kalimat yang enak dibacakan asisten suara \u2014 dan terima konsekuensinya.",
+  brief:
+    "<p>Voice search hanya membacakan <b>satu</b> jawaban. Tidak ada posisi dua. Bahasanya juga beda: orang mengetik \u201cjam buka pempek lina\u201d, tapi bertanya \u201cpempek Ny. Lina buka jam berapa hari Minggu?\u201d \u2014 lebih panjang, lebih seperti percakapan, sering pakai kata tanya.</p>" +
+    "<p>Dari sini muncul istilah <b>zero-click</b>: pertanyaan terjawab, tapi tidak ada kunjungan ke website. Kamu menang di visibility, kalah di traffic. Menyembunyikan jawaban supaya orang terpaksa klik juga tidak berhasil \u2014 engine akan mengambil jawaban dari kompetitor yang mau menjawab.</p>" +
+    "<p>Tulis satu kalimat, maksimal 30 kata, yang tetap masuk akal saat dibacakan tanpa layar.</p>",
+  steps: [
+    "Sebut nama brand dan kotanya di dalam kalimat \u2014 suara tidak bisa menampilkan logo.",
+    "Ganti angka yang susah diucapkan: \u201cmulai Rp35 ribu\u201d, bukan \u201cRp35.000,00\u201d.",
+    "Hindari singkatan dan tanda baca aneh. Bacakan keras-keras; kalau tersandung, tulis ulang.",
+    "Sisipkan satu alasan untuk tetap menghubungi kamu \u2014 sesuatu yang hanya bisa diselesaikan di tempat."
+  ],
+  tip: "<b>Cara hidup dengan zero-click:</b> jangan ukur keberhasilan hanya dari jumlah sesi. Ukur juga brand mention, pencarian nama brand, dan berapa banyak pelanggan yang datang sudah tahu harga. Itu jejak visibility tanpa klik.",
+  kind: "write",
+  seed: "ans",
+  fields: [{ k: "voice", label: "Jawaban untuk dibacakan", hint: "satu kalimat, maksimal 30 kata", ph: "", rows: 4 }],
+  scorer: "voice",
+  show: ["voice", "geo"], pass: { voice: 70 }, artKey: "voice"
+},
+{
+  id: "m7", era: 3, no: 7, title: "Jadi sumber yang dikutip AI",
+  goal: "Susun satu kalimat yang layak dikutip AI, lalu lihat jawaban AI yang dihasilkan.",
+  brief:
+    "<p>AI tidak memberi ranking. Ia membaca beberapa sumber, menulis satu jawaban baru, lalu menyebut sumber yang dipakainya. Targetnya berubah: bukan lagi <i>diklik</i>, tapi <i>dikutip</i>.</p>" +
+    "<p>Kalimat yang biasanya dikutip AI bentuknya selalu mirip:</p>" +
+    "<p><b>[subjek spesifik] + [angka] + [sumber data] + [tahun]</b><br>" +
+    "<i>\u201cKilap Sepatu menangani 6.400 pasang sejak 2021, dengan rata-rata pengerjaan 24 jam (data internal, 2026).\u201d</i></p>" +
+    "<p>Kalimat seperti itu bisa dipotong dari paragrafnya dan tetap utuh. Kalimat \u201ckami penyedia jasa terbaik di kota ini\u201d tidak bisa dikutip \u2014 tidak ada isinya untuk dikutip.</p>",
+  steps: [
+    "Pilih satu angka yang benar-benar kamu punya: jumlah pelanggan, lama pengerjaan, area layanan, atau tahun mulai.",
+    "Tulis satu kalimat 12\u201328 kata: nama brand + angka + satuan + sumber data + tahun.",
+    "Tambahkan dua kalimat konteks di bawahnya, supaya kalimat kutipan itu duduk di antara penjelasan.",
+    "Cek sekali lagi: kalau angkanya karangan, seluruh kredibilitasmu jadi utang. Jangan pernah."
+  ],
+  tip: "<b>Kenapa jujur itu taktik, bukan cuma moral:</b> angka karangan akan bertabrakan dengan sumber lain saat AI menyusun jawaban, dan sumber yang tidak konsisten berhenti dikutip. Data palsu rusak sendiri \u2014 setelah merusak nama brand-mu.",
+  kind: "write",
+  seed: null,
+  fields: [{ k: "stat", label: "Kalimat kutipan + konteksnya", hint: "3\u20134 kalimat, satu di antaranya kalimat kutipan", ph: "", rows: 7 }],
+  show: ["seo", "aeo", "geo"], pass: { geo: 65 }, artKey: "stat", aipreview: true
+},
+{
+  id: "m8", era: 3, no: 8, title: "Off-page: suaramu di luar website",
+  goal: "Bagi 100 poin usaha ke enam channel, lalu lihat perkiraan share of voice-mu di jawaban AI.",
+  brief:
+    "<p>Ini bagian yang paling sulit diterima orang yang besar dengan SEO: <b>sebagian besar bahan jawaban AI tidak berasal dari website-mu.</b> AI juga membaca forum, review, artikel perbandingan, dan berita \u2014 tempat brand dibicarakan orang lain, bukan tempat brand bicara sendiri.</p>" +
+    "<p>Jadi halaman yang sempurna pun bisa tidak muncul di jawaban AI kalau tidak ada satu pun sumber luar yang menyebutnya. Sebaliknya, brand dengan banyak mention dari pihak lain sering muncul walau website-nya biasa saja.</p>" +
+    "<p>Tiap channel punya bobot dan titik jenuh sendiri. Poin di atas titik jenuh terbuang. Sebagian channel juga punya ambang minimum: liputan media tidak terjadi dengan usaha setengah hati. Total kebutuhan semua channel lebih dari 100 poin, jadi kamu memang harus memilih.</p>",
+  steps: [
+    "Alokasikan 100 poin. Habiskan semuanya \u2014 usaha yang tidak dipakai tidak menghasilkan apa pun.",
+    "Baca titik jenuh tiap channel. Direktori penuh di 10 poin \u2014 poin ke-11 ke atas hangus.",
+    "Perhatikan ambang minimum: media butuh minimal 20 poin, di bawah itu hasilnya nol.",
+    "Ingat: hasil misi ini menaikkan batas nilai SynthEngine kamu di Misi 9."
+  ],
+  tip: "<b>Batas yang tidak boleh dilewati:</b> review palsu dan akun bodong di forum itu manipulasi, bukan strategi. Melanggar aturan platform dan bisa menghapus semua jejakmu sekaligus. Yang kita alokasikan di sini adalah usaha supaya <i>layak</i> dibicarakan.",
+  kind: "allocate",
+  channels: [
+    { k: "own", nm: "Website & blog sendiri", note: "maksimal di 20 poin \u2014 wajib ada, tapi bobotnya paling rendah", sat: 20, cap: 55, min: 0 },
+    { k: "review", nm: "Review pelanggan", note: "maksimal di 25 poin \u2014 Google Maps, marketplace", sat: 25, cap: 75, min: 0 },
+    { k: "forum", nm: "Forum & komunitas", note: "maksimal di 25 poin; di atas 45 poin dianggap spam", sat: 25, cap: 80, min: 0, spamAt: 45 },
+    { k: "listicle", nm: "Artikel perbandingan", note: "maksimal di 20 poin \u2014 tulisan orang lain tentang kamu", sat: 20, cap: 60, min: 0 },
+    { k: "press", nm: "Media & liputan lokal", note: "baru menghasilkan mulai 20 poin, maksimal di 35 poin", sat: 35, cap: 85, min: 20 },
+    { k: "dir", nm: "Direktori & profil resmi", note: "maksimal di 10 poin \u2014 murah, cepat penuh", sat: 10, cap: 45, min: 0 }
+  ]
+},
+{
+  id: "m9", era: 3, no: 9, title: "Audit tiga engine",
+  goal: "Satu halaman yang harus lolos CrawlBot, SnippetBot, dan SynthEngine sekaligus \u2014 minimal 70 di ketiganya.",
+  brief:
+    "<p>Ini ujian akhir, dan memang dibuat tidak nyaman. Ketiga engine tidak sepenuhnya sejalan: CrawlBot mau teks panjang dan berulang, SnippetBot mau pendek dan langsung, SynthEngine mau spesifik dan bisa diverifikasi.</p>" +
+    "<p>Halaman yang menang bukan yang memuaskan satu engine, tapi yang menyusun semuanya dalam urutan benar: <b>jawaban di depan untuk SnippetBot, kedalaman di bawahnya untuk CrawlBot, angka bersumber di seluruh teks untuk SynthEngine.</b></p>" +
+    "<p>Rakit dari bahan yang sudah kamu tulis di misi sebelumnya. Copy lalu sambung itu bukan curang \u2014 itu cara kerja studio sebenarnya.</p>",
+  steps: [
+    "Baris pertama: heading berbentuk pertanyaan. Blok berikutnya: jawaban 40\u201360 kata dengan angka.",
+    "Sisipkan kalimat kutipan dari Misi 7 di paragraf kedua atau ketiga.",
+    "Tambahkan subjudul kedua, satu bullet list, dan penjelasan sampai total 180\u2013320 kata.",
+    "Sebut brand + kategori + kota secara jelas, cukup sekali, di tempat yang wajar.",
+    "Tutup dengan call to action yang menyebut hal yang tidak bisa dikerjakan AI: pengukuran, penjemputan, konsultasi."
+  ],
+  tip: "<b>Kalau satu engine terus tertinggal:</b> jangan tambal dengan menumpuk keyword. Buka checklist engine itu, cari satu baris bertanda \u00d7 dengan bobot paling besar, perbaiki yang itu saja. Biasanya nilai lain ikut naik.",
+  kind: "write",
+  seed: "ans",
+  fields: [{ k: "final", label: "Halaman final", hint: "180\u2013320 kata", ph: "", rows: 16 }],
+  show: ["seo", "aeo", "geo"], pass: { seo: 70, aeo: 70, geo: 70 }, artKey: "final", boss: true
+},
+{
+  id: "m10", era: 3, no: 10, title: "Batas etika dan apa yang bisa diukur",
+  goal: "Empat keputusan yang akan kamu hadapi di dunia kerja \u2014 termasuk soal apa yang sebenarnya tidak bisa diukur.",
+  brief:
+    "<p>Tiga era ini punya pola yang berulang: setiap kali search engine membuat aturan, muncul jalan pintas untuk mengakalinya, dan setiap jalan pintas akhirnya ditutup \u2014 sering dengan penalti untuk yang memakainya. Keyword stuffing, tukar link, artikel massal, review palsu: semuanya pernah berhasil, semuanya berakhir sama.</p>" +
+    "<p>Satu hal lagi yang jarang diakui konsultan: <b>GEO hampir tidak bisa diukur dengan andal sekarang.</b> Tidak ada data clickstream dari dalam jawaban AI, jawabannya berbeda untuk tiap orang dan tiap waktu, dan penyedia AI tidak menerbitkan data citation share. Tool yang menjanjikan \u201cranking GEO\u201d sebenarnya menjual perkiraan dengan rasa percaya diri yang tidak didukung datanya.</p>",
+  steps: [
+    "Baca tiap situasi seolah kamu yang akan tanda tangan hasilnya.",
+    "Pilih yang bisa kamu pertahankan di depan klien, dosen, dan pelanggan sekaligus.",
+    "Setelah selesai, cetak rapormu untuk dikumpulkan."
+  ],
+  tip: "<b>Ukuran yang masih jujur dipakai:</b> brand mention di jawaban AI (dicek manual pakai daftar keyword yang tetap), pertumbuhan pencarian nama brand, kualitas leads yang masuk, dan berapa persen pelanggan yang sudah tahu harga sebelum bertanya. Semuanya kasar \u2014 tapi tidak berpura-pura presisi.",
+  kind: "decide",
+  qs: [
+    { stem: "Klien minta 300 artikel AI per bulan supaya \u201cmenguasai semua keyword\u201d.",
+      opts: ["Kerjakan, pasar sedang cepat", "Tolak total, AI itu curang", "Tawarkan 12 artikel dengan data asli", "Kerjakan tapi jangan bilang siapa-siapa"], ans: 2,
+      why: "Masalahnya bukan alatnya, tapi tidak ada hal baru untuk dikutip. Volume tanpa data orisinal itu biaya tanpa aset." },
+    { stem: "Angka \u201c98% pelanggan puas\u201d terdengar bagus. Surveinya belum pernah dilakukan.",
+      opts: ["Pakai, kompetitor juga begitu", "Pakai dengan catatan kecil di bawah", "Ganti dengan angka yang kamu punya", "Bulatkan jadi 95% biar aman"], ans: 2,
+      why: "Angka karangan itu utang yang jatuh tempo di depan orang lain. Angka kecil yang benar mengalahkan angka besar yang rapuh." },
+    { stem: "Ada jasa yang menawarkan 200 review bintang lima dan 50 komentar forum.",
+      opts: ["Ambil, ini kan off-page signal", "Ambil sebagian saja", "Tolak, lalu minta izin menghubungi pelanggan asli", "Pakai untuk kompetitor, bukan diri sendiri"], ans: 2,
+      why: "Review palsu melanggar aturan platform dan gugur saat diperiksa. Yang menaikkan nilai Misi 8 adalah alasan nyata untuk dibicarakan." },
+    { stem: "Atasan minta laporan bulanan berisi \u201cranking kita di ChatGPT\u201d.",
+      opts: ["Buat angkanya dari estimasi tool", "Jelaskan ranking itu tidak ada, tawarkan daftar keyword yang dicek manual", "Tolak melapor sampai ada data resmi", "Pakai ranking Google saja, mirip"], ans: 1,
+      why: "Ranking tunggal di AI tidak ada. Yang jujur dan tetap berguna: 20\u201330 keyword tetap, dicek berkala, dicatat disebut atau tidak." }
+  ]
+}
+];
+
+function missionById(id) {
+  for (var i = 0; i < MISSIONS.length; i++) if (MISSIONS[i].id === id) return MISSIONS[i];
+  return null;
+}
+function unlocked(i) {
+  if (i === 0) return true;
+  var prev = MISSIONS[i - 1];
+  return !!S.m[prev.id];
+}
+
+/* teks demo di halaman pembuka \u2014 dinilai sungguhan oleh ketiga engine */
+var DEMO_CTX = { brand: "Kilap Sepatu", cat: "jasa cuci sepatu", city: "Palembang", kw: "jasa cuci sepatu palembang", offsite: 0 };
+var DEMO_TEXT = "Jasa Cuci Sepatu Palembang Terbaik\n" +
+"Kami adalah jasa cuci sepatu Palembang terbaik dan terpercaya dengan harga bersaing. Kilap Sepatu hadir sebagai jasa cuci sepatu Palembang yang profesional dan amanah untuk semua kalangan. " +
+"Sebagai jasa cuci sepatu Palembang yang sudah sangat berpengalaman, kami selalu mengutamakan kepuasan pelanggan dengan pelayanan yang luar biasa dan berkualitas tinggi. " +
+"Jasa cuci sepatu Palembang kami melayani berbagai jenis sepatu dari berbagai bahan dengan teknik terbaik yang dimiliki oleh tim kami yang sangat solid dan berdedikasi tinggi. " +
+"Percayakan sepatu Anda kepada jasa cuci sepatu Palembang nomor satu yang sudah dipercaya oleh banyak sekali pelanggan setia di seluruh wilayah kota ini dan sekitarnya.";
+/* =======================================================================
+   TAMPILAN
+   ======================================================================= */
+var cur = null;
+
+/* ---------- rail ---------- */
+function paintRail() {
+  var lv = levelOf(S.xp), nxt = null;
+  for (var i = 0; i < LEVELS.length; i++) if (LEVELS[i].at > S.xp) { nxt = LEVELS[i]; break; }
+  var pct = nxt ? Math.round((S.xp - lv.at) / (nxt.at - lv.at) * 100) : 100;
+  var b = S.brand;
+  el("whoami").innerHTML =
+    "<b>" + esc(lv.t) + "</b><em>" + S.xp + " XP" + (nxt ? " \u00b7 " + (nxt.at - S.xp) + " lagi ke " + nxt.t : " \u00b7 maksimal") + "</em>" +
+    '<div class="xpbar"><i style="width:' + pct + '%"></i></div>' +
+    (b ? '<em style="margin-top:8px;display:block">' + esc(b.brand) + " \u00b7 " + esc(b.city) + "</em>" : "") +
+    '<div class="badges">' + BADGES.map(function (x) {
+      return '<span class="badge' + (S.badges.indexOf(x.id) >= 0 ? " on" : "") + '">' + esc(x.t) + "</span>";
+    }).join("") + "</div>";
+
+  var html = "", era = 0;
+  for (var j = 0; j < MISSIONS.length; j++) {
+    var m = MISSIONS[j];
+    if (m.era !== era) {
+      era = m.era;
+      html += '<div class="eraband" style="--era:' + ERAS[era].color + '">' + esc(ERAS[era].name) + "</div><ul class=\"mlist\">";
+    }
+    var done = !!S.m[m.id], open = unlocked(j);
+    html += '<li><button data-go="' + m.id + '" data-n="' + m.no + '" class="' + (done ? "done" : "") + (open ? "" : " locked") +
+      '" ' + (open ? "" : "disabled") + (cur === m.id ? ' aria-current="true"' : "") + ">" + esc(m.title) +
+      (done ? ' <span style="font-family:var(--mono);font-size:.72rem;opacity:.7">' + S.m[m.id].score + "</span>" : "") + "</button></li>";
+    var nx = MISSIONS[j + 1];
+    if (!nx || nx.era !== era) html += "</ul>";
+  }
+  el("mapnav").innerHTML = html;
+}
+
+function firstOpen() {
+  for (var i = 0; i < MISSIONS.length; i++) if (!S.m[MISSIONS[i].id]) return MISSIONS[i].id;
+  return MISSIONS[MISSIONS.length - 1].id;
+}
+/* ---------- kerangka halaman misi ---------- */
+function missionShell(m, taskHTML) {
+  return '<div style="--era:' + ERAS[m.era].color + '">' +
+    '<div class="eratag">' + esc(ERAS[m.era].name) + "</div>" +
+    '<div class="mtitle"><span class="no">Misi ' + m.no + "</span><h2>" + esc(m.title) + "</h2></div>" +
+    '<p class="goal">' + esc(m.goal) + "</p>" +
+    '<div class="brief">' + m.brief + "</div>" +
+    "<h3>Langkah kerja</h3><ol class=\"steps\">" + m.steps.map(function (s) { return "<li>" + s + "</li>"; }).join("") + "</ol>" +
+    '<div class="tip">' + m.tip + "</div>" +
+    taskHTML + "</div>";
+}
+function go(id) {
+  cur = id;
+  var m = missionById(id);
+  if (!m) return;
+  var t = "";
+  if (m.kind === "quiz" || m.kind === "decide") t = viewQuiz(m);
+  else if (m.kind === "serp") t = viewSerp(m);
+  else if (m.kind === "write") t = viewWrite(m);
+  else if (m.kind === "faq") t = viewFaq(m);
+  else if (m.kind === "allocate") t = viewAlloc(m);
+  el("stage").innerHTML = missionShell(m, t);
+  paintRail();
+  window.scrollTo(0, 0);
+  if (m.kind === "quiz" || m.kind === "decide") wireQuiz(m);
+  else if (m.kind === "serp") wireSerp(m);
+  else if (m.kind === "write") wireWrite(m);
+  else if (m.kind === "faq") wireFaq(m);
+  else if (m.kind === "allocate") wireAlloc(m);
+}
+function nextBtn(m) {
+  var i = MISSIONS.indexOf(m), n = MISSIONS[i + 1];
+  return n ? '<button class="btn ghost" id="btnNext">Misi ' + n.no + ": " + esc(n.title) + "</button>" : '<button class="btn ghost" id="btnReport2">Lihat rapor akhir</button>';
+}
+function wireNext(m) {
+  var i = MISSIONS.indexOf(m), n = MISSIONS[i + 1];
+  var b = el("btnNext"); if (b && n) b.onclick = function () { go(n.id); };
+  var r = el("btnReport2"); if (r) r.onclick = report;
+}
+
+/* ---------- 1. kuis / keputusan ---------- */
+function viewQuiz(m) {
+  var saved = (S.m[m.id] && S.m[m.id].data && S.m[m.id].data.pick) || [];
+  return '<section class="surface" id="quiz">' + m.qs.map(function (q, i) {
+    return '<div class="q" data-i="' + i + '"><p class="stem">' +
+      (m.kind === "quiz" ? "<b>" + esc(q.stem) + "</b>" : esc(q.stem)) + '</p><div class="opts">' +
+      q.opts.map(function (o, j) {
+        return '<button data-q="' + i + '" data-o="' + j + '" aria-pressed="' + (saved[i] === j ? "true" : "false") + '">' + esc(o) + "</button>";
+      }).join("") + '</div><p class="why" hidden></p></div>';
+  }).join("") + "</section>" +
+    '<div class="btnrow"><button class="btn" id="btnCheck">Periksa jawaban</button><span id="qscore" class="u-sans"></span></div>' +
+    '<div class="btnrow" id="afterQ" hidden>' + nextBtn(m) + "</div>";
+}
+function wireQuiz(m) {
+  var pick = (S.m[m.id] && S.m[m.id].data && S.m[m.id].data.pick) ? S.m[m.id].data.pick.slice() : [];
+  var qs = el("quiz");
+  qs.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-q]"); if (!b) return;
+    var qi = +b.getAttribute("data-q");
+    pick[qi] = +b.getAttribute("data-o");
+    var row = qs.querySelectorAll('.q[data-i="' + qi + '"] .opts button');
+    for (var i = 0; i < row.length; i++) row[i].setAttribute("aria-pressed", row[i] === b ? "true" : "false");
+  });
+  el("btnCheck").onclick = function () {
+    var right = 0;
+    for (var i = 0; i < m.qs.length; i++) {
+      var bs = qs.querySelectorAll('.q[data-i="' + i + '"] .opts button');
+      for (var j = 0; j < bs.length; j++) {
+        bs[j].classList.remove("right", "wrong");
+        if (j === m.qs[i].ans) bs[j].classList.add("right");
+        else if (pick[i] === j) bs[j].classList.add("wrong");
+      }
+      var w = qs.querySelector('.q[data-i="' + i + '"] .why');
+      w.hidden = false; w.textContent = m.qs[i].why;
+      if (pick[i] === m.qs[i].ans) right++;
+    }
+    var sc = Math.round(right / m.qs.length * 100);
+    el("qscore").textContent = right + " dari " + m.qs.length + " benar \u00b7 " + sc + " XP";
+    el("afterQ").hidden = false;
+    finish(m.id, sc, { pick: pick });
+    if (m.id === "m1" && sc >= 80) award("intent");
+    if (m.id === "m10" && sc === 100) award("honest");
+    save(); paintRail(); wireNext(m);
+  };
+  wireNext(m);
+}
+
+/* ---------- 2. SERP ---------- */
+function viewSerp(m) {
+  var d = (S.m[m.id] && S.m[m.id].data) || {}, b = S.brand;
+  return '<section class="surface">' +
+    '<label class="fl" for="t1">Title tag<small>ideal 45\u201360 karakter</small></label>' +
+    '<input type="text" id="t1" value="' + esc(d.title || "") + '" placeholder="' + esc(b.kw) + " \u2014 pembeda konkret | " + esc(b.brand) + '">' +
+    '<div class="counter" id="c1"></div>' +
+    '<label class="fl" for="d1">Meta description<small>ideal 110\u2013155 karakter</small></label>' +
+    '<textarea id="d1" rows="3" placeholder="Satu manfaat terukur, satu penghilang keraguan, satu ajakan.">' + esc(d.desc || "") + "</textarea>" +
+    '<div class="counter" id="c2"></div></section>' +
+    '<h3>Pratinjau hasil pencarian</h3><div class="serp" id="serp"></div>' +
+    '<div class="btnrow"><button class="btn" id="btnScore">Nilai title &amp; deskripsi</button></div>' +
+    '<div id="out"></div><div class="btnrow" id="afterS" hidden>' + nextBtn(m) + "</div>";
+}
+function wireSerp(m) {
+  var b = S.brand, t1 = el("t1"), d1 = el("d1");
+  function cut(s, n) { return s.length > n ? s.slice(0, n - 1) + "\u2026" : s; }
+  function paint() {
+    var t = t1.value, d = d1.value;
+    el("c1").textContent = t.length + " karakter" + (t.length > 60 ? " \u2014 terpotong di hasil pencarian" : "");
+    el("c1").className = "counter" + (t.length > 60 ? " over" : "");
+    el("c2").textContent = d.length + " karakter" + (d.length > 155 ? " \u2014 terpotong" : "");
+    el("c2").className = "counter" + (d.length > 155 ? " over" : "");
+    el("serp").innerHTML = '<div class="url">' + esc(low(b.brand).replace(/[^a-z0-9]+/g, "") + ".id") + " \u203a " + esc(low(b.kw).replace(/\s+/g, "-")) + "</div>" +
+      '<div class="t">' + (esc(cut(t, 60)) || "Judul halaman belum ditulis") + "</div>" +
+      '<div class="d">' + (esc(cut(d, 155)) || "Meta description belum ditulis. Search engine akan mengambil potongan acak dari halamanmu.") + "</div>";
+  }
+  t1.oninput = paint; d1.oninput = paint; paint();
+  el("btnScore").onclick = function () {
+    var t = t1.value.trim(), d = d1.value.trim(), cs = [];
+    cs.push(mk(18, t.length === 0 ? 0 : (t.length <= 60 && t.length >= 40 ? 1 : (t.length <= 60 ? .6 : .2)),
+      "Panjang title " + t.length + " karakter", t.length > 60 ? "Lebih dari 60 karakter akan terpotong." : (t.length < 40 ? "Masih ada ruang yang belum dipakai." : "")));
+    cs.push(mk(18, has(words(t).slice(0, 4).join(" "), low(b.kw).split(" ")[0]) ? 1 : (has(t, b.kw) ? .5 : 0),
+      "Keyword di awal title", "Mulai dari keyword, nama brand taruh di belakang."));
+    cs.push(mk(14, hasQuantClaim(t) || hasNumber(t) ? 1 : 0, "Ada pembeda konkret di title", "Angka, lama pengerjaan, atau area layanan."));
+    cs.push(mk(10, has(t, b.brand) ? 1 : 0, "Nama brand disebut di title", ""));
+    cs.push(mk(16, d.length === 0 ? 0 : (d.length >= 110 && d.length <= 155 ? 1 : (d.length <= 155 ? .6 : .2)),
+      "Panjang meta description " + d.length + " karakter", d.length < 110 ? "Terlalu pendek \u2014 ruang gratis di hasil pencarian belum dipakai." : (d.length > 155 ? "Terpotong." : "")));
+    cs.push(mk(12, hasQuantClaim(d) ? 1 : (hasNumber(d) ? .5 : 0), "Ada angka di meta description", "Angka menaikkan klik lebih baik daripada kata sifat."));
+    cs.push(mk(12, /(pesan|hubungi|cek|lihat|coba|kunjungi|booking|konsultasi|wa|chat|daftar)/i.test(d) ? 1 : 0,
+      "Ada call to action", "Akhiri dengan satu aksi yang jelas."));
+    var fl = fluffFound(t + " " + d);
+    cs.push(mk(10, fl.length ? 0 : 1, "Tanpa kata fluff" + (fl.length ? " (" + fl.join(", ") + ")" : ""), fl.length ? "Ganti dengan klaim yang bisa dibuktikan." : ""));
+    var sc = total(cs);
+    el("out").innerHTML = '<section class="console"><header><span>Penilaian tampilan di hasil pencarian</span><span>title tag + meta description</span></header>' +
+      '<div class="checks" style="--m:var(--crawl)"><ul>' + cs.map(function (c) {
+        var cl = c.got >= .99 ? "ok" : (c.got > 0 ? "part" : "no");
+        return '<li class="' + cl + '">' + esc(c.t) + (c.why && c.got < .99 ? " <i>" + esc(c.why) + "</i>" : "") + "</li>";
+      }).join("") + "</ul><p style=\"font-family:var(--sans);font-size:1.15rem;margin:10px 0 0\">Nilai: " + sc + " / 100</p></div></section>";
+    S.art.title = t; S.art.desc = d;
+    finish(m.id, sc, { title: t, desc: d });
+    if (sc >= 80) award("serp");
+    el("afterS").hidden = false; wireNext(m);
+  };
+  wireNext(m);
+}
+
+/* ---------- 3. tulis (mesin penilai) ---------- */
+var FRAMEWORKS = {
+  PAS: ["Problem \u2014 sebut masalah pembaca dengan kata-katanya sendiri", "Agitate \u2014 perbesar akibat kalau dibiarkan", "Solution \u2014 tawarkan jalan keluar yang spesifik"],
+  AIDA: ["Attention \u2014 pembuka yang menahan mata", "Interest \u2014 fakta atau angka yang membuat penasaran", "Desire \u2014 gambaran hasil yang diinginkan", "Action \u2014 satu langkah berikutnya"],
+  FAB: ["Feature \u2014 apa yang ada", "Advantage \u2014 apa bedanya dari yang lain", "Benefit \u2014 apa untungnya bagi pembaca"],
+  "4C": ["Clear \u2014 satu gagasan per kalimat", "Concise \u2014 buang kata yang tidak bekerja", "Compelling \u2014 ada alasan untuk terus membaca", "Credible \u2014 setiap klaim punya bukti"]
+};
+function viewWrite(m) {
+  var d = (S.m[m.id] && S.m[m.id].data) || {};
+  var seed = (!d[m.artKey] && m.seed && S.art[m.seed]) ? S.art[m.seed] : null;
+  var fw = m.framework ? '<label class="fl" for="fw">Framework yang dipakai</label><select id="fw">' +
+    Object.keys(FRAMEWORKS).map(function (k) { return '<option' + (d.fw === k ? " selected" : "") + ">" + k + "</option>"; }).join("") +
+    '</select><div class="tip" id="fwsteps"></div>' : "";
+  var fields = m.fields.map(function (f) {
+    var v = d[f.k] || (f.k === m.artKey && seed ? seed : "") || "";
+    return '<label class="fl" for="' + f.k + '">' + esc(f.label) + "<small>" + esc(f.hint) + "</small></label>" +
+      '<textarea id="' + f.k + '" rows="' + f.rows + '" placeholder="' + esc(f.ph) + '">' + esc(v) + "</textarea>" +
+      '<div class="counter" id="cnt_' + f.k + '"></div>';
+  }).join("");
+  var names = { seo: "CrawlBot", aeo: "SnippetBot", geo: "SynthEngine", voice: "VoiceBot" };
+  var target = Object.keys(m.pass).map(function (k) { return names[k] + " \u2265 " + m.pass[k]; }).join(" dan ");
+  return (seed ? '<div class="tip">Teks dari misi sebelumnya sudah dimuat di bawah. Tulis ulang di atasnya, jangan mulai dari nol.</div>' : "") +
+    '<section class="surface">' + fw + fields + "</section>" +
+    '<p class="counter" style="margin:0 0 12px">Target lulus misi ini: ' + esc(target) + "</p>" +
+    '<div class="btnrow"><button class="btn" id="btnRun">Jalankan engine</button>' +
+    '<button class="btn ghost" id="btnLock" disabled>Kunci nilai &amp; lanjut</button></div>' +
+    '<div id="out"></div><div class="btnrow" id="afterW" hidden>' + nextBtn(m) + "</div>";
+}
+function wireWrite(m) {
+  var last = null;
+  function fwPaint() {
+    if (!m.framework) return;
+    var k = el("fw").value;
+    el("fwsteps").innerHTML = "<b>" + k + "</b> \u2014 isi berurutan:<ul style=\"margin:6px 0 0;padding-left:20px\">" +
+      FRAMEWORKS[k].map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") + "</ul>";
+  }
+  if (m.framework) { el("fw").onchange = fwPaint; fwPaint(); }
+  m.fields.forEach(function (f) {
+    var ta = el(f.k);
+    ta.oninput = function () {
+      var n = wc(ta.value);
+      el("cnt_" + f.k).textContent = n + " kata \u00b7 " + sentences(ta.value).length + " kalimat" +
+        (f.k === "voice" ? (n > 30 ? " \u2014 lewat batas 30 kata" : "") : "");
+      el("cnt_" + f.k).className = "counter" + (f.k === "voice" && n > 30 ? " over" : "");
+    };
+    ta.oninput();
+  });
+  el("btnRun").onclick = function () {
+    var main = el(m.artKey).value;
+    if (wc(main) < 12) { toast("Tulis dulu minimal 12 kata."); return; }
+    var q = el("q") ? el("q").value : (S.brand.q || "");
+    var res = runAll(main, ctxNow({ q: q }));
+    if (m.scorer === "voice") res.unshift(engVoice(main, ctxNow({ q: q })));
+    var showing = res.filter(function (r) { return m.show.indexOf(r.key) >= 0; });
+    var html = "";
+    if (m.compare && S.art[m.seed]) {
+      var before = runAll(S.art[m.seed], ctxNow({ q: q }));
+      html += '<div class="tip"><b>Sebelum (Misi 3):</b> CrawlBot ' + before[0].score + " \u00b7 SnippetBot " + before[1].score + " \u00b7 SynthEngine " + before[2].score +
+        "<br><b>Sesudah:</b> CrawlBot " + res[0].score + " \u00b7 SnippetBot " + res[1].score + " \u00b7 SynthEngine " + res[2].score +
+        "<br>Nilai CrawlBot boleh turun sedikit. Yang dikejar sekarang bukan ranking, tapi jawaban yang diambil.</div>";
+    }
+    html += consoleHTML(showing, m.show.length === 3 ? "teks sama, tiga pembaca" : "engine era ini");
+    if (m.aipreview) html += aiPreview(main, res[2]);
+    if (m.boss) {
+      var fail = [];
+      for (var k in m.pass) {
+        var r = res.filter(function (x) { return x.key === k; })[0];
+        if (r.score < m.pass[k]) fail.push(r.name + " " + r.score + "/" + m.pass[k]);
+      }
+      html += '<div class="tip">' + (fail.length ?
+        "<b>Belum lolos:</b> " + fail.join(", ") + ". Perbaiki dulu baris bertanda \u00d7 dengan bobot terbesar dulu, lalu jalankan lagi." :
+        "<b>Lolos ketiganya.</b> Ini yang dicari di dunia kerja: satu halaman, tiga pembaca, tanpa mengorbankan salah satu.") + "</div>";
+    }
+    el("out").innerHTML = html;
+    var keys = Object.keys(m.pass), sum = 0;
+    keys.forEach(function (k) { sum += res.filter(function (x) { return x.key === k; })[0].score; });
+    last = { score: Math.round(sum / keys.length), res: res, main: main, q: q };
+    el("btnLock").disabled = false;
+    el("btnLock").textContent = "Kunci nilai (" + last.score + " XP) & lanjut";
+  };
+  el("btnLock").onclick = function () {
+    if (!last) return;
+    var data = { score: last.score };
+    m.fields.forEach(function (f) { data[f.k] = el(f.k).value; });
+    if (m.framework) data.fw = el("fw").value;
+    S.art[m.artKey] = last.main;
+    if (el("q")) S.brand.q = el("q").value;
+    finish(m.id, last.score, data);
+    var by = {}; last.res.forEach(function (r) { by[r.key] = r.score; });
+    if (m.id === "m3" && by.seo >= 70) award("framework");
+    if (m.id === "m4" && by.aeo >= 70) award("bluf");
+    if (m.id === "m6" && by.voice >= 70) award("voice");
+    if (m.id === "m7" && by.geo >= 65) award("citation");
+    if (m.id === "m9" && by.seo >= 70 && by.aeo >= 70 && by.geo >= 70) award("triple");
+    save(); paintRail();
+    el("afterW").hidden = false; wireNext(m);
+    toast("Tersimpan. " + last.score + " XP.");
+  };
+  wireNext(m);
+}
+function aiPreview(t, geo) {
+  var b = S.brand, q = bestQuotable(t, b.brand);
+  var cited = geo.score >= 60 && q.score >= 5;
+  var body = cited ?
+    "Untuk " + esc(b.cat) + " di " + esc(b.city) + ", beberapa sumber menyebut " + esc(b.brand) + " dengan data yang jelas. " +
+    '<span class="cite">' + esc(q.s) + "</span> Pertimbangkan juga jarak dan waktu pengerjaan sebelum memutuskan." :
+    "Untuk " + esc(b.cat) + " di " + esc(b.city) + ", pilihan yang tersedia cukup banyak dan sebagian besar menawarkan layanan serupa. " +
+    "Informasi yang bisa diverifikasi masih sedikit, jadi sebaiknya bandingkan sendiri harga dan lama pengerjaannya.";
+  return '<div class="aibox"><h4>Jawaban AI untuk \u201c' + esc(b.kw) + "\u201d</h4><p>" + body + "</p>" +
+    '<div class="src">' + (cited ? "Sumber dikutip: " + esc(b.brand) + " \u00b7 2 sumber lain" :
+      "Sumber dikutip: 3 website lain \u2014 punyamu tidak termasuk. Tidak ada kalimat yang bisa dikutip.") + "</div></div>";
+}
+
+/* ---------- 5. FAQ ---------- */
+function viewFaq(m) {
+  var d = (S.m[m.id] && S.m[m.id].data) || {}, rows = "";
+  for (var i = 0; i < 3; i++) {
+    rows += '<label class="fl" for="fq' + i + '">Pertanyaan ' + (i + 1) + '<small>pakai kata pelanggan</small></label>' +
+      '<input type="text" id="fq' + i + '" value="' + esc((d["q" + i]) || "") + '" placeholder="Berapa lama\u2026?">' +
+      '<label class="fl" for="fa' + i + '">Jawaban ' + (i + 1) + '<small>40\u201360 kata</small></label>' +
+      '<textarea id="fa' + i + '" rows="4">' + esc((d["a" + i]) || "") + "</textarea>" +
+      '<div class="counter" id="cf' + i + '"></div>';
+  }
+  return '<section class="surface">' + rows +
+    '<label class="fl"><input type="checkbox" id="schema" ' + (d.schema ? "checked" : "") + ' style="width:auto;margin-right:8px"> Aktifkan FAQ schema (schema.org)</label></section>' +
+    '<h3>Pratinjau</h3><div id="fpv"></div>' +
+    '<div class="btnrow"><button class="btn" id="btnFaq">Nilai blok FAQ</button></div>' +
+    '<div id="out"></div><div class="btnrow" id="afterF" hidden>' + nextBtn(m) + "</div>";
+}
+function wireFaq(m) {
+  function all() {
+    var o = { q: [], a: [] };
+    for (var i = 0; i < 3; i++) { o.q.push(el("fq" + i).value.trim()); o.a.push(el("fa" + i).value.trim()); }
+    o.schema = el("schema").checked;
+    return o;
+  }
+  function paint() {
+    var o = all();
+    for (var i = 0; i < 3; i++) {
+      var n = wc(o.a[i]);
+      el("cf" + i).textContent = n + " kata" + (n > 0 && (n < 25 || n > 80) ? " \u2014 di luar rentang ideal 40\u201360" : "");
+      el("cf" + i).className = "counter" + (n > 80 ? " over" : "");
+    }
+    var live = o.q.map(function (q, i) { return q && o.a[i] ? '<div style="border-bottom:1px solid var(--rule);padding:8px 0"><b class="u-sans">' + esc(q) + "</b><br>" + esc(o.a[i]) + "</div>" : ""; }).join("");
+    el("fpv").innerHTML = o.schema ?
+      '<div class="serp"><div class="url">tampilan dengan FAQ schema aktif</div><div class="t">' + esc(S.art.title || S.brand.kw) + "</div>" + (live || "<div class=\"d\">Isi FAQ belum lengkap.</div>") + "</div>" :
+      '<div class="serp"><div class="url">tanpa schema \u2014 search engine harus menebak sendiri</div><div class="d">' + (live ? "FAQ-nya ada, tapi tidak ditandai. Search engine belum tentu mengenalinya sebagai blok tanya-jawab." : "Isi FAQ belum lengkap.") + "</div></div>";
+  }
+  for (var i = 0; i < 3; i++) { el("fq" + i).oninput = paint; el("fa" + i).oninput = paint; }
+  el("schema").onchange = paint; paint();
+  el("btnFaq").onclick = function () {
+    var o = all(), cs = [], filled = 0, qform = 0, inRange = 0, direct = 0, numbered = 0;
+    for (var i = 0; i < 3; i++) {
+      if (o.q[i] && o.a[i]) filled++;
+      if (questionLines(o.q[i]).length) qform++;
+      var n = wc(o.a[i]); if (n >= 30 && n <= 75) inRange++;
+      var f = firstSentence(o.a[i]); if (f && wc(f) <= 28 && /(adalah|butuh|mulai|bisa|dapat|ya|tidak|\d)/i.test(f)) direct++;
+      if (hasQuantClaim(o.a[i])) numbered++;
+    }
+    cs.push(mk(20, filled / 3, "Tiga pasang tanya-jawab lengkap (" + filled + "/3)", ""));
+    cs.push(mk(18, qform / 3, "Pertanyaan pakai bahasa orang bertanya (" + qform + "/3)", "Sertakan kata tanya atau tanda tanya."));
+    cs.push(mk(18, inRange / 3, "Panjang jawaban pas untuk snippet (" + inRange + "/3)", "Sekitar 40\u201360 kata."));
+    cs.push(mk(18, direct / 3, "Kalimat pertama langsung menjawab (" + direct + "/3)", "Jangan mengulang pertanyaan sebelum menjawab."));
+    cs.push(mk(14, numbered / 3, "Ada angka konkret (" + numbered + "/3)", "Lama pengerjaan, harga, jumlah, atau batas waktu."));
+    cs.push(mk(12, o.schema ? 1 : 0, "FAQ schema aktif", "Tanpa schema, search engine harus menebak struktur halamanmu."));
+    var sc = total(cs);
+    el("out").innerHTML = '<section class="console"><header><span>SnippetBot memeriksa blok FAQ</span><span>answer engine 2019</span></header>' +
+      '<div class="checks" style="--m:var(--answer)"><ul>' + cs.map(function (c) {
+        var cl = c.got >= .99 ? "ok" : (c.got > 0 ? "part" : "no");
+        return '<li class="' + cl + '">' + esc(c.t) + (c.why && c.got < .99 ? " <i>" + esc(c.why) + "</i>" : "") + "</li>";
+      }).join("") + '</ul><p style="font-family:var(--sans);font-size:1.15rem;margin:10px 0 0">Nilai: ' + sc + " / 100</p></div></section>";
+    var data = { schema: o.schema };
+    for (var j = 0; j < 3; j++) { data["q" + j] = o.q[j]; data["a" + j] = o.a[j]; }
+    S.art.faq = o;
+    finish(m.id, sc, data);
+    if (sc >= 80) award("snippet");
+    el("afterF").hidden = false; wireNext(m);
+  };
+  wireNext(m);
+}
+
+/* ---------- 8. alokasi ---------- */
+function viewAlloc(m) {
+  var d = (S.m[m.id] && S.m[m.id].data) || {};
+  var rows = m.channels.map(function (c) {
+    var v = (d[c.k] != null) ? d[c.k] : 0;
+    return '<div class="arow"><div class="nm">' + esc(c.nm) + "<small>" + esc(c.note) + "</small></div>" +
+      '<input type="range" id="r_' + c.k + '" min="0" max="100" step="5" value="' + v + '" aria-label="' + esc(c.nm) + '">' +
+      '<output id="o_' + c.k + '">' + v + "</output></div>";
+  }).join("");
+  return '<section class="surface"><div class="alloc">' + rows + "</div>" +
+    '<p class="budget" id="bud"></p></section>' +
+    '<h3>Perkiraan share of voice di jawaban AI</h3><div class="sov" id="sov"></div>' +
+    '<div class="btnrow"><button class="btn" id="btnAlloc">Kunci strategi</button></div>' +
+    '<div id="out"></div><div class="btnrow" id="afterA" hidden>' + nextBtn(m) + "</div>";
+}
+function wireAlloc(m) {
+  function vals() { var o = {}; m.channels.forEach(function (c) { o[c.k] = +el("r_" + c.k).value; }); return o; }
+  /* Tiap channel punya titik jenuh (sat) dan nilai maksimal (cap).
+     Sebagian punya ambang minimum (min) dan batas spam (spamAt).
+     Total kebutuhan semua channel > 100 poin, jadi harus memilih. */
+  var MAXRAW = 3.15; /* pembagi: alokasi paling efisien \u2248 100 */
+  function calc(o) {
+    var raw = 0, parts = [], notes = [];
+    m.channels.forEach(function (c) {
+      var p = o[c.k] || 0, v = 0;
+      if (c.min && p > 0 && p < c.min) {
+        notes.push(c.nm + ": " + p + " poin belum cukup, ambang minimumnya " + c.min + " poin \u2014 hasilnya nol.");
+      } else {
+        v = c.cap * Math.min(1, p / c.sat);
+        if (p > c.sat) notes.push(c.nm + ": sudah penuh di " + c.sat + " poin, " + (p - c.sat) + " poin terbuang.");
+        if (c.spamAt && p > c.spamAt) { v -= 15; notes.push(c.nm + ": di atas " + c.spamAt + " poin terbaca spam, nilainya dipotong."); }
+      }
+      raw += Math.max(0, v);
+      parts.push({ k: c.k, nm: c.nm, v: Math.max(0, v) });
+    });
+    if (!o.own) { raw *= .85; notes.push("Website sendiri 0 poin: tidak ada sumber resmi yang bisa dipakai AI untuk memastikan entity-mu."); }
+    return { raw: raw, score: Math.round(Math.min(100, raw / MAXRAW)), parts: parts, notes: notes };
+  }
+  function paint() {
+    var o = vals(), used = 0;
+    m.channels.forEach(function (c) { el("o_" + c.k).value = o[c.k]; used += o[c.k]; });
+    var r = calc(o), max = Math.max(1, Math.max.apply(null, r.parts.map(function (p) { return p.v; })));
+    el("bud").innerHTML = "Terpakai <b>" + used + "</b> dari 100 poin. " +
+      (used > 100 ? "<span style=\"color:var(--bad)\">Kelebihan " + (used - 100) + " \u2014 kurangi dulu.</span>" :
+        used < 100 ? "Sisa " + (100 - used) + " poin belum dipakai." : "Pas.");
+    el("sov").innerHTML = r.parts.map(function (p) {
+      return '<div class="sovrow"><span>' + esc(p.nm) + '</span><div class="bar"><i style="width:' + Math.round(p.v / max * 100) + '%"></i></div></div>';
+    }).join("") + '<p class="budget">Kekuatan off-page signal: <b>' + (used > 100 ? 0 : r.score) + "</b>/100</p>" +
+      (used <= 100 && r.notes.length ? '<p class="counter" style="margin:0">' + esc(r.notes.join(" ")) + "</p>" : "");
+    el("btnAlloc").disabled = used !== 100;
+  }
+  m.channels.forEach(function (c) { el("r_" + c.k).oninput = paint; });
+  paint();
+  el("btnAlloc").onclick = function () {
+    var o = vals(), r = calc(o), spread = 0;
+    m.channels.forEach(function (c) { if (o[c.k] >= 10) spread++; });
+    S.art.offsite = r.score;
+    var waste = r.notes.length ? "<br><br><b>Poin yang tidak bekerja:</b><br>" + r.notes.map(esc).join("<br>") : "";
+    var note = !o.own ?
+      "Isi dulu website sendiri. Itu sumber yang dipakai AI untuk memastikan entity-mu memang ada, walau bobotnya paling rendah." :
+      spread <= 2 ?
+      "Kamu menumpuk di satu atau dua channel. Tiap channel punya titik jenuh, jadi poin berlebih di tempat yang sama hampir tidak menambah apa pun." :
+      spread >= 5 ? "Sebarannya luas. Ini yang paling mirip cara AI bekerja: banyak sumber berbeda menyebut hal yang sama." :
+        "Sebarannya cukup. Baca catatan di bawah, lalu coba satu kombinasi lain dan bandingkan angkanya.";
+    el("out").innerHTML = '<div class="tip"><b>Off-page signal: ' + r.score + "/100.</b> " + note + waste +
+      "<br><br>Angka ini jadi salah satu komponen nilai SynthEngine di Misi 9. Halaman bagus dengan off-page nol tidak akan pernah dapat nilai penuh.</div>";
+    var data = { }; m.channels.forEach(function (c) { data[c.k] = o[c.k]; });
+    finish(m.id, r.score, data);
+    if (r.score >= 70) award("entity");
+    save(); el("afterA").hidden = false; wireNext(m);
+  };
+  wireNext(m);
+}
+
+/* ---------- sandbox ---------- */
+function sandbox() {
+  cur = null; paintRail();
+  el("stage").innerHTML = '<div style="--era:var(--ink)"><div class="eratag" style="--era:var(--ink)">Sandbox</div>' +
+    "<h2>Uji teks apa pun di tiga engine</h2>" +
+    '<p class="goal">Tempel teks apa pun \u2014 punyamu, punya kompetitor, atau contoh dari buku \u2014 lalu lihat ketiga engine menilainya sekaligus. Nilainya tidak masuk rapor.</p>' +
+    '<section class="surface">' +
+    '<label class="fl" for="sbk">Keyword atau pertanyaan target</label><input type="text" id="sbk" value="' + esc(S.brand ? S.brand.kw : "") + '">' +
+    '<label class="fl" for="sbt">Teks</label><textarea id="sbt" rows="12" placeholder="Tempel di sini."></textarea><div class="counter" id="sbc"></div></section>' +
+    '<div class="btnrow"><button class="btn" id="sbrun">Jalankan tiga engine</button></div><div id="out"></div></div>';
+  el("sbt").oninput = function () { el("sbc").textContent = wc(el("sbt").value) + " kata \u00b7 " + sentences(el("sbt").value).length + " kalimat"; };
+  el("sbrun").onclick = function () {
+    var t = el("sbt").value;
+    if (wc(t) < 10) { toast("Minimal 10 kata."); return; }
+    el("out").innerHTML = consoleHTML(runAll(t, ctxNow({ kw: el("sbk").value })), "sandbox");
+  };
+}
+
+/* ---------- rapor ---------- */
+function report() {
+  var lv = levelOf(S.xp), b = S.brand || {};
+  var rows = MISSIONS.map(function (m) {
+    var r = S.m[m.id];
+    return "<tr><td>" + m.no + "</td><td>" + esc(m.title) + "</td><td>" + esc(ERAS[m.era].name.split("\u2014")[0].trim()) +
+      '</td><td class="n">' + (r ? r.score : "\u2014") + '</td><td class="n">' + (r ? r.attempts : "\u2014") + "</td></tr>";
+  }).join("");
+  var got = BADGES.filter(function (x) { return S.badges.indexOf(x.id) >= 0; }).map(function (x) { return x.t; });
+  var done = Object.keys(S.m).length;
+  modal("<h2>Rapor Lab Tiga Engine</h2>" +
+    "<p>" + esc(b.brand || "\u2014") + " \u00b7 " + esc(b.cat || "") + " \u00b7 " + esc(b.city || "") +
+    "<br>Keyword: " + esc(b.kw || "\u2014") + "</p>" +
+    '<p class="u-sans" style="font-size:1.3rem">' + esc(lv.t) + " \u00b7 " + S.xp + " XP \u00b7 " + done + "/" + MISSIONS.length + " misi selesai</p>" +
+    "<table class=\"rc\"><tr><th>#</th><th>Misi</th><th>Era</th><th>Nilai</th><th>Coba</th></tr>" + rows + "</table>" +
+    "<p><b>Badge:</b> " + (got.length ? esc(got.join(", ")) : "belum ada") + "</p>" +
+    (S.art.final ? "<h3>Halaman final</h3><p style=\"white-space:pre-wrap\">" + esc(S.art.final) + "</p>" : "") +
+    '<div class="btnrow" style="margin-top:18px"><button class="btn" onclick="window.print()">Cetak / simpan PDF</button>' +
+    '<button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+}
+
+/* ---------- catatan pengajar ---------- */
+function teacher() {
+  modal("<h2>Catatan pengajar</h2>" +
+    "<p>Satu file HTML, jalan tanpa internet, tanpa install. Bagikan lewat flashdisk, WhatsApp, atau folder kelas. Progres tiap siswa tersimpan di browser masing-masing.</p>" +
+    "<h3>Usulan pembagian pertemuan</h3>" +
+    "<p><b>Pertemuan A \u2014 Era 1 (SEO):</b> Misi 1\u20133. Search intent, title tag, framework copywriting. Tutup dengan satu pertanyaan: kenapa nilai SnippetBot rendah padahal CrawlBot tinggi?<br>" +
+    "<b>Pertemuan B \u2014 Era 2 (AEO):</b> Misi 4\u20136. BLUF, FAQ schema, voice search dan zero-click. Pakai perbandingan nilai sebelum\u2013sesudah di Misi 4 sebagai bahan diskusi.<br>" +
+    "<b>Pertemuan C \u2014 Era 3 (GEO):</b> Misi 7\u20138. Kalimat yang bisa dikutip dan off-page signal. Minta 3 siswa membaca kalimat kutipannya, kelas menilai mana yang paling mungkin dipakai AI.<br>" +
+    "<b>Pertemuan D \u2014 Ujian:</b> Misi 9\u201310 dikerjakan di kelas, lalu kumpulkan file jawabannya.</p>" +
+    "<h3>Cara mengumpulkan nilai</h3>" +
+    "<p>Siswa klik <b>Export jawaban</b> \u2192 keluar satu file <span style=\"font-family:var(--mono)\">.json</span> berisi semua tulisan, nilai, dan jumlah percobaan. Bisa dibuka dengan text editor, atau dimuat lagi lewat <b>Import jawaban</b> untuk diperiksa langsung di app ini. Rapor juga bisa dicetak jadi PDF.</p>" +
+    "<h3>Cara engine menilai</h3>" +
+    "<p>Penilaiannya murni rule-based, bukan AI, jadi hasilnya sama di semua komputer dan bisa kamu pertanggungjawabkan. Aturannya ada di bagian <span style=\"font-family:var(--mono)\">TIGA ENGINE PENILAI</span> di file ini. Bobot tiap kriteria adalah angka pertama di <span style=\"font-family:var(--mono)\">mk(...)</span> \u2014 ubah angkanya kalau mau menyesuaikan penekanan materi.</p>" +
+    "<h3>Menambah misi sendiri</h3>" +
+    "<p>Buka bagian <span style=\"font-family:var(--mono)\">DAFTAR MISI</span>, copy satu objek, ubah <span style=\"font-family:var(--mono)\">id</span> supaya unik, lalu isi <span style=\"font-family:var(--mono)\">brief</span> dan <span style=\"font-family:var(--mono)\">steps</span>. Ada enam jenis tugas: quiz, serp, write, faq, allocate, decide. Menu kiri, XP, badge, dan rapor menyesuaikan sendiri \u2014 tidak ada kode lain yang perlu disentuh.</p>" +
+    "<h3>Yang perlu disampaikan ke kelas</h3>" +
+    "<p>Nilai di sini adalah alat bantu ajar, bukan tiruan algoritma Google atau model AI mana pun. Nilai tinggi berarti tulisan itu memenuhi prinsip yang kita ajarkan, bukan jaminan ranking. Sampaikan di awal supaya siswa tidak sibuk mengejar angka dan lupa pembacanya.</p>" +
+    '<div class="btnrow" style="margin-top:18px"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+}
+
+/* ---------- onboarding ---------- */
+function onboard() {
+  cur = null;
+  var picks = PRESETS.map(function (p, i) {
+    return '<button class="pick" data-p="' + i + '" aria-pressed="false"><b>' + esc(p.brand) + "</b><small>" + esc(p.cat) + " \u00b7 " + esc(p.city) + "</small><br>" + esc(p.fact) + "</button>";
+  }).join("") + '<button class="pick" data-p="-1" aria-pressed="false"><b>Brand saya sendiri</b><small>isi manual</small><br>Pakai usaha keluarga, UMKM tempat magang, atau proyek kelompokmu.</button>';
+  el("stage").innerHTML = '<div style="--era:var(--synth)">' +
+    '<div class="eratag">Sebelum mulai</div>' +
+    "<h1>Satu teks, tiga engine, tiga nilai</h1>" +
+    '<p class="goal" style="font-size:1.15rem;max-width:60ch">Dulu search engine hanya mengurutkan link. Lalu ia mulai mengambil satu jawaban dan menaruhnya di atas hasil pencarian. Sekarang AI menulis jawabannya sendiri, dan hanya menyebut sumber yang dipakainya. Teks yang menang di satu era bisa hilang di era berikutnya. Sepuluh misi berikut membawamu melewati ketiganya, dengan satu brand yang kamu pegang dari awal sampai akhir.</p>' +
+    '<div class="console" style="margin:26px 0"><header><span>Contoh teks gaya 2008, dinilai tiga engine</span><span>nilainya dihitung langsung, bukan contoh tempelan</span></header>' +
+    '<div style="padding:14px 16px;background:var(--card);border-bottom:1px solid var(--rule);font-size:.95rem"><i>' + esc(DEMO_TEXT) + "</i></div>" +
+    metersHTML(runAll(DEMO_TEXT, DEMO_CTX)) + "</div>" +
+    "<h3>Pilih brand yang kamu pegang</h3><p>Semua misi memakai brand ini, jadi pilih yang kamu paham.</p>" +
+    '<div class="picks" id="picks">' + picks + "</div>" +
+    '<section class="surface" id="custom" hidden style="margin-top:16px">' +
+    '<label class="fl" for="cb">Nama brand</label><input type="text" id="cb">' +
+    '<label class="fl" for="cc">Kategori usaha<small>mis. jasa cuci sepatu</small></label><input type="text" id="cc">' +
+    '<label class="fl" for="ci">Kota</label><input type="text" id="ci">' +
+    '<label class="fl" for="ck">Keyword utama<small>tulis seperti yang diketik orang</small></label><input type="text" id="ck">' +
+    "</section>" +
+    '<div class="btnrow" style="margin-top:18px"><button class="btn" id="btnStart" disabled>Mulai Misi 1</button></div></div>';
+  var sel = null;
+  el("picks").addEventListener("click", function (e) {
+    var b = e.target.closest(".pick"); if (!b) return;
+    var all = el("picks").querySelectorAll(".pick");
+    for (var i = 0; i < all.length; i++) all[i].setAttribute("aria-pressed", all[i] === b ? "true" : "false");
+    sel = +b.getAttribute("data-p");
+    el("custom").hidden = sel !== -1;
+    el("btnStart").disabled = false;
+  });
+  el("btnStart").onclick = function () {
+    var p;
+    if (sel === -1) {
+      p = { brand: el("cb").value.trim(), cat: el("cc").value.trim(), city: el("ci").value.trim(), kw: el("ck").value.trim() };
+      if (!p.brand || !p.cat || !p.city || !p.kw) { toast("Isi keempat kolomnya dulu."); return; }
+    } else p = JSON.parse(JSON.stringify(PRESETS[sel]));
+    p.q = "";
+    S.brand = p; save(); paintRail(); go(MISSIONS[0].id);
+  };
+  paintRail();
+}
+
+/* ---------- ekspor / impor / reset ---------- */
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+function copyBox(id) {
+  var ta = el(id);
+  ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length);
+  var ok = false;
+  try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+  if (!ok && navigator.clipboard) {
+    navigator.clipboard.writeText(ta.value).then(function () { toast("Tersalin."); },
+      function () { toast("Tekan lama di kotak teks, lalu pilih Select All \u2192 Copy."); });
+    return;
+  }
+  toast(ok ? "Tersalin. Tempel ke WhatsApp atau email." : "Tekan lama di kotak teks, lalu pilih Select All \u2192 Copy.");
+}
+function exportFile() {
+  var json = JSON.stringify(S, null, 2);
+  var name = "lab-tiga-engine-" + low((S.brand && S.brand.brand) || "siswa").replace(/[^a-z0-9]+/g, "-") +
+    "-" + new Date().toISOString().slice(0, 10) + ".json";
+  modal("<h2>Export jawaban</h2>" +
+    "<p>Pilih salah satu. Di iPhone dan iPad, tombol download biasanya tidak berfungsi \u2014 pakai Copy, lalu tempel ke WhatsApp atau email ke dosen.</p>" +
+    '<div class="btnrow"><button class="btn" id="exCopy">Copy semua teks</button>' +
+    '<button class="btn ghost" id="exDl">Download file .json</button></div>' +
+    '<textarea id="exTa" rows="8">' + esc(json) + "</textarea>" +
+    '<p class="counter">Nama file: ' + esc(name) + "</p>" +
+    '<div class="btnrow"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+  el("exCopy").onclick = function () { copyBox("exTa"); };
+  el("exDl").onclick = function () {
+    try {
+      var blob = new Blob([json], { type: "application/json" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob); a.download = name;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+      toast("File " + name + " diunduh.");
+    } catch (e) { toast("Download tidak didukung di browser ini. Pakai tombol Copy."); }
+  };
+}
+function applyImport(text) {
+  try {
+    var o = JSON.parse(text);
+    if (!o || o.v !== 1) throw 0;
+    S = o; save(); paintRail(); closeModal();
+    if (S.brand) go(firstOpen()); else onboard();
+    toast("Jawaban berhasil dimuat.");
+  } catch (e) { toast("Teks tidak dikenali. Pastikan seluruh isi file .json tersalin, termasuk tanda kurung kurawal."); }
+}
+function importDialog() {
+  modal("<h2>Import jawaban</h2>" +
+    "<p>Pilih file .json, atau tempel isinya ke kotak di bawah. Menu tempel muncul dengan tekan lama di kotak itu.</p>" +
+    '<input type="file" id="impFile" accept="application/json,text/plain,.json" style="margin-bottom:14px">' +
+    '<textarea id="impTa" rows="6" placeholder="Tempel isi file .json di sini."></textarea>' +
+    '<div class="btnrow"><button class="btn" id="impGo">Muat jawaban</button>' +
+    '<button class="btn ghost" onclick="closeModal()">Batal</button></div>');
+  el("impFile").onchange = function () {
+    if (!this.files || !this.files[0]) return;
+    var r = new FileReader();
+    r.onload = function () { applyImport(r.result); };
+    r.onerror = function () { toast("File tidak bisa dibaca. Pakai cara tempel teks."); };
+    r.readAsText(this.files[0]);
+  };
+  el("impGo").onclick = function () {
+    var v = el("impTa").value.trim();
+    if (!v) { toast("Kotaknya masih kosong."); return; }
+    applyImport(v);
+  };
+}
+
+/* ---------- init ---------- */
+load();
+el("modal").addEventListener("click", function (e) { if (e.target === el("modal")) closeModal(); });
+document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
+document.addEventListener("click", function (e) {
+  var b = e.target.closest("button[data-go]");
+  if (b && !b.disabled) { go(b.getAttribute("data-go")); el("stage").focus(); }
+});
+el("btnSandbox").onclick = sandbox;
+el("btnReport").onclick = report;
+el("btnTeacher").onclick = teacher;
+el("btnExport").onclick = exportFile;
+el("btnImport").onclick = importDialog;
+el("btnReset").onclick = function () {
+  modal("<h2>Mulai dari nol?</h2><p>Semua tulisan, nilai, dan badge di browser ini akan dihapus dan tidak bisa dikembalikan. Export dulu kalau masih dibutuhkan.</p>" +
+    '<div class="btnrow"><button class="btn" id="cfr">Ya, hapus semuanya</button><button class="btn ghost" onclick="closeModal()">Batal</button></div>');
+  el("cfr").onclick = function () { S = freshState(); save(); closeModal(); onboard(); };
+};
+if (S.brand) { paintRail(); go(firstOpen()); } else onboard();
+
+</script>
+</body>
+</html>

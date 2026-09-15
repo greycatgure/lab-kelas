@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab Kelas — Politeknik Negeri Sriwijaya</title>
+<meta name="description" content="Kumpulan lab dan simulasi kelas: copywriting dan SEO, pemasaran digital, perancangan web, kesekretariatan, serta kewirausahaan.">
+<style>
+:root{
+  --paper:#F1F2EC; --card:#FBFBF7; --ink:#17202B; --ink-soft:#4A5563; --rule:#CDD1C2;
+  --sans:"Arial Narrow","Helvetica Neue Condensed","Liberation Sans Narrow",system-ui,sans-serif;
+  --serif:Georgia,"Iowan Old Style","Palatino Linotype",serif;
+  --mono:ui-monospace,"SFMono-Regular","Consolas","Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:17px; line-height:1.6; -webkit-text-size-adjust:100%}
+h1,h2,h3,.u-sans{font-family:var(--sans); letter-spacing:-.01em; font-weight:700; line-height:1.1}
+p{margin:0 0 .9em; max-width:64ch}
+a{color:inherit}
+button:focus{outline:2px solid var(--ink); outline-offset:2px}
+:focus-visible{outline:3px solid var(--ink); outline-offset:3px}
+
+header{background:var(--ink); color:#E7EAE2; padding:34px 22px 30px}
+header .in{max-width:880px; margin:0 auto}
+header h1{font-size:2.5rem; margin:0}
+header .sub{font-family:var(--mono); font-size:.74rem; color:#9AA69B; margin-top:8px; letter-spacing:.02em}
+header p{color:#C9D0C6; margin:16px 0 0; max-width:58ch; font-size:1.02rem}
+
+main{max-width:880px; margin:0 auto; padding:30px 22px 70px}
+.grp{font-family:var(--sans); font-size:1.02rem; color:var(--ink-soft); margin:26px 0 10px; padding-bottom:5px; border-bottom:1px solid var(--rule)}
+.grp:first-child{margin-top:0}
+.labs{display:grid; gap:13px}
+.lab{display:block; background:var(--card); border:1px solid var(--rule); border-left:5px solid var(--c); border-radius:4px; padding:17px 19px; text-decoration:none}
+.lab:hover{border-color:var(--ink); border-left-color:var(--c)}
+.lab .mk{font-family:var(--mono); font-size:.71rem; color:var(--c); text-transform:uppercase; letter-spacing:.06em}
+.lab h2{font-size:1.45rem; margin:5px 0 6px}
+.lab .desc{font-size:.96rem; margin:0 0 9px; color:var(--ink-soft); max-width:62ch}
+.lab .meta{font-family:var(--sans); font-size:.86rem; color:var(--ink-soft)}
+.lab .meta b{color:var(--ink)}
+.lab .warn{font-size:.88rem; background:#F6E9DC; border-radius:3px; padding:7px 11px; margin:9px 0 0; max-width:60ch}
+.lab .open{font-family:var(--sans); font-size:.94rem; color:var(--c); margin-top:9px; display:block}
+.soon{opacity:.55; border-left-color:var(--rule); cursor:default}
+.soon .open{color:var(--ink-soft)}
+
+.note{background:#E6E9DC; border-radius:4px; padding:16px 20px; font-size:.95rem; margin:30px 0 14px}
+.note h3{margin:0 0 6px; font-size:1.05rem}
+.note ul{margin:6px 0 0; padding-left:20px}
+.note li{margin-bottom:5px; max-width:62ch}
+footer{border-top:1px solid var(--rule); margin-top:26px; padding-top:18px; font-size:.86rem; color:var(--ink-soft)}
+footer p{max-width:62ch}
+@media (max-width:640px){
+  header{padding:26px 16px 24px} header h1{font-size:1.9rem}
+  main{padding:22px 16px 60px}
+  .lab h2{font-size:1.25rem}
+}
+</style>
+</head>
+<body>
+<header><div class="in">
+  <h1>Lab Kelas</h1>
+  <div class="sub">politeknik negeri sriwijaya &middot; administrasi bisnis &amp; teknik komputer</div>
+  <p>Alat latihan untuk dipakai di kelas dan di rumah. Semuanya berjalan di browser &mdash; tidak perlu memasang apa pun, dan pekerjaanmu tersimpan di perangkatmu sendiri.</p>
+</div></header>
+
+<main>
+  <div id="labs"></div>
+
+  <div class="note">
+    <h3>Sebelum mulai</h3>
+    <ul>
+      <li>Pakai tab biasa, jangan Private atau Incognito &mdash; di mode itu browser memblokir penyimpanan, jadi kemajuanmu hilang saat tab ditutup.</li>
+      <li>Kemajuan tersimpan per perangkat dan per browser. Kalau ganti HP atau laptop, pakai tombol <b>Export jawaban</b> lalu <b>Import</b> di perangkat baru.</li>
+      <li>Untuk mengumpulkan tugas: tekan <b>Export jawaban</b>, lalu salin atau unggah hasilnya sesuai arahan dosen.</li>
+      <li>Di iPhone, tombol download sering tidak berfungsi. Pakai <b>Copy semua teks</b>, lalu tempel ke WhatsApp, email, atau kolom tugas di LMS.</li>
+      <li>Simpan halaman ini lewat tombol Bagikan &rarr; Tambah ke Layar Utama supaya mudah dibuka lagi.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>Dikelola oleh dosen pengampu untuk keperluan pembelajaran. Nilai yang diberikan lab ini adalah alat bantu ajar, bukan tiruan algoritma Google atau model AI mana pun, dan bukan nilai mata kuliah: nilai tinggi berarti pekerjaanmu memenuhi prinsip yang diajarkan di kelas.</p>
+  </footer>
+</main>
+
+<script>
+/* =======================================================================
+   DAFTAR LAB
+   Isi kartu di bawah diambil dari isi berkas labnya masing-masing.
+
+   MENAMBAH LAB BARU:
+   1. Unggah berkasnya ke folder baru, beri nama index.html
+      (di layar Add file -> Upload files, tulis "nama-folder/index.html"
+       pada kolom nama berkas sebelum menekan Commit)
+   2. Salin satu blok { ... } di bawah, ubah isinya, simpan.
+
+   path  : nama folder, harus diakhiri garis miring
+   grup  : judul kelompok; kartu dikelompokkan mengikuti urutan pertama muncul
+   mk    : mata kuliah  |  kelas: kelas atau program (boleh "")
+   c     : warna garis kiri
+   warn  : peringatan yang tampil di kartu (boleh dihapus)
+   soon  : true kalau belum diunggah (kartu redup dan tidak bisa diklik)
+   ======================================================================= */
+var LABS = [
+  {
+    path: "copywriting-seo/",
+    nm: "Lab Tiga Engine",
+    mk: "Copywriting dan SEO", kelas: "5BDB \u00b7 STr Bisnis Digital",
+    grup: "Administrasi Bisnis",
+    c: "#7B2D7A",
+    desc: "Sepuluh misi menulis yang dinilai tiga engine sekaligus: search engine 2004, answer engine 2019, dan generative engine 2026. Satu teks, tiga penilaian yang tidak sepakat.",
+    meta: "10 misi \u00b7 SEO, framework copywriting, AEO, GEO"
+  },
+  {
+    path: "analitik-prepost/",
+    nm: "Lab Analitik &amp; Pre-Post",
+    mk: "Copywriting dan SEO", kelas: "5BDB \u00b7 STr Bisnis Digital",
+    grup: "Administrasi Bisnis",
+    c: "#1B6B4A",
+    desc: "Masukkan angka asli dari X Analytics, Google Search Console, atau analitik blog. Alat ini menghitung metriknya, menunjukkan indikator yang lemah, lalu menguji apakah klaim perbaikanmu boleh ditulis.",
+    meta: "4 tahap \u00b7 Sub-CPMK 4 \u2014 analitik performa dan uji pre-post"
+  },
+  {
+    path: "pemasaran-digital/",
+    nm: "Studio UMKM",
+    mk: "Pemasaran Digital", kelas: "3NF \u00b7 D3 Administrasi Bisnis",
+    grup: "Administrasi Bisnis",
+    c: "#2547C8",
+    desc: "Satu mitra UMKM diikuti selama 16 minggu: brief merek, company profile, buyer persona, kalender konten, produksi visual, publikasi dan analitik, konten website, sampai kampanye email.",
+    meta: "10 misi \u00b7 minggu 1\u201316 \u00b7 ada panel dosen"
+  },
+  {
+    path: "perancangan-web/",
+    nm: "Ruang Rancang",
+    mk: "Perancangan Web", kelas: "5NB \u00b7 D3 Administrasi Bisnis",
+    grup: "Administrasi Bisnis",
+    c: "#0F6070",
+    desc: "Delapan keputusan membangun website mitra: cara kerja website, antarmuka yang terbaca, markah yang bersih, tampilan dan perilaku, pemilihan alat, situs multi-halaman, proyek mitra, sampai pengujian dan penyerahan.",
+    meta: "8 misi \u00b7 pertemuan 1\u20137 dan 9\u201315"
+  },
+  {
+    path: "kesekretariatan/",
+    nm: "Meja Sekretaris",
+    mk: "Kesekretariatan 2", kelas: "D3 Administrasi Bisnis",
+    grup: "Administrasi Bisnis",
+    c: "#B4700E",
+    desc: "Tujuh pekerjaan di meja sekretaris: memilih sumber informasi, merencanakan perjalanan dinas, menutup kas kecil dengan metode imprest dan fluktuasi, memilih layanan bank, menata ruang kerja, mengusulkan mesin kantor, dan menentukan dokumen kegiatan bisnis.",
+    meta: "7 tugas \u00b7 Sub-CPMK 1\u20137 \u00b7 bobot mengikuti RPS"
+  },
+  {
+    path: "kewirausahaan/",
+    nm: "Ruang Usaha",
+    mk: "Manajemen dan Kewirausahaan", kelas: "D3 Teknik Komputer",
+    grup: "Teknik Komputer",
+    c: "#8C3A2B",
+    desc: "Sepuluh keputusan membangun usaha berbasis komputer: memisahkan mitos dari kenyataan, membaca masalah jadi peluang, menguji asumsi dengan usaha terbatas, menghitung titik pulang pokok, menyelaraskan strategi pemasaran, dan menyusun Business Model Canvas.",
+    meta: "10 misi \u00b7 Sub-CPMK 1\u201310"
+  }
+];
+
+(function () {
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/&(?!amp;|rarr;|mdash;|nbsp;|#)/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  var out = "", grup = null, open = false;
+  for (var i = 0; i < LABS.length; i++) {
+    var L = LABS[i];
+    if (L.grup !== grup) {
+      if (open) out += "</div>";
+      grup = L.grup;
+      out += '<h3 class="grp">' + esc(grup) + '</h3><div class="labs">';
+      open = true;
+    }
+    var inner =
+      '<div class="mk">' + esc(L.mk) + (L.kelas ? " &middot; " + esc(L.kelas) : "") + "</div>" +
+      "<h2>" + L.nm + "</h2>" +
+      '<p class="desc">' + esc(L.desc) + "</p>" +
+      (L.meta ? '<div class="meta">' + esc(L.meta) + "</div>" : "") +
+      (L.warn ? '<p class="warn">' + L.warn + "</p>" : "") +
+      '<span class="open">' + (L.soon ? "Segera" : "Buka lab &rarr;") + "</span>";
+    out += L.soon
+      ? '<div class="lab soon" style="--c:' + L.c + '">' + inner + "</div>"
+      : '<a class="lab" style="--c:' + L.c + '" href="' + esc(L.path) + '">' + inner + "</a>";
+  }
+  if (open) out += "</div>";
+  document.getElementById("labs").innerHTML = out;
+})();
+</script>
+</body>
+</html>
