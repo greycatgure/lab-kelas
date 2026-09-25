@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studio Kode — Perancangan Web Lanjutan</title>
+<style>
+/* =========================================================
+   STUDIO KODE — Perancangan Web lanjutan (D3 Administrasi Bisnis)
+   Sekeluarga dengan lab lain: kertas & tinta sama, aksen teal
+   karena ini ruang kerja teknis: ketik, jalankan, uji.
+   ========================================================= */
+:root{
+  --paper:#F1F2EC; --card:#FBFBF7; --ink:#17202B; --ink-soft:#4A5563; --rule:#CDD1C2;
+  --teal:#0F6070; --good:#2E6B45; --bad:#A32020; --warn:#B4700E; --info:#2547C8;
+  --sans:"Arial Narrow","Helvetica Neue Condensed","Liberation Sans Narrow",system-ui,sans-serif;
+  --serif:Georgia,"Iowan Old Style","Palatino Linotype",serif;
+  --mono:ui-monospace,"SFMono-Regular","Consolas","Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:17px; line-height:1.6; -webkit-text-size-adjust:100%}
+h1,h2,h3,h4,.u-sans{font-family:var(--sans); letter-spacing:-.01em; font-weight:700; line-height:1.1}
+h1{font-size:2.2rem;margin:0}
+h2{font-size:1.7rem;margin:0 0 6px}
+h3{font-size:1.12rem;margin:20px 0 6px}
+p{margin:0 0 .85em; max-width:68ch}
+code{font-family:var(--mono); font-size:.88em; background:#E6E9DC; padding:1px 4px; border-radius:2px}
+button:focus{outline:2px solid var(--teal); outline-offset:2px}
+:focus-visible{outline:3px solid var(--teal); outline-offset:2px}
+
+.wrap{display:grid; grid-template-columns:250px minmax(0,1fr); min-height:100vh}
+.rail{background:var(--ink); color:#E7EAE2; padding:18px 15px 40px; position:sticky; top:0; align-self:start; height:100vh; overflow:auto; -webkit-overflow-scrolling:touch}
+.stage{padding:28px 30px 80px; max-width:1100px; min-width:0}
+
+.wm{font-family:var(--sans); font-size:1.3rem; line-height:1}
+.wm span{display:block; font-family:var(--mono); font-size:.66rem; color:#9AA69B; margin-top:5px; letter-spacing:.02em}
+.who{margin:14px 0; padding:9px 11px; background:#22303F; border-radius:3px; font-family:var(--sans); font-size:.86rem}
+.who b{display:block; font-size:1rem}
+.who em{display:block; color:#9AA69B; font-style:normal; font-family:var(--mono); font-size:.7rem; margin-top:3px}
+.xp{height:6px; background:#0E151D; border-radius:99px; margin-top:8px; overflow:hidden}
+.xp i{display:block; height:100%; background:#4FA8B8; width:0; transition:width .6s ease}
+.blok{margin:15px 0 5px; font-family:var(--sans); font-size:.78rem; color:#8E9A8F}
+.mlist{list-style:none; margin:0; padding:0}
+.mlist button{width:100%; text-align:left; background:none; border:0; color:#D8DDD3; cursor:pointer; font-family:var(--sans); font-size:.92rem; padding:6px 8px 6px 25px; border-radius:3px; position:relative; line-height:1.25}
+.mlist button:hover{background:#22303F}
+.mlist button[aria-current="true"]{background:#2C3C4E; color:#fff}
+.mlist button:before{content:attr(data-n); position:absolute; left:6px; top:6px; font-family:var(--mono); font-size:.68rem; color:#7E8A80}
+.mlist button.done:before{content:"\2713"; color:#4FA8B8}
+.mlist button.locked{opacity:.4; cursor:not-allowed}
+.mlist .w{font-family:var(--mono); font-size:.66rem; opacity:.65}
+.tools{margin-top:18px; border-top:1px solid #2C3C4E; padding-top:12px; display:grid; gap:5px}
+.tools button{background:none; border:1px solid #3A4C60; color:#C9D0C6; font-family:var(--sans); font-size:.84rem; padding:5px 9px; border-radius:3px; cursor:pointer; text-align:left}
+.tools button:hover{background:#22303F; color:#fff}
+.badges{display:flex; gap:5px; flex-wrap:wrap; margin-top:8px}
+.badge{font-family:var(--sans); font-size:.74rem; border:1px solid #3A4C60; color:#9AA69B; padding:2px 7px; border-radius:99px}
+.badge.on{background:#4FA8B8; color:#0E262C; border-color:#4FA8B8}
+
+.tag{font-family:var(--sans); font-size:.88rem; color:var(--teal); display:flex; align-items:center; gap:8px; margin-bottom:8px}
+.tag:before{content:""; width:28px; height:4px; background:var(--teal)}
+.mt{display:flex; gap:10px; align-items:baseline; margin-bottom:5px}
+.mt .no{font-family:var(--mono); font-size:.92rem; color:var(--ink-soft)}
+.goal{font-family:var(--sans); font-size:1.02rem; color:var(--ink-soft); max-width:64ch; margin-bottom:16px}
+.brief{border-left:4px solid var(--rule); padding-left:17px; margin-bottom:18px}
+.note{background:#E6E9DC; border-radius:3px; padding:11px 15px; font-size:.92rem; margin-bottom:18px; max-width:72ch}
+.note b{font-family:var(--sans)}
+
+/* ---------- studio: editor + pratinjau ---------- */
+.studio{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px; margin-bottom:14px}
+.pane{border:1px solid var(--rule); border-radius:4px; background:var(--card); display:flex; flex-direction:column; min-width:0}
+.pane>header{background:var(--ink); color:#E7EAE2; font-family:var(--sans); font-size:.86rem; padding:6px 11px; display:flex; justify-content:space-between; align-items:center; gap:8px}
+.pane>header .tabs{display:flex; gap:3px}
+.pane>header .tabs button{background:none; border:0; color:#9AA69B; font-family:var(--mono); font-size:.72rem; padding:2px 7px; border-radius:3px; cursor:pointer}
+.pane>header .tabs button[aria-pressed="true"]{background:#3A4C60; color:#fff}
+textarea.code{
+  width:100%; border:0; border-radius:0 0 4px 4px; resize:vertical; padding:10px 12px;
+  font-family:var(--mono); font-size:.78rem; line-height:1.55; color:var(--ink); background:#fff;
+  min-height:300px; tab-size:2; white-space:pre; overflow-wrap:normal; overflow-x:auto;
+}
+.frameBox{background:#fff; border-radius:0 0 4px 4px; overflow:auto; padding:8px; display:flex; justify-content:center}
+iframe.prev{border:1px solid var(--rule); background:#fff; width:100%; height:330px; display:block}
+iframe.prev.w360{width:360px; flex:none}
+iframe.prev.w768{width:768px; flex:none}
+
+.checks{border:1px solid var(--rule); border-radius:4px; background:var(--card); margin-bottom:16px; overflow:hidden}
+.checks>header{background:var(--teal); color:#fff; font-family:var(--sans); font-size:.9rem; padding:7px 13px; display:flex; justify-content:space-between}
+.checks ul{list-style:none; margin:0; padding:9px 13px}
+.checks li{position:relative; padding:5px 0 5px 27px; font-size:.93rem; max-width:74ch}
+.checks li:before{position:absolute; left:2px; top:5px; font-family:var(--mono); font-size:.86rem}
+.checks li.ok:before{content:"\2713"; color:var(--good)}
+.checks li.no:before{content:"\00D7"; color:var(--bad)}
+.checks li.skip:before{content:"?"; color:var(--warn)}
+.checks li em{color:var(--ink-soft); font-style:italic}
+.checks li .w{font-family:var(--mono); font-size:.72rem; color:var(--ink-soft)}
+
+.checks li .cara{font-size:.88rem; color:var(--ink-soft); margin:4px 0 2px; padding:6px 10px; background:#EEF1E7; border-left:3px solid var(--teal); border-radius:2px; max-width:70ch}
+.checks li .cara b{font-family:var(--sans); color:var(--ink)}
+.checks li.no .cara{background:#F7EDEC; border-left-color:var(--bad)}
+.bar{display:flex; gap:9px; flex-wrap:wrap; align-items:center; margin-bottom:16px}
+.btn{font-family:var(--sans); font-size:.98rem; background:var(--ink); color:#fff; border:0; padding:9px 18px; border-radius:3px; cursor:pointer}
+.btn:hover{background:#0E151D}
+.btn.go{background:var(--teal)} .btn.go:hover{background:#0A4652}
+.btn.ghost{background:none; color:var(--ink); border:1px solid var(--ink)}
+.btn.ghost:hover{background:#E6E9DC}
+.btn:disabled{opacity:.45; cursor:not-allowed}
+.meterline{font-family:var(--mono); font-size:.76rem; color:var(--ink-soft)}
+.meterline b{font-family:var(--sans); font-size:1rem; color:var(--ink)}
+
+.score{border:1px solid var(--ink); border-radius:4px; overflow:hidden; margin-bottom:18px}
+.score>header{background:var(--ink); color:#E7EAE2; font-family:var(--sans); font-size:.92rem; padding:7px 13px; display:flex; justify-content:space-between}
+.score .body{background:var(--card); padding:14px}
+.score .v{font-family:var(--sans); font-size:2.3rem; line-height:1}
+.score .track{height:8px; background:#E2E5DA; border-radius:99px; overflow:hidden; margin:7px 0 10px}
+.score .track i{display:block; height:100%; width:0; background:var(--teal); transition:width .6s ease}
+
+.files{display:flex; gap:4px; flex-wrap:wrap; margin-bottom:8px}
+.files button{font-family:var(--mono); font-size:.76rem; background:#fff; border:1px solid var(--rule); padding:5px 10px; border-radius:3px; cursor:pointer}
+.files button[aria-pressed="true"]{background:var(--teal); color:#fff; border-color:var(--teal)}
+.files button.err{border-color:var(--bad); color:var(--bad)}
+
+label.fl{display:block; font-family:var(--sans); font-size:.9rem; margin-bottom:3px}
+input[type=text],textarea:not(.code){width:100%; font-family:var(--serif); font-size:1rem; color:var(--ink); background:#fff; border:1px solid var(--rule); border-radius:3px; padding:8px 10px; margin-bottom:12px}
+.card{background:var(--card); border:1px solid var(--rule); border-radius:4px; padding:15px 17px; margin-bottom:15px}
+.hint{font-family:var(--mono); font-size:.73rem; color:var(--ink-soft); margin:-6px 0 12px}
+table.t{width:100%; border-collapse:collapse; font-size:.9rem; margin:10px 0 14px}
+table.t th,table.t td{border-bottom:1px solid var(--rule); padding:6px 7px; text-align:left}
+table.t th{font-family:var(--sans); font-size:.86rem}
+table.t td.n{font-family:var(--mono); text-align:right}
+.modal{position:fixed; top:0; right:0; bottom:0; left:0; background:rgba(23,32,43,.72); display:grid; place-items:center; padding:16px; z-index:60}
+.modal[hidden]{display:none}
+.sheet{background:var(--paper); border-radius:5px; padding:22px; max-width:760px; width:100%; max-height:88vh; overflow:auto}
+.toast{position:fixed; left:50%; bottom:20px; transform:translateX(-50%); background:var(--ink); color:#fff; font-family:var(--sans); padding:10px 17px; border-radius:3px; z-index:70; max-width:88vw}
+.toast[hidden]{display:none}
+.rep{font-family:var(--mono); font-size:.76rem; line-height:1.5; white-space:pre; min-height:220px}
+
+@media (max-width:980px){
+  .studio{grid-template-columns:1fr}
+  iframe.prev{height:280px}
+}
+@media (max-width:820px){
+  .wrap{grid-template-columns:1fr}
+  .rail{position:static; height:auto; padding-bottom:14px}
+  .stage{padding:20px 14px 70px}
+  h1{font-size:1.7rem} h2{font-size:1.35rem}
+  textarea.code{min-height:220px; font-size:.74rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{.rail,.bar,.tools,.modal{display:none!important} body{background:#fff} .stage{max-width:none;padding:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="rail" aria-label="Daftar tantangan">
+    <div class="wm">STUDIO KODE<span>perancangan web lanjutan &middot; d3 adm. bisnis</span></div>
+    <div class="who" id="who"></div>
+    <div id="nav"></div>
+    <div class="tools">
+      <button id="btnRef">Buku acuan</button>
+      <button id="btnRapor">Rapor saya</button>
+      <button id="btnTerbit">Cara menerbitkan situs</button>
+      <button id="btnExport">Export jawaban</button>
+      <button id="btnImport">Import jawaban</button>
+      <button id="btnReset">Kosongkan</button>
+    </div>
+  </nav>
+  <main class="stage" id="stage" tabindex="-1"></main>
+</div>
+<div class="modal" id="modal" hidden><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast" hidden></div>
+<script>
+/* =======================================================================
+   STUDIO KODE \u2014 Perancangan Web lanjutan
+   Mahasiswa menulis HTML dan CSS sendiri. Pratinjau tampil langsung,
+   lalu penguji memeriksa halaman yang SUDAH JADI di dalam iframe:
+   struktur, atribut, gaya terhitung, dan ukuran sebenarnya.
+   Tidak ada kunci jawaban yang bisa ditebak \u2014 yang dinilai hasil kerjanya.
+   ======================================================================= */
+"use strict";
+
+var KEY = "studiokode.v1";
+var BLOK = { 1: "Dasar \u2014 struktur dan isi", 2: "Menengah \u2014 tampilan dan tata letak", 3: "Lanjutan \u2014 situs utuh" };
+var LEVELS = [
+  { at: 0, t: "Anak Ketik" }, { at: 160, t: "Perakit Halaman" },
+  { at: 330, t: "Penata Tampilan" }, { at: 500, t: "Perancang Situs" },
+  { at: 680, t: "Tukang Web" }
+];
+var BADGES = [
+  { id: "kerangka", t: "Kerangka Benar" }, { id: "semantik", t: "Tag Bermakna" },
+  { id: "gambar", t: "Gambar Tertib" }, { id: "kartu", t: "Komponen Rapi" },
+  { id: "warna", t: "Kontras Lolos" }, { id: "tataletak", t: "Tata Letak Lentur" },
+  { id: "navigasi", t: "Navigasi Jelas" }, { id: "formulir", t: "Formulir Terbaca" },
+  { id: "boss", t: "Pemburu Bug" }, { id: "proyek", t: "Situs Terbit" },
+  { id: "bersih", t: "Lolos Sekali Jalan" }
+];
+
+/* ---------------- state ---------------- */
+var S = null;
+function fresh() { return { v: 1, nama: "", npm: "", xp: 0, badges: [], m: {}, cur: null }; }
+function load() {
+  try { var r = localStorage.getItem(KEY); S = r ? JSON.parse(r) : fresh(); }
+  catch (e) { S = fresh(); }
+  if (!S || S.v !== 1) S = fresh();
+  if (!S.m) S.m = {}; if (!S.badges) S.badges = [];
+}
+var gagalSimpan = false;
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) {
+    if (!gagalSimpan) { gagalSimpan = true; toast("Browser menolak menyimpan. Tab ini mungkin mode Private \u2014 pakai Export jawaban sebelum menutup."); }
+  }
+}
+function award(id) {
+  if (S.badges.indexOf(id) < 0) {
+    S.badges.push(id);
+    for (var i = 0; i < BADGES.length; i++) if (BADGES[i].id === id) { toast("Badge baru: " + BADGES[i].t); return; }
+  }
+}
+function levelOf(xp) {
+  var o = LEVELS[0];
+  for (var i = 0; i < LEVELS.length; i++) if (xp >= LEVELS[i].at) o = LEVELS[i];
+  return o;
+}
+function finish(id, score, data) {
+  var prev = S.m[id] ? S.m[id].score : 0;
+  var old = S.m[id] || {};
+  S.m[id] = {
+    score: Math.max(prev, Math.round(score)),
+    runs: old.runs || 0, hint: old.hint || 0,
+    data: data || old.data || {}, at: Date.now()
+  };
+  S.xp = 0;
+  for (var k in S.m) S.xp += S.m[k].score;
+  save(); paintRail();
+}
+
+/* ---------------- helper ---------------- */
+function el(id) { return document.getElementById(id); }
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
+var tt = null;
+function toast(m) { var t = el("toast"); t.textContent = m; t.hidden = false; clearTimeout(tt); tt = setTimeout(function () { t.hidden = true; }, 4200); }
+function modal(h) { el("sheet").innerHTML = h; el("modal").hidden = false; }
+function closeModal() { el("modal").hidden = true; }
+function inArr(a, v) { return a && a.indexOf(v) >= 0; }
+
+/* ---------------- warna dan kontras ----------------
+   Rasio kontras dihitung dari gaya yang benar-benar dipakai browser,
+   bukan dari kode yang ditulis \u2014 jadi warna warisan pun terhitung. */
+function toRgb(str) {
+  var m = String(str || "").match(/rgba?\(([^)]+)\)/);
+  if (!m) return null;
+  var p = m[1].split(",");
+  var a = p.length > 3 ? parseFloat(p[3]) : 1;
+  return { r: parseFloat(p[0]), g: parseFloat(p[1]), b: parseFloat(p[2]), a: a };
+}
+function lum(c) {
+  function f(v) { v = v / 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }
+  return 0.2126 * f(c.r) + 0.7152 * f(c.g) + 0.0722 * f(c.b);
+}
+function bgOf(win, node) {
+  var e = node;
+  while (e && e.nodeType === 1) {
+    var c = toRgb(win.getComputedStyle(e).backgroundColor);
+    if (c && c.a > 0.1) return c;
+    e = e.parentNode;
+  }
+  return { r: 255, g: 255, b: 255, a: 1 };
+}
+function contrastOf(win, node) {
+  var fg = toRgb(win.getComputedStyle(node).color);
+  if (!fg) return null;
+  var bg = bgOf(win, node);
+  var a = lum(fg), b = lum(bg);
+  var hi = Math.max(a, b), lo = Math.min(a, b);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+/* ---------------- alat bantu untuk penguji ---------------- */
+function ctxOf(fr) {
+  var doc = fr.contentDocument, win = fr.contentWindow;
+  var layoutOK = false;
+  try { layoutOK = doc.body && doc.body.getBoundingClientRect().height > 0; } catch (e) {}
+  return {
+    doc: doc, win: win, layoutOK: layoutOK,
+    q: function (s) { try { return doc.querySelector(s); } catch (e) { return null; } },
+    all: function (s) { try { return [].slice.call(doc.querySelectorAll(s)); } catch (e) { return []; } },
+    st: function (n) { return n ? win.getComputedStyle(n) : null; },
+    px: function (v) { return parseFloat(v) || 0; },
+    h: function (n) { try { return n.getBoundingClientRect().height; } catch (e) { return 0; } },
+    w: function (n) { try { return n.getBoundingClientRect().width; } catch (e) { return 0; } },
+    kontras: function (n) { return contrastOf(win, n); },
+    src: "",            /* kode HTML mentah, diisi runner */
+    css: "",            /* kode CSS mentah */
+    lebar: 0,           /* lebar iframe saat pengujian */
+    /* halaman menggulir ke samping? tanda tata letak bocor */
+    bocor: function () {
+      try { return doc.documentElement.scrollWidth > doc.documentElement.clientWidth + 2; } catch (e) { return false; }
+    },
+    teks: function (n) { return n ? String(n.textContent || "").replace(/\s+/g, " ").trim() : ""; }
+  };
+}
+
+/* jalankan kode di iframe pada satu lebar, lalu panggil cb(ctx)
+   Memakai document.write, bukan srcdoc: sinkron, didukung semua peramban,
+   dan tidak bergantung pada onload yang bisa terlambat. */
+function gabung(html, css) {
+  if (!css) return html;
+  if (/<\/head>/i.test(html)) return html.replace(/<\/head>/i, "<style>\n" + css + "\n</style></head>");
+  if (/<body[^>]*>/i.test(html)) return html.replace(/<body([^>]*)>/i, "<body$1><style>\n" + css + "\n</style>");
+  return "<style>\n" + css + "\n</style>\n" + html;
+}
+function tulisKe(fr, isi) {
+  try {
+    var d = fr.contentDocument || (fr.contentWindow && fr.contentWindow.document);
+    if (!d) return false;
+    d.open(); d.write(isi); d.close();
+    return true;
+  } catch (e) { return false; }
+}
+function jalankan(fr, html, css, lebar, cb) {
+  fr.style.width = (lebar || 1280) + "px";
+  tulisKe(fr, gabung(html, css));
+  setTimeout(function () {
+    var c = ctxOf(fr);
+    c.src = html; c.css = css; c.lebar = lebar;
+    cb(c);
+  }, 40);
+}
+
+/* uji satu tantangan: dua lintasan lebar (360 dan 1280) */
+function uji(fr, html, css, checks, cb) {
+  var hasil = [], perlu360 = false;
+  for (var i = 0; i < checks.length; i++) if (checks[i].w === 360) perlu360 = true;
+  function lintasan(lebar, next) {
+    jalankan(fr, html, css, lebar, function (c) {
+      for (var j = 0; j < checks.length; j++) {
+        var ch = checks[j], lb = ch.w || 1280;
+        if (lb !== lebar) continue;
+        var r;
+        try { r = ch.fn(c); } catch (e) { r = false; }
+        if (r === "skip" || (ch.layout && !c.layoutOK)) r = "skip";
+        hasil[j] = r;
+      }
+      next();
+    });
+  }
+  lintasan(1280, function () {
+    if (!perlu360) { fr.className = "prev"; cb(hasil); return; }
+    lintasan(360, function () { cb(hasil); });
+  });
+}
+
+function nilaiDari(checks, hasil, runs, hint) {
+  var dapat = 0, maks = 0, skip = 0;
+  for (var i = 0; i < checks.length; i++) {
+    var w = checks[i].w2 || 1;
+    if (hasil[i] === "skip") { skip++; continue; }
+    maks += w;
+    if (hasil[i]) dapat += w;
+  }
+  var dasar = maks ? dapat / maks * 100 : 0;
+  var denda = Math.min(18, Math.max(0, (runs - 3) * 3)) + (hint ? 10 : 0);
+  return { nilai: Math.max(0, Math.round(dasar - denda)), dasar: Math.round(dasar), denda: denda, skip: skip };
+}
+/* =======================================================================
+   DAFTAR TANTANGAN
+   Setiap penguji menerima ctx: q/all (querySelector), st (gaya terhitung),
+   h/w (ukuran sebenarnya), kontras, bocor, teks, src, css, layoutOK.
+   w: 360 berarti diuji pada lebar 360 piksel.
+   layout: true berarti butuh tata letak nyata (dilewati kalau tak tersedia).
+   w2 adalah bobot butir; kosong berarti 1.
+   ======================================================================= */
+
+function hd(c) { /* urutan heading pada halaman */
+  return c.all("h1,h2,h3,h4,h5,h6").map(function (n) { return +n.tagName.charAt(1); });
+}
+function lompat(a) {
+  for (var i = 1; i < a.length; i++) if (a[i] - a[i - 1] > 1) return true;
+  return false;
+}
+var TEKS_MALAS = ["klik di sini", "di sini", "selengkapnya", "baca", "link", "tautan", "lihat"];
+
+var TANTANGAN = [
+{
+  id: "k1", blok: 1, no: 1, title: "Kerangka halaman",
+  goal: "Tulis kerangka HTML yang sah dari nol. Semua tantangan berikutnya berdiri di atas ini.",
+  brief:
+    "<p>Mitra kita: <b>Kopi Kemuning</b>, kedai kopi robusta di Palembang. Kamu yang membuat situsnya, dari berkas kosong, tanpa Wix dan tanpa WordPress.</p>" +
+    "<p>Kerangka halaman bukan hiasan. Tanpa <code>&lt;!DOCTYPE html&gt;</code> browser masuk mode lama dan CSS berperilaku aneh. Tanpa <code>lang</code> pembaca layar salah melafalkan. Tanpa <code>meta viewport</code> halamanmu tampil sebesar korek api di ponsel.</p>" +
+    "<p>Tulis di kotak kiri, lihat hasilnya di kanan. Tekan <b>Jalankan uji</b> kalau sudah siap dinilai.</p>",
+  note: "<b>Tiga uji pertama boleh gratis.</b> Mulai uji keempat, tiap uji mengurangi nilai 3 poin sampai batas 18. Jadi periksa pratinjau dulu, jangan menebak dengan menekan uji berkali-kali.",
+  hint: "Susunannya: doctype, lalu &lt;html lang=\"id\"&gt;, di dalamnya &lt;head&gt; berisi meta charset, meta viewport, dan title; lalu &lt;body&gt; berisi satu &lt;h1&gt; di dalam &lt;main&gt;.",
+  html: '<!-- Tulis kerangka halaman di sini. Hapus komentar ini. -->\n',
+  css: "/* Belum perlu CSS di tantangan ini. */\n",
+  langkah: [
+    "Tulis <!DOCTYPE html> di baris pertama, lalu <html lang=\"id\"> dan penutupnya.",
+    "Di dalam <head>: meta charset, meta viewport, dan <title>.",
+    "Di dalam <body>: satu <main>, dan di dalamnya satu <h1>.",
+    "Lihat pratinjau di kanan. Kalau judul tab berubah, <title> sudah bekerja."
+  ],
+  contoh: [
+    { nm: "Kerangka kosong", kode: "<!DOCTYPE html>\n<html lang=\"id\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Judul halaman</title>\n</head>\n<body>\n  <main>\n    <h1>Judul utama</h1>\n  </main>\n</body>\n</html>", ket: "Pola ini dipakai di semua halaman web. Ubah isi title dan h1 sesuai kebutuhan." }
+  ],
+  checks: [
+    { b: "Baris pertama harus tepat: <!DOCTYPE html> \u2014 tanpa spasi atau komentar sebelumnya.", t: "Ada <!DOCTYPE html> di baris paling atas", w2: 2, fn: function (c) { return /^\s*<!doctype html>/i.test(c.src); } },
+    { b: "Ubah <html> menjadi <html lang=\"id\">.", t: "Tag <html> memakai lang=\"id\"", w2: 2, fn: function (c) { var h = c.q("html"); return !!h && /^id/i.test(h.getAttribute("lang") || ""); } },
+    { b: "Tulis <meta charset=\"UTF-8\"> sebagai baris pertama di dalam <head>.", t: "Ada <meta charset=\"UTF-8\">", w2: 2, fn: function (c) { return !!c.q("meta[charset]"); } },
+    { b: "Tulis <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> di dalam <head>.", t: "Ada meta viewport", w2: 2, fn: function (c) { var m = c.q('meta[name="viewport"]'); return !!m && /width=device-width/i.test(m.getAttribute("content") || ""); } },
+    { b: "Isi <title>Kopi Kemuning \u2014 Robusta Palembang</title>. Harus memuat kata Kemuning.", t: "Judul halaman terisi dan menyebut nama kedai", w2: 2, fn: function (c) { return c.doc.title.length > 5 && /kemuning/i.test(c.doc.title); } },
+    { b: "Satu halaman hanya boleh punya satu <h1>. Judul bagian di bawahnya pakai <h2>.", t: "Tepat satu <h1> di halaman", w2: 2, fn: function (c) { return c.all("h1").length === 1; } },
+    { b: "Bungkus isi halaman: <main> \u2026 </main>, tepat satu kali.", t: "Isi utama dibungkus <main>", w2: 2, fn: function (c) { return !!c.q("main") && c.all("main").length === 1; } },
+    { b: "Pindahkan <h1> ke dalam <main>.", t: "<h1> berada di dalam <main>", fn: function (c) { var h = c.q("h1"); return !!h && !!h.closest && !!h.closest("main"); } }
+  ],
+  badge: "kerangka"
+},
+{
+  id: "k2", blok: 1, no: 2, title: "Tag yang bermakna",
+  goal: "Susun isi halaman dengan tag yang menjelaskan perannya, bukan yang sekadar membuat tampilan berubah.",
+  brief:
+    "<p>Browser tidak peduli kamu memakai <code>&lt;div&gt;</code> untuk segalanya. Tetapi mesin pencari, pembaca layar, dan dirimu enam bulan kemudian sangat peduli.</p>" +
+    "<p>Dua pasangan yang sering tertukar: <code>&lt;b&gt;</code> hanya menebalkan, <code>&lt;strong&gt;</code> menyatakan penting. <code>&lt;i&gt;</code> hanya memiringkan, <code>&lt;em&gt;</code> menyatakan penekanan. Yang kedua terbaca oleh pembaca layar.</p>" +
+    "<p>Isi halaman Kopi Kemuning: satu <code>&lt;h1&gt;</code>, satu bagian ber-<code>&lt;h2&gt;</code>, minimal dua paragraf, satu daftar berisi tiga varian kopi, satu tautan ke halaman produk, dan <code>&lt;footer&gt;</code>.</p>",
+  note: "<b>Teks tautan yang baik bisa dipahami tanpa kalimat di sekelilingnya.</b> Pembaca layar bisa membacakan daftar seluruh tautan di halaman \u2014 kalau semuanya berbunyi \u201cklik di sini\u201d, daftar itu tidak berguna.",
+  hint: "Pakai &lt;section&gt; dengan &lt;h2&gt; di dalamnya, &lt;ul&gt; dengan tiga &lt;li&gt;, dan tautan seperti &lt;a href=\"produk.html\"&gt;Lihat daftar kopi&lt;/a&gt;.",
+  html: '<!DOCTYPE html>\n<html lang="id">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Kopi Kemuning \u2014 Kopi Robusta Palembang</title>\n</head>\n<body>\n  <main>\n    <h1>Kopi Kemuning</h1>\n    <!-- Lanjutkan di sini -->\n  </main>\n</body>\n</html>\n',
+  css: "",
+  langkah: [
+    "Tambahkan <section> dengan <h2> di dalamnya.",
+    "Tulis dua paragraf <p> berisi kalimat penuh tentang kedai.",
+    "Tambahkan <ul> berisi tiga <li> varian kopi.",
+    "Tambahkan satu <a href=\"produk.html\"> dengan teks yang menjelaskan tujuannya.",
+    "Tandai satu kata penting dengan <strong>, lalu pastikan tidak ada <b> atau <i>.",
+    "Tutup dengan <footer> berisi nama dan tahun."
+  ],
+  contoh: [
+    { nm: "Bagian bertema", kode: "<section>\n  <h2>Tentang kami</h2>\n  <p>Satu kalimat penjelasan.</p>\n</section>", ket: "section membungkus satu bagian yang punya judulnya sendiri." },
+    { nm: "Daftar", kode: "<ul>\n  <li>Butir pertama</li>\n  <li>Butir kedua</li>\n  <li>Butir ketiga</li>\n</ul>", ket: "ul untuk daftar tanpa urutan, ol kalau urutannya penting." },
+    { nm: "Tautan", kode: "<a href=\"produk.html\">daftar kopi kami</a>", ket: "Teksnya menjelaskan tujuan, sehingga bisa dipahami tanpa kalimat sekitarnya." }
+  ],
+  checks: [
+    { b: "Setelah h1 pakai h2, setelah h2 pakai h3. Jangan langsung ke h4 atau h5.", t: "Urutan heading tidak melompat (h1 lalu h2, bukan h1 lalu h3)", w2: 2, fn: function (c) { return !lompat(hd(c)); } },
+    { b: "Bungkus satu bagian: <section><h2>Tentang kami</h2> \u2026 </section>.", t: "Ada <section> yang memuat <h2>", w2: 2, fn: function (c) { var s = c.all("section"); for (var i = 0; i < s.length; i++) if (s[i].querySelector("h2")) return true; return false; } },
+    { b: "Tambahkan dua <p> yang masing-masing berisi satu kalimat penuh, bukan potongan kata.", t: "Minimal dua paragraf <p> berisi teks", w2: 2, fn: function (c) { return c.all("p").filter(function (p) { return c.teks(p).length > 25; }).length >= 2; } },
+    { b: "Tulis <ul><li>Robusta medium</li><li>Robusta gelap</li><li>Robusta bubuk</li></ul>.", t: "Ada daftar <ul> atau <ol> dengan minimal tiga <li>", w2: 2, fn: function (c) { var l = c.all("ul,ol"); for (var i = 0; i < l.length; i++) if (l[i].querySelectorAll("li").length >= 3) return true; return false; } },
+    { b: "Pakai <a href=\"produk.html\">\u2026</a>. Jangan href=\"#\".", t: "Ada tautan ke halaman lain (bukan href=\"#\")", w2: 2, fn: function (c) {
+        return c.all("a[href]").filter(function (a) { var h = a.getAttribute("href"); return h && h !== "#" && h.indexOf("javascript:") !== 0; }).length >= 1; } },
+    { b: "Isi teks tautan dengan apa yang dituju: <a href=\"produk.html\">daftar kopi kami</a>, bukan \u201cdi sini\u201d.", t: "Teks tautan bermakna, bukan \u201cklik di sini\u201d", w2: 2, fn: function (c) {
+        var a = c.all("a[href]");
+        if (!a.length) return false;
+        for (var i = 0; i < a.length; i++) {
+          var t = c.teks(a[i]).toLowerCase();
+          if (t.length < 4) return false;
+          for (var j = 0; j < TEKS_MALAS.length; j++) if (t === TEKS_MALAS[j]) return false;
+        }
+        return true; } },
+    { b: "Ganti <b> dengan <strong> dan <i> dengan <em>, lalu pastikan tidak ada <b> atau <i> yang tersisa.", t: "Memakai <strong> atau <em>, tidak memakai <b> atau <i>", w2: 2, fn: function (c) {
+        return (c.all("strong,em").length >= 1) && (c.all("b,i").length === 0); } },
+    { b: "Tambahkan <footer><p>Kopi Kemuning \u00b7 Palembang \u00b7 2026</p></footer> sebelum </body>.", t: "Ada <footer>", fn: function (c) { return !!c.q("footer"); } },
+    { b: "Hapus <br><br>. Jarak antarparagraf diatur CSS, misalnya p { margin-bottom: 1em; }.", t: "Tidak memakai <br> berjejer untuk mengatur jarak", fn: function (c) { return !/<br\s*\/?>\s*<br/i.test(c.src); } }
+  ],
+  badge: "semantik"
+},
+{
+  id: "k3", blok: 1, no: 3, title: "Gambar yang tertib",
+  goal: "Pasang gambar dengan alt yang berguna dan ukuran yang tidak membuat halaman melompat.",
+  brief:
+    "<p>Gambar adalah penyebab paling umum halaman terasa berat dan tata letak melompat saat dimuat. Dua kebiasaan mencegahnya.</p>" +
+    "<p><b>Atribut alt</b> menjelaskan isi gambar bagi yang tidak bisa melihatnya, dan tampil kalau gambar gagal dimuat. Isinya menjelaskan <i>maknanya</i>, bukan nama berkasnya. Untuk gambar hiasan murni, alt dibiarkan kosong dengan sengaja.</p>" +
+    "<p><b>Atribut width dan height</b> memberi tahu browser ruang yang harus disisihkan sebelum gambar selesai dimuat, sehingga teks tidak terlempar ke bawah.</p>" +
+    "<p>Gambar di tantangan ini memakai alamat yang memang tidak ada \u2014 itu disengaja, supaya kamu melihat alt bekerja.</p>",
+  note: "<b>Uji cepat menulis alt:</b> bayangkan kamu membacakan halaman ini di telepon. Apa yang kamu katakan tentang gambar itu? Itulah alt-nya. \u201cfoto1.jpg\u201d tidak akan pernah kamu ucapkan.",
+  hint: "&lt;figure&gt;&lt;img src=\"kopi.jpg\" alt=\"Biji robusta disangrai sedang\" width=\"640\" height=\"420\"&gt;&lt;figcaption&gt;Sangrai medium&lt;/figcaption&gt;&lt;/figure&gt; dan di CSS: img { max-width: 100%; height: auto; }",
+  html: '<!DOCTYPE html>\n<html lang="id">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Galeri \u2014 Kopi Kemuning</title>\n</head>\n<body>\n  <main>\n    <h1>Galeri Kopi Kemuning</h1>\n    <!-- Pasang dua gambar: satu di dalam figure dengan keterangan -->\n  </main>\n</body>\n</html>\n',
+  css: "/* Buat gambar tidak melebihi lebar wadahnya */\n",
+  langkah: [
+    "Tambahkan dua <img> dengan src, alt, width, dan height.",
+    "Tulis alt yang menjelaskan isi gambar, bukan nama berkasnya.",
+    "Bungkus satu gambar dengan <figure> dan beri <figcaption>.",
+    "Buka tab CSS, tulis img { max-width: 100%; height: auto; }",
+    "Ganti lebar pratinjau ke 360 dan pastikan gambar tidak keluar layar."
+  ],
+  contoh: [
+    { nm: "Gambar dengan keterangan", kode: "<figure>\n  <img src=\"kopi.jpg\" alt=\"Biji robusta sangrai medium\" width=\"640\" height=\"420\">\n  <figcaption>Sangrai medium</figcaption>\n</figure>", ket: "alt menjelaskan isi; width dan height mencegah teks melompat." },
+    { nm: "CSS gambar lentur", kode: "img {\n  max-width: 100%;\n  height: auto;\n}", ket: "Dua baris ini mencegah gambar keluar layar di ponsel." }
+  ],
+  checks: [
+    { b: "Tambahkan dua tag <img>, masing-masing dengan src, alt, width, dan height.", t: "Ada minimal dua <img>", w2: 2, fn: function (c) { return c.all("img").length >= 2; } },
+    { b: "Setiap gambar butuh alt, misalnya alt=\"Biji robusta sangrai medium\".", t: "Setiap <img> punya atribut alt", w2: 3, fn: function (c) {
+        var im = c.all("img"); if (!im.length) return false;
+        for (var i = 0; i < im.length; i++) if (im[i].getAttribute("alt") === null) return false;
+        return true; } },
+    { b: "Tulis alt yang menjelaskan isi gambar, minimal beberapa kata \u2014 bukan alt=\"\" atau alt=\"gambar\".", t: "Minimal satu alt berisi penjelasan (bukan kosong)", w2: 2, fn: function (c) {
+        return c.all("img").filter(function (i) { return (i.getAttribute("alt") || "").length > 8; }).length >= 1; } },
+    { b: "Jangan menulis alt=\"kopi.jpg\". Jelaskan isinya, bukan nama berkasnya.", t: "Alt tidak berisi nama berkas seperti .jpg atau .png", w2: 2, fn: function (c) {
+        return c.all("img").filter(function (i) { return /\.(jpg|jpeg|png|webp|gif)/i.test(i.getAttribute("alt") || ""); }).length === 0; } },
+    { b: "Tambahkan width=\"640\" height=\"420\" sesuai ukuran asli gambar.", t: "Setiap <img> punya width dan height", w2: 2, fn: function (c) {
+        var im = c.all("img"); if (!im.length) return false;
+        for (var i = 0; i < im.length; i++) if (!im[i].getAttribute("width") || !im[i].getAttribute("height")) return false;
+        return true; } },
+    { b: "Bungkus: <figure><img \u2026><figcaption>Sangrai medium</figcaption></figure>.", t: "Ada <figure> dengan <figcaption>", w2: 2, fn: function (c) {
+        var f = c.all("figure"); for (var i = 0; i < f.length; i++) if (f[i].querySelector("figcaption")) return true; return false; } },
+    { b: "Di tab CSS tulis: img { max-width: 100%; height: auto; }", t: "CSS membatasi lebar gambar (max-width)", w2: 2, fn: function (c) {
+        var im = c.q("img"); if (!im) return false;
+        var mw = c.st(im).maxWidth; return mw && mw !== "none"; } },
+    { b: "Penyebabnya hampir selalu tidak ada max-width. Tulis img { max-width: 100%; height: auto; }", t: "Gambar tidak keluar dari layar pada lebar 360", w2: 2, w: 360, layout: true, fn: function (c) {
+        var im = c.all("img"); if (!im.length) return false;
+        for (var i = 0; i < im.length; i++) if (c.w(im[i]) > 361) return false;
+        return !c.bocor(); } }
+  ],
+  badge: "gambar"
+},
+{
+  id: "k4", blok: 1, no: 4, title: "Kartu produk yang bisa disentuh",
+  goal: "Buat satu komponen kartu produk yang tetap nyaman dipakai di layar ponsel.",
+  brief:
+    "<p>Sekarang satu komponen nyata: kartu produk berisi gambar, nama kopi, harga, dan tombol pesan.</p>" +
+    "<p>Dua aturan yang membedakan kartu buatan orang yang paham dari kartu buatan orang yang meniru contoh:</p>" +
+    "<p><b>Harga ditandai secara semantik</b> dengan <code>&lt;strong&gt;</code>, bukan hanya dibesarkan lewat CSS. Kalau CSS gagal dimuat, harga tetap terlihat penting.<br>" +
+    "<b>Tombol minimal 44 piksel tinggi.</b> Ini angka baku untuk sasaran sentuh: lebih kecil dari itu, ujung jari orang dewasa mulai sering salah tekan.</p>" +
+    "<p>Satu lagi yang diuji: halaman tidak boleh bisa digulir ke samping pada lebar 360 piksel. Gulir samping hampir selalu tanda ada ukuran tetap yang lupa dibatasi.</p>",
+  note: "<b>Kenapa gulir samping itu masalah:</b> di ponsel, pengguna menggulir ke bawah dengan ibu jari. Kalau halaman juga bisa bergeser ke samping, setiap gulir terasa meleset. Penyebabnya biasanya satu <code>width: 400px</code> yang lupa diganti <code>max-width</code>.",
+  hint: "Pakai &lt;article&gt; berisi img, &lt;h2&gt;, &lt;strong&gt;Rp32.000&lt;/strong&gt;, dan &lt;button&gt;Pesan sekarang&lt;/button&gt;. Di CSS beri tombol padding yang cukup, misalnya padding: 14px 20px, dan jangan memberi kartu lebar tetap \u2014 pakai max-width.",
+  html: '<!DOCTYPE html>\n<html lang="id">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Produk \u2014 Kopi Kemuning</title>\n</head>\n<body>\n  <main>\n    <h1>Kopi pilihan</h1>\n    <!-- Buat satu kartu produk di sini -->\n  </main>\n</body>\n</html>\n',
+  css: "/* Tata kartunya. Ingat: tombol minimal 44px tinggi. */\n",
+  langkah: [
+    "Bungkus kartu dengan <article>.",
+    "Isi kartu: gambar ber-alt, <h2> nama kopi, harga di dalam <strong>, dan <button>.",
+    "Di CSS beri tombol padding supaya tingginya cukup untuk disentuh.",
+    "Beri kartu max-width, jangan width.",
+    "Ganti pratinjau ke 360 dan pastikan tidak bisa digeser ke samping."
+  ],
+  contoh: [
+    { nm: "Kartu produk", kode: "<article>\n  <img src=\"kopi.jpg\" alt=\"Kemasan robusta 200 gram\" width=\"320\" height=\"200\">\n  <h2>Robusta Kemuning</h2>\n  <p><strong>Rp32.000</strong> per 200 gram</p>\n  <button>Pesan sekarang</button>\n</article>", ket: "article dipakai untuk satuan isi yang bermakna walau dipindahkan." },
+    { nm: "Tombol yang nyaman disentuh", kode: "button {\n  padding: 14px 20px;\n  font-size: 16px;\n}", ket: "Padding inilah yang membuat tinggi tombol melewati 44 piksel." }
+  ],
+  checks: [
+    { b: "Bungkus kartu: <article> \u2026 </article>.", t: "Kartu dibungkus <article>", w2: 2, fn: function (c) { return c.all("article").length >= 1; } },
+    { b: "Tambahkan <h2>Robusta Kemuning</h2> di dalam <article>.", t: "Kartu punya judul (h2 atau h3) di dalamnya", w2: 2, fn: function (c) { var a = c.q("article"); return !!a && !!a.querySelector("h2,h3"); } },
+    { b: "Tambahkan <img src=\"kopi.jpg\" alt=\"Kemasan robusta 200 gram\" width=\"320\" height=\"200\"> di dalam kartu.", t: "Ada gambar produk dengan alt", w2: 2, fn: function (c) { var i = c.q("article img"); return !!i && (i.getAttribute("alt") || "").length > 3; } },
+    { b: "Tulis harganya begini: <p><strong>Rp32.000</strong> per 200 gram</p>.", t: "Harga ditandai <strong> dan memuat \u201cRp\u201d", w2: 3, fn: function (c) {
+        var s = c.all("article strong"); for (var i = 0; i < s.length; i++) if (/rp\s?\d/i.test(c.teks(s[i]))) return true; return false; } },
+    { b: "Tambahkan <button>Pesan sekarang</button>. Teksnya harus kata kerja.", t: "Ada <button> dengan teks aksi yang jelas", w2: 2, fn: function (c) {
+        var b = c.all("article button, article a.tombol, button");
+        for (var i = 0; i < b.length; i++) { var t = c.teks(b[i]); if (t.length >= 4 && /pesan|beli|tambah|order|keranjang/i.test(t)) return true; }
+        return false; } },
+    { b: "Beri tombol ruang di CSS: button { padding: 14px 20px; font-size: 16px; }", t: "Tinggi tombol minimal 44 piksel", w2: 3, layout: true, fn: function (c) {
+        var b = c.q("article button") || c.q("button"); if (!b) return false;
+        return c.h(b) >= 43.5; } },
+    { b: "Ganti width: 320px menjadi max-width: 320px pada kartu.", t: "Kartu tidak diberi lebar tetap yang kaku", w2: 2, fn: function (c) {
+        return !/\bwidth\s*:\s*\d{3,}px/i.test(c.css) || /max-width/i.test(c.css); } },
+    { b: "Cari angka lebar tetap di CSS dan ganti width menjadi max-width. Tambahkan juga img { max-width: 100%; }", t: "Tidak bisa digulir ke samping pada lebar 360", w2: 3, w: 360, layout: true, fn: function (c) { return !c.bocor(); } }
+  ],
+  badge: "kartu"
+},
+{
+  id: "k5", blok: 2, no: 5, title: "Warna dan keterbacaan",
+  goal: "Pilih warna dan ukuran huruf yang lolos ambang keterbacaan, diukur bukan dikira-kira.",
+  brief:
+    "<p>Desain yang terlihat bagus di laptopmu di ruang ber-AC bisa tidak terbaca di ponsel seseorang di bawah matahari Palembang. Karena itu keterbacaan punya angka, bukan selera.</p>" +
+    "<p><b>Rasio kontras</b> membandingkan terang warna teks dengan latarnya. Ambang yang dipakai luas: <b>4,5:1</b> untuk teks biasa. Abu-abu muda di atas putih hampir selalu gagal, walau terlihat \u201cbersih\u201d.</p>" +
+    "<p><b>Ukuran huruf badan minimal 16 piksel</b>, dan <b>tinggi baris minimal 1,4</b>. Di bawah itu mata bekerja lebih keras tanpa alasan.</p>" +
+    "<p>Satu lagi: <b>warna tidak boleh menjadi satu-satunya penanda</b>. Tautan yang hanya dibedakan warna hilang bagi yang buta warna \u2014 beri garis bawah.</p>",
+  note: "<b>Yang diuji adalah gaya terhitung,</b> jadi warna yang diwarisi dari elemen induk pun terbaca penguji. Kalau kontrasnya gagal, coba gelapkan teks atau terangkan latar \u2014 angka rasionya ditampilkan di hasil uji.",
+  hint: "Contoh yang lolos: body { color: #1b2430; background: #fbfbf7; font-size: 17px; line-height: 1.6; } dan a { color: #0b5d6b; text-decoration: underline; }",
+  html: '<!DOCTYPE html>\n<html lang="id">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Tentang \u2014 Kopi Kemuning</title>\n</head>\n<body>\n  <main>\n    <h1>Tentang Kopi Kemuning</h1>\n    <p>Kami menyangrai robusta dari kebun sendiri di lereng Kemuning sejak 2019, dan mengirim ke empat belas kota.</p>\n    <p>Baca <a href="produk.html">daftar kopi yang tersedia</a> untuk melihat pilihan sangrai.</p>\n  </main>\n</body>\n</html>\n',
+  css: "/* Atur warna, ukuran huruf, dan tinggi baris. */\nbody {\n\n}\n",
+  langkah: [
+    "Buka tab CSS dan mulai dari body: color, background, font-size, line-height.",
+    "Jalankan uji \u2014 rasio kontras yang terukur ditampilkan di hasilnya.",
+    "Kalau kontras gagal, gelapkan warna teks atau terangkan latarnya.",
+    "Beri tautan text-decoration: underline.",
+    "Batasi lebar kolom teks dengan main { max-width: 700px; margin: 0 auto; }"
+  ],
+  contoh: [
+    { nm: "Dasar keterbacaan", kode: "body {\n  color: #1b2430;\n  background: #fbfbf7;\n  font-size: 17px;\n  line-height: 1.6;\n}", ket: "Empat baris ini memenuhi ambang kontras, ukuran huruf, dan tinggi baris sekaligus." },
+    { nm: "Tautan yang terlihat", kode: "a {\n  color: #0b5d6b;\n  text-decoration: underline;\n}", ket: "Garis bawah membuat tautan tetap terlihat bagi yang buta warna." },
+    { nm: "Lebar kolom nyaman", kode: "main {\n  max-width: 700px;\n  margin: 0 auto;\n  padding: 0 16px;\n}", ket: "Baris teks yang terlalu panjang membuat mata kehilangan barisnya." }
+  ],
+  checks: [
+    { b: "Di CSS tulis body { font-size: 17px; }", t: "Ukuran huruf badan minimal 16px", w2: 2, fn: function (c) { var b = c.q("body"); return !!b && c.px(c.st(b).fontSize) >= 16; } },
+    { b: "Di CSS tulis body { line-height: 1.6; }", t: "Tinggi baris minimal 1,4", w2: 2, fn: function (c) {
+        var b = c.q("p") || c.q("body"); if (!b) return false;
+        var lh = c.st(b).lineHeight, fs = c.px(c.st(b).fontSize);
+        if (lh && lh !== "normal") {
+          var v = c.px(lh);
+          if (v > 4) return v / (fs || 16) >= 1.38;   /* nilai piksel */
+          if (v > 0) return v >= 1.38;                /* nilai kelipatan */
+        }
+        var m = (c.css || "").match(/line-height\s*:\s*([0-9.]+)(px|em|rem)?/i);
+        if (!m) return false;
+        var n = parseFloat(m[1]);
+        return m[2] === "px" ? n / (fs || 16) >= 1.38 : n >= 1.38; } },
+    { b: "Gelapkan teks atau terangkan latar, misalnya body { color: #1b2430; background: #fbfbf7; }. Rasio terukur muncul di hasil uji.", t: "Kontras teks paragraf minimal 4,5:1", w2: 3, fn: function (c) {
+        var p = c.q("p"); if (!p) return false;
+        var r = c.kontras(p); c.catatan = r ? "rasio terukur " + r.toFixed(2) + ":1" : "";
+        return r != null && r >= 4.5; } },
+    { b: "Beri h1 warna gelap yang sama dengan teks badan, misalnya h1 { color: #1b2430; }", t: "Kontras judul minimal 4,5:1", w2: 2, fn: function (c) {
+        var h = c.q("h1"); if (!h) return false;
+        var r = c.kontras(h); return r != null && r >= 4.5; } },
+    { b: "Tulis background pada body, misalnya body { background: #fbfbf7; }", t: "Latar halaman diatur sendiri, tidak dibiarkan bawaan", w2: 2, fn: function (c) {
+        return /background(-color)?\s*:/i.test(c.css); } },
+    { b: "Tulis a { color: #0b5d6b; text-decoration: underline; }", t: "Tautan diberi garis bawah, bukan hanya dibedakan warna", w2: 3, fn: function (c) {
+        var a = c.q("a"); if (!a) return false;
+        var td = c.st(a).textDecorationLine || c.st(a).textDecoration || "";
+        return /underline/.test(td) || c.px(c.st(a).borderBottomWidth) > 0; } },
+    { b: "Tulis main { max-width: 700px; margin: 0 auto; }", t: "Lebar kolom teks dibatasi agar nyaman dibaca", w2: 2, layout: true, fn: function (c) {
+        var m = c.q("main") || c.q("body"); if (!m) return false;
+        var mw = c.st(m).maxWidth;
+        if (mw && mw !== "none") return true;
+        return c.w(m) <= 820; } }
+  ],
+  badge: "warna"
+},
+{
+  id: "k6", blok: 2, no: 6, title: "Tata letak yang lentur",
+  goal: "Tiga kartu berdampingan di laptop, menumpuk sendiri di ponsel, tanpa satu pun angka lebar tetap.",
+  brief:
+    "<p>Inilah tantangan yang membedakan orang yang paham CSS dari orang yang menempel potongan kode. Tugasnya sederhana diucapkan: <b>tiga kartu berdampingan di layar lebar, menumpuk di layar sempit</b>.</p>" +
+    "<p>Cara lamanya memakai lebar persen dan berharap. Cara sekarang memakai <code>flex-wrap</code> atau <code>grid</code>, lalu membiarkan browser yang memutuskan kapan harus menumpuk.</p>" +
+    "<p>Penguji akan memuat halamanmu dua kali: pada <b>1280 piksel</b> ketiga kartu harus sejajar, dan pada <b>360 piksel</b> harus tersusun ke bawah. Tidak ada yang bisa memalsukan ini kecuali tata letaknya memang benar.</p>",
+  note: "<b>Cara membacanya di hasil uji:</b> \u201csejajar\u201d berarti ketiga kartu punya posisi atas yang sama; \u201cmenumpuk\u201d berarti posisi atasnya berbeda. Itu yang diukur penguji, bukan kode yang kamu tulis \u2014 jadi jalan mana pun boleh, selama hasilnya benar.",
+  hint: "Salah satu cara: .daftar { display: flex; flex-wrap: wrap; gap: 16px; } lalu .kartu { flex: 1 1 260px; } \u2014 angka 260px itu lebar minimum sebelum menumpuk, bukan lebar tetap.",
+  html: '<!DOCTYPE html>\n<html lang="id">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Daftar kopi \u2014 Kopi Kemuning</title>\n</head>\n<body>\n  <main>\n    <h1>Daftar kopi</h1>\n    <div class="daftar">\n      <article class="kartu"><h2>Robusta Kemuning</h2><p><strong>Rp32.000</strong></p></article>\n      <article class="kartu"><h2>Robusta Sangrai Gelap</h2><p><strong>Rp35.000</strong></p></article>\n      <article class="kartu"><h2>Robusta Bubuk Halus</h2><p><strong>Rp30.000</strong></p></article>\n    </div>\n  </main>\n</body>\n</html>\n',
+  css: "/* Buat ketiga kartu sejajar di layar lebar dan menumpuk di layar sempit. */\n.daftar {\n\n}\n.kartu {\n\n}\n",
+  langkah: [
+    "HTML-nya sudah disiapkan; kerjakan hanya di tab CSS.",
+    "Beri .daftar display: flex dan gap.",
+    "Tambahkan flex-wrap: wrap supaya kartu boleh turun baris.",
+    "Beri .kartu flex: 1 1 260px \u2014 angka itu batas sebelum menumpuk, bukan lebar tetap.",
+    "Uji di pratinjau 360 dan penuh: menumpuk di sempit, sejajar di lebar."
+  ],
+  contoh: [
+    { nm: "Kartu sejajar lalu menumpuk", kode: ".daftar {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 16px;\n}\n.kartu {\n  flex: 1 1 260px;\n}", ket: "flex-wrap memberi izin turun baris; 260px menentukan kapan itu terjadi." },
+    { nm: "Cara grid", kode: ".daftar {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));\n  gap: 16px;\n}", ket: "Hasilnya serupa tanpa perlu mengatur .kartu. Pilih salah satu, jangan keduanya." }
+  ],
+  checks: [
+    { b: "Tulis .daftar { display: flex; }", t: "Wadah memakai flex atau grid", w2: 2, fn: function (c) {
+        var d = c.q(".daftar"); if (!d) return false;
+        return /flex|grid/.test(c.st(d).display); } },
+    { b: "Tambahkan gap: 16px; di dalam .daftar.", t: "Ada jarak antar kartu (gap atau margin)", w2: 2, fn: function (c) {
+        var d = c.q(".daftar"), k = c.q(".kartu"); if (!d) return false;
+        return c.px(c.st(d).gap) > 0 || c.px(c.st(d).columnGap) > 0 || (k && c.px(c.st(k).marginRight) > 0); } },
+    { b: "Setelah display: flex, beri .kartu { flex: 1 1 260px; } supaya ketiganya berbagi baris.", t: "Tiga kartu sejajar pada lebar 1280", w2: 3, layout: true, fn: function (c) {
+        var k = c.all(".kartu"); if (k.length < 3) return false;
+        var t0 = k[0].getBoundingClientRect().top;
+        return Math.abs(k[1].getBoundingClientRect().top - t0) < 6 && Math.abs(k[2].getBoundingClientRect().top - t0) < 6; } },
+    { b: "Tambahkan flex-wrap: wrap; pada .daftar. Angka 260px di flex menentukan kapan mulai menumpuk.", t: "Kartu menumpuk ke bawah pada lebar 360", w2: 3, w: 360, layout: true, fn: function (c) {
+        var k = c.all(".kartu"); if (k.length < 3) return false;
+        return k[1].getBoundingClientRect().top - k[0].getBoundingClientRect().top > 20; } },
+    { b: "Cari angka lebar tetap di CSS dan ganti width menjadi max-width. Tambahkan juga img { max-width: 100%; }", t: "Tidak bisa digulir ke samping pada lebar 360", w2: 3, w: 360, layout: true, fn: function (c) { return !c.bocor(); } },
+    { b: "Hapus width: \u2026px dari .kartu; cukup flex: 1 1 260px.", t: "Tidak ada lebar tetap dalam piksel pada kartu", w2: 2, fn: function (c) {
+        return !/\.kartu[^}]*[^-]width\s*:\s*\d+px/i.test(c.css); } },
+    { b: "Tulis main { max-width: 1000px; margin: 0 auto; }", t: "Isi halaman dibatasi lebar maksimum dan dipusatkan", w2: 2, fn: function (c) {
+        var m = c.q("main"); if (!m) return false;
+        var s = c.st(m);
+        return s.maxWidth !== "none" && (s.marginLeft === "auto" || c.px(s.marginLeft) > 8); } }
+  ],
+  badge: "tataletak"
+},
+{
+  id: "k7", blok: 2, no: 7, title: "Navigasi antar halaman",
+  goal: "Bangun navigasi yang bekerja untuk situs beberapa halaman, dan menandai halaman yang sedang dibuka.",
+  brief:
+    "<p>Sampai di sini kamu selalu mengerjakan satu halaman. Situs sebenarnya punya beberapa, dan navigasi adalah satu-satunya hal yang muncul <b>sama</b> di semuanya.</p>" +
+    "<p>Bentuk bakunya: <code>&lt;nav&gt;</code> berisi <code>&lt;ul&gt;</code> berisi <code>&lt;li&gt;</code> berisi <code>&lt;a&gt;</code>. Terlihat bertele-tele, tetapi pembaca layar memakai struktur itu untuk memberitahu penggunanya \u201cdaftar navigasi, tiga tautan\u201d.</p>" +
+    "<p><b>Tautan relatif</b> seperti <code>href=\"produk.html\"</code> menunjuk berkas di folder yang sama. Ini yang dipakai situs statis, dan yang nanti bekerja begitu berkasmu diunggah ke GitHub Pages.</p>" +
+    "<p><b>Halaman yang sedang dibuka</b> ditandai <code>aria-current=\"page\"</code>, supaya pengguna tahu posisinya.</p>",
+  note: "<b>Kenapa tidak href=\"#\":</b> tanda pagar kosong membuat tautan yang tidak menuju ke mana pun. Di tugas ini setiap tautan harus menunjuk berkas nyata yang akan kamu buat di tantangan terakhir.",
+  hint: "&lt;nav aria-label=\"Menu utama\"&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=\"index.html\" aria-current=\"page\"&gt;Beranda&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=\"produk.html\"&gt;Produk&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=\"kontak.html\"&gt;Kontak&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/nav&gt;",
+  html: '<!DOCTYPE html>\n<html lang="id">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Beranda \u2014 Kopi Kemuning</title>\n</head>\n<body>\n  <header>\n    <!-- Bangun navigasi di sini -->\n  </header>\n  <main>\n    <h1>Kopi Kemuning</h1>\n  </main>\n  <footer>\n    <!-- Tambahkan keterangan pemilik dan tahun -->\n  </footer>\n</body>\n</html>\n',
+  css: "/* Buat menu berjajar dan hilangkan titik daftarnya. */\n",
+  langkah: [
+    "Di dalam <header> tulis <nav aria-label=\"Menu utama\">.",
+    "Di dalamnya <ul> dengan tiga <li>, masing-masing berisi <a href> ke berkas .html.",
+    "Tambahkan aria-current=\"page\" pada tautan Beranda saja.",
+    "Di CSS: nav ul { list-style: none; display: flex; gap: 14px; padding: 0; }",
+    "Isi <footer> dengan nama kedai dan tahun."
+  ],
+  contoh: [
+    { nm: "Navigasi", kode: "<nav aria-label=\"Menu utama\">\n  <ul>\n    <li><a href=\"index.html\" aria-current=\"page\">Beranda</a></li>\n    <li><a href=\"produk.html\">Produk</a></li>\n    <li><a href=\"kontak.html\">Kontak</a></li>\n  </ul>\n</nav>", ket: "aria-current menandai halaman yang sedang dibuka \u2014 pindahkan sesuai halamannya." },
+    { nm: "CSS menu", kode: "nav ul {\n  list-style: none;\n  display: flex;\n  gap: 14px;\n  padding: 0;\n}", ket: "list-style menghilangkan titik, flex membuatnya berjajar." }
+  ],
+  checks: [
+    { b: "Susun: <nav><ul><li><a href=\"index.html\">Beranda</a></li> \u2026 </ul></nav> dengan tiga butir.", t: "Ada <nav> berisi <ul> dengan minimal tiga <li>", w2: 3, fn: function (c) {
+        var n = c.q("nav"); return !!n && n.querySelectorAll("ul li").length >= 3; } },
+    { b: "Setiap href menunjuk berkas: index.html, produk.html, kontak.html.", t: "Setiap butir menu berupa <a> dengan href ke berkas .html", w2: 3, fn: function (c) {
+        var a = c.all("nav a[href]"); if (a.length < 3) return false;
+        for (var i = 0; i < a.length; i++) if (!/\.html$/i.test(a[i].getAttribute("href") || "")) return false;
+        return true; } },
+    { b: "Ganti href=\"#\" dengan nama berkas yang sebenarnya.", t: "Tidak ada tautan href=\"#\" di navigasi", w2: 2, fn: function (c) {
+        return c.all("nav a").filter(function (a) { return (a.getAttribute("href") || "") === "#"; }).length === 0; } },
+    { b: "Pada tautan halaman yang sedang dibuka tambahkan aria-current=\"page\" \u2014 tepat satu tautan saja.", t: "Halaman aktif ditandai aria-current=\"page\"", w2: 3, fn: function (c) {
+        return c.all('nav a[aria-current="page"]').length === 1; } },
+    { b: "Tulis <nav aria-label=\"Menu utama\">.", t: "<nav> diberi aria-label atau judul", w2: 2, fn: function (c) {
+        var n = c.q("nav"); return !!n && ((n.getAttribute("aria-label") || "").length > 2 || !!n.querySelector("h2")); } },
+    { b: "Tulis nav ul { list-style: none; padding: 0; }", t: "Titik daftar dihilangkan lewat CSS", w2: 2, fn: function (c) {
+        var u = c.q("nav ul"); if (!u) return false;
+        if (c.st(u).listStyleType === "none") return true;
+        return /list-style(-type)?\s*:\s*none/i.test(c.css || ""); } },
+    { b: "Tambahkan display: flex; gap: 14px; pada nav ul.", t: "Menu berjajar menyamping pada lebar 1280", w2: 2, layout: true, fn: function (c) {
+        var li = c.all("nav li"); if (li.length < 2) return false;
+        return Math.abs(li[1].getBoundingClientRect().top - li[0].getBoundingClientRect().top) < 6; } },
+    { b: "Isi footer dengan nama dan tahun, misalnya Kopi Kemuning \u00b7 Palembang \u00b7 2026.", t: "Footer memuat nama pemilik dan tahun", w2: 2, fn: function (c) {
+        var f = c.q("footer"); return !!f && /20\d\d/.test(c.teks(f)) && c.teks(f).length > 12; } }
+  ],
+  badge: "navigasi"
+},
+{
+  id: "k8", blok: 2, no: 8, title: "Formulir pesanan",
+  goal: "Buat formulir yang bisa diisi orang dengan satu tangan, dan terbaca pembaca layar.",
+  brief:
+    "<p>Formulir adalah tempat uang berpindah, dan tempat paling banyak pelanggan menyerah di tengah jalan. Hampir semua sebabnya teknis, bukan desain.</p>" +
+    "<p><b>Setiap kolom wajib punya <code>&lt;label&gt;</code></b> yang terhubung lewat <code>for</code> dan <code>id</code>. Placeholder bukan pengganti label: teksnya hilang begitu orang mulai mengetik, dan pembaca layar sering melewatkannya.</p>" +
+    "<p><b>Tipe input yang tepat</b> mengubah papan ketik di ponsel: <code>type=\"email\"</code> memunculkan tanda @, <code>type=\"tel\"</code> memunculkan angka. Ini perbedaan yang langsung terasa.</p>" +
+    "<p>Formulir pesanan Kopi Kemuning butuh: nama, email, nomor telepon, pilihan sangrai, jumlah, catatan, dan tombol kirim.</p>",
+  note: "<b>Uji satu tangan:</b> buka formulirmu di ponsel dan coba isi sambil berdiri, satu tangan. Kolom yang terlalu pendek, papan ketik yang salah, dan tombol yang terlalu kecil akan langsung terasa \u2014 jauh sebelum ada pelanggan yang mengeluh.",
+  hint: "Setiap kolom: &lt;label for=\"nama\"&gt;Nama&lt;/label&gt;&lt;input id=\"nama\" name=\"nama\" type=\"text\" required&gt;. Untuk pilihan sangrai pakai &lt;select&gt; atau &lt;fieldset&gt; dengan &lt;legend&gt; berisi radio. Beri input padding agar tingginya cukup.",
+  html: '<!DOCTYPE html>\n<html lang="id">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Pesan \u2014 Kopi Kemuning</title>\n</head>\n<body>\n  <main>\n    <h1>Formulir pesanan</h1>\n    <form>\n      <!-- Bangun kolom-kolomnya di sini -->\n    </form>\n  </main>\n</body>\n</html>\n',
+  css: "/* Beri kolom lebar penuh dan tinggi yang nyaman disentuh. */\n",
+  langkah: [
+    "Untuk setiap kolom tulis pasangannya: <label for=\"x\"> lalu <input id=\"x\">.",
+    "Pakai type yang tepat: text, email, tel.",
+    "Tambahkan required pada kolom yang wajib.",
+    "Tambahkan <select> untuk sangrai dan <textarea> untuk catatan, keduanya berlabel.",
+    "Tutup dengan <button type=\"submit\">.",
+    "Di CSS beri input padding supaya nyaman disentuh."
+  ],
+  contoh: [
+    { nm: "Satu kolom lengkap", kode: "<label for=\"nama\">Nama</label>\n<input id=\"nama\" name=\"nama\" type=\"text\" required>", ket: "Nilai for dan id harus sama. Itu yang menghubungkan label dengan kolomnya." },
+    { nm: "Kolom email dan telepon", kode: "<label for=\"surel\">Email</label>\n<input id=\"surel\" name=\"email\" type=\"email\" required>\n\n<label for=\"tel\">Telepon</label>\n<input id=\"tel\" name=\"tel\" type=\"tel\">", ket: "type yang tepat mengubah papan ketik di ponsel." },
+    { nm: "Pilihan dan catatan", kode: "<label for=\"sangrai\">Sangrai</label>\n<select id=\"sangrai\" name=\"sangrai\">\n  <option>Medium</option>\n  <option>Gelap</option>\n</select>\n\n<label for=\"catatan\">Catatan</label>\n<textarea id=\"catatan\" name=\"catatan\"></textarea>\n\n<button type=\"submit\">Kirim pesanan</button>", ket: "Semua kolom, termasuk select dan textarea, butuh label." },
+    { nm: "CSS kolom", kode: "input, select, textarea {\n  width: 100%;\n  padding: 12px;\n  font-size: 16px;\n}", ket: "Padding membuat tinggi kolom cukup untuk disentuh." }
+  ],
+  checks: [
+    { b: "Buat <form> berisi minimal empat kolom: input nama, email, telepon, dan satu lagi.", t: "Ada <form> dengan minimal empat kolom isian", w2: 2, fn: function (c) {
+        return !!c.q("form") && c.all("form input, form select, form textarea").length >= 4; } },
+    { b: "Pasangkan: <label for=\"nama\">Nama</label><input id=\"nama\" type=\"text\">. Nilai for dan id harus sama.", t: "Setiap kolom punya <label> yang terhubung lewat for dan id", w2: 3, fn: function (c) {
+        var f = c.all("form input, form select, form textarea").filter(function (n) { return n.type !== "submit" && n.type !== "hidden"; });
+        if (!f.length) return false;
+        for (var i = 0; i < f.length; i++) {
+          var id = f[i].id;
+          if (f[i].type === "radio" || f[i].type === "checkbox") {
+            if (!id || !c.q('label[for="' + id + '"]')) return false;
+            continue;
+          }
+          if (!id || !c.q('label[for="' + id + '"]')) return false;
+        }
+        return true; } },
+    { b: "Ubah kolom email menjadi type=\"email\" dan telepon menjadi type=\"tel\".", t: "Memakai type=\"email\" dan type=\"tel\"", w2: 3, fn: function (c) {
+        return !!c.q('input[type="email"]') && !!c.q('input[type="tel"]'); } },
+    { b: "Tambahkan kata required di dalam tag input, minimal pada dua kolom.", t: "Kolom wajib ditandai atribut required", w2: 2, fn: function (c) { return c.all("form [required]").length >= 2; } },
+    { b: "Pakai <select id=\"sangrai\"><option>Medium</option><option>Gelap</option></select> beserta labelnya.", t: "Ada pilihan sangrai berupa select atau radio ber-fieldset", w2: 2, fn: function (c) {
+        return !!c.q("form select") || (!!c.q("form fieldset legend") && c.all('form input[type="radio"]').length >= 2); } },
+    { b: "Tambahkan <label for=\"catatan\">Catatan</label><textarea id=\"catatan\"></textarea>.", t: "Ada <textarea> untuk catatan", fn: function (c) { return !!c.q("form textarea"); } },
+    { b: "Tulis <button type=\"submit\">Kirim pesanan</button>.", t: "Tombol kirim memakai <button type=\"submit\">", w2: 2, fn: function (c) {
+        var b = c.q('form button[type="submit"]') || c.q('form input[type="submit"]');
+        return !!b; } },
+    { b: "Di CSS tulis input, select, textarea { width: 100%; padding: 12px; font-size: 16px; }", t: "Tinggi kolom isian minimal 40 piksel", w2: 2, layout: true, fn: function (c) {
+        var i = c.q('form input[type="text"], form input[type="email"], form input'); if (!i) return false;
+        return c.h(i) >= 39.5; } },
+    { b: "Setiap kolom yang punya placeholder juga harus punya <label for> yang cocok.", t: "Placeholder tidak dipakai menggantikan label", w2: 2, fn: function (c) {
+        var ph = c.all("form [placeholder]");
+        for (var i = 0; i < ph.length; i++) { var id = ph[i].id; if (!id || !c.q('label[for="' + id + '"]')) return false; }
+        return true; } }
+  ],
+  badge: "formulir"
+},
+{
+  id: "k9", blok: 3, no: 9, title: "Bongkar situs mitra yang rusak",
+  goal: "Satu halaman yang ditulis buru-buru, penuh kesalahan yang berbeda setiap kali kamu mulai. Perbaiki semuanya.",
+  brief:
+    "<p>Ini tantangan penutup sebelum proyek. Kamu menerima halaman yang sudah jadi \u2014 dan rusak. Tugasmu memperbaiki, bukan menulis ulang dari nol.</p>" +
+    "<p><b>Kesalahannya diacak setiap kali kamu menekan \u201cAcak ulang kerusakan\u201d</b>, diambil dari sepuluh jenis kesalahan yang paling sering terjadi di pekerjaan nyata. Jadi tidak ada gunanya menyalin jawaban teman, dan mengulang tantangan ini tetap melatih.</p>" +
+    "<p>Daftar uji di bawah adalah satu-satunya petunjukmu. Bacalah seperti laporan hasil audit: cari yang bertanda merah, cari sebabnya di kode, perbaiki, jalankan lagi.</p>",
+  note: "<b>Cara kerja yang dipakai orang berpengalaman:</b> perbaiki satu hal, jalankan uji, lihat. Bukan memperbaiki delapan hal sekaligus lalu bingung mana yang menyebabkan apa. Di sini uji tidak dibatasi \u2014 nilainya dihitung dari berapa banyak yang berhasil kamu benahi.",
+  hint: "Baca butir merah satu per satu. Yang paling sering terlewat: atribut lang pada tag html, alt pada gambar, urutan heading yang melompat, tag yang tidak ditutup, dan lebar tetap dalam piksel yang membuat halaman bocor ke samping.",
+  kind: "boss",
+  langkah: [
+    "Jalankan uji dulu sebelum mengubah apa pun \u2014 itu daftar temuanmu.",
+    "Ambil satu butir merah, baca bantuannya, cari bagian kodenya.",
+    "Perbaiki satu hal, jalankan uji lagi, pastikan butir itu berubah hijau.",
+    "Ulangi sampai semua hijau. Jangan memperbaiki banyak hal sekaligus."
+  ],
+  contoh: [
+    { nm: "Perbaikan yang sering dibutuhkan", kode: "<html lang=\"id\">\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<th scope=\"col\">Sangrai</th>\n<label for=\"email\">Email</label><input id=\"email\" type=\"email\" required>", ket: "Bentuk benar dari kesalahan yang paling sering ditanam. Bandingkan dengan kode yang ada." },
+    { nm: "Perbaikan di CSS", kode: "body {\n  color: #1b2430;\n  background: #fbfbf7;\n  font-size: 17px;\n  line-height: 1.6;\n}\nmain {\n  max-width: 900px;\n  margin: 0 auto;\n}", ket: "Perhatikan max-width, bukan width \u2014 itu penyebab halaman bocor ke samping." }
+  ],
+  checks: [
+    { b: "Ubah <html> menjadi <html lang=\"id\">.", t: "Tag <html> memakai lang", w2: 2, fn: function (c) { var h = c.q("html"); return !!h && (h.getAttribute("lang") || "").length >= 2; } },
+    { b: "Tulis <meta charset=\"UTF-8\"> di dalam <head>.", t: "Ada meta charset", w2: 2, fn: function (c) { return !!c.q("meta[charset]"); } },
+    { b: "Tulis <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> di dalam <head>.", t: "Ada meta viewport width=device-width", w2: 2, fn: function (c) { var m = c.q('meta[name="viewport"]'); return !!m && /width=device-width/i.test(m.getAttribute("content") || ""); } },
+    { b: "Ganti isi <title> dengan judul sebenarnya, bukan \u201cDokumen\u201d.", t: "Judul halaman terisi dengan benar", w2: 2, fn: function (c) { return c.doc.title.length > 5 && !/dokumen|untitled|judul/i.test(c.doc.title); } },
+    { b: "Sisakan satu <h1> saja; ubah yang lain menjadi <h2>.", t: "Hanya ada satu <h1>", w2: 2, fn: function (c) { return c.all("h1").length === 1; } },
+    { b: "Setelah h1 pakai h2, setelah h2 pakai h3. Jangan langsung ke h4 atau h5.", t: "Urutan heading tidak melompat", w2: 2, fn: function (c) { return !lompat(hd(c)); } },
+    { b: "Tambahkan alt yang menjelaskan isi gambar, dan jangan memakai nama berkas sebagai alt.", t: "Semua gambar punya alt yang menjelaskan", w2: 3, fn: function (c) {
+        var im = c.all("img"); if (!im.length) return false;
+        for (var i = 0; i < im.length; i++) {
+          var a = im[i].getAttribute("alt");
+          if (a === null || /\.(jpg|png|webp)/i.test(a)) return false;
+        }
+        return true; } },
+    { b: "Ganti <td><b>Sangrai</b></td> menjadi <th scope=\"col\">Sangrai</th>.", t: "Kepala tabel memakai <th>, bukan <td> yang ditebalkan", w2: 2, fn: function (c) {
+        var t = c.q("table"); if (!t) return true;
+        return t.querySelectorAll("th").length >= 2; } },
+    { b: "Tambahkan id pada input dan <label for> yang sama, misalnya <label for=\"email\">Email</label><input id=\"email\" type=\"email\">.", t: "Setiap kolom formulir punya label terhubung", w2: 3, fn: function (c) {
+        var f = c.all("form input, form select, form textarea").filter(function (n) { return n.type !== "submit"; });
+        if (!f.length) return true;
+        for (var i = 0; i < f.length; i++) if (!f[i].id || !c.q('label[for="' + f[i].id + '"]')) return false;
+        return true; } },
+    { b: "Isi teks tautan dengan apa yang dituju: <a href=\"produk.html\">daftar kopi kami</a>, bukan \u201cdi sini\u201d.", t: "Teks tautan bermakna", w2: 2, fn: function (c) {
+        var a = c.all("a[href]");
+        for (var i = 0; i < a.length; i++) {
+          var t = c.teks(a[i]).toLowerCase();
+          for (var j = 0; j < TEKS_MALAS.length; j++) if (t === TEKS_MALAS[j]) return false;
+        }
+        return a.length > 0; } },
+    { b: "Perbaiki warna di CSS, misalnya body { color: #1b2430; background: #fbfbf7; }", t: "Kontras teks minimal 4,5:1", w2: 3, fn: function (c) {
+        var p = c.q("p"); if (!p) return false;
+        var r = c.kontras(p); return r != null && r >= 4.5; } },
+    { b: "Di CSS tulis body { font-size: 17px; }", t: "Ukuran huruf badan minimal 16px", w2: 2, fn: function (c) { var b = c.q("body"); return !!b && c.px(c.st(b).fontSize) >= 16; } },
+    { b: "Cari width: \u2026px di CSS dan ganti menjadi max-width.", t: "Tidak bocor ke samping pada lebar 360", w2: 3, w: 360, layout: true, fn: function (c) { return !c.bocor(); } }
+  ],
+  badge: "boss"
+},
+{
+  id: "k10", blok: 3, no: 10, title: "Proyek akhir: situs tiga halaman",
+  goal: "Bangun situs Kopi Kemuning yang utuh, lalu unduh berkasnya dan terbitkan sendiri tanpa Wix.",
+  brief:
+    "<p>Semua yang kamu latih dipakai sekaligus. Empat berkas, seperti situs statis sungguhan:</p>" +
+    "<p><code>index.html</code> beranda \u00b7 <code>produk.html</code> daftar kopi \u00b7 <code>kontak.html</code> formulir pesanan \u00b7 <code>style.css</code> satu lembar gaya yang dipakai ketiga halaman.</p>" +
+    "<p>Perhatikan yang terakhir: <b>satu berkas CSS untuk semua halaman</b>. Itu sebabnya situs statis mudah dirawat \u2014 ganti satu warna, tiga halaman ikut berubah. Menyalin gaya ke setiap halaman adalah cara membuat pekerjaanmu tiga kali lebih berat.</p>" +
+    "<p>Setelah semua uji lolos, tombol <b>Unduh berkas situs</b> memberi keempat berkas itu apa adanya. Keempatnya bisa langsung kamu unggah ke GitHub Pages, dan situsnya hidup di internet dengan alamat milikmu sendiri. Tidak ada Wix, tidak ada WordPress, tidak ada langganan bulanan.</p>",
+  note: "<b>Ini bukan latihan pura-pura.</b> Berkas yang kamu unduh adalah situs yang sebenarnya. Buka menu \u201cCara menerbitkan situs\u201d di sisi kiri untuk langkah mengunggahnya \u2014 prosesnya sama dengan yang dipakai lab ini sendiri.",
+  hint: "Kerjakan satu halaman sampai lolos, baru pindah. Salin navigasi yang sama ke ketiga halaman, ubah hanya penanda aria-current. Di setiap halaman, hubungkan CSS dengan &lt;link rel=\"stylesheet\" href=\"style.css\"&gt;.",
+  kind: "proyek",
+  files: [
+    { k: "index", nm: "index.html",
+      start: '<!DOCTYPE html>\n<html lang="id">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Kopi Kemuning \u2014 Robusta Palembang</title>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <header>\n    <!-- navigasi: index, produk, kontak -->\n  </header>\n  <main>\n    <h1>Kopi Kemuning</h1>\n    <!-- perkenalan singkat dan satu gambar -->\n  </main>\n  <footer></footer>\n</body>\n</html>\n' },
+    { k: "produk", nm: "produk.html",
+      start: '<!DOCTYPE html>\n<html lang="id">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Produk \u2014 Kopi Kemuning</title>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <header>\n    <!-- navigasi yang sama -->\n  </header>\n  <main>\n    <h1>Daftar kopi</h1>\n    <!-- tiga kartu produk -->\n  </main>\n  <footer></footer>\n</body>\n</html>\n' },
+    { k: "kontak", nm: "kontak.html",
+      start: '<!DOCTYPE html>\n<html lang="id">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Kontak \u2014 Kopi Kemuning</title>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <header>\n    <!-- navigasi yang sama -->\n  </header>\n  <main>\n    <h1>Hubungi kami</h1>\n    <!-- formulir pesanan -->\n  </main>\n  <footer></footer>\n</body>\n</html>\n' },
+    { k: "css", nm: "style.css",
+      start: "/* Satu lembar gaya untuk ketiga halaman. */\n:root {\n  --tinta: #1b2430;\n  --kertas: #fbfbf7;\n}\nbody {\n\n}\n" }
+  ],
+  langkah: [
+    "Kerjakan index.html sampai butirnya hijau, baru pindah berkas.",
+    "Salin blok <nav> yang sama ke ketiga halaman; ubah hanya letak aria-current.",
+    "Pastikan ketiga halaman punya <link rel=\"stylesheet\" href=\"style.css\">.",
+    "Tulis semua gaya di style.css saja, jangan di dalam halaman.",
+    "Setelah semua hijau, tekan Unduh berkas situs lalu buka panduan penerbitan."
+  ],
+  contoh: [
+    { nm: "Kerangka satu halaman", kode: "<!DOCTYPE html>\n<html lang=\"id\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Beranda \u2014 Kopi Kemuning</title>\n  <link rel=\"stylesheet\" href=\"style.css\">\n</head>\n<body>\n  <header></header>\n  <main></main>\n  <footer><p>Kopi Kemuning \u00b7 Palembang \u00b7 2026</p></footer>\n</body>\n</html>", ket: "Pola yang sama untuk ketiga halaman; yang berbeda hanya title dan isi main." },
+    { nm: "style.css pembuka", kode: "body {\n  color: #1b2430;\n  background: #fbfbf7;\n  font-size: 17px;\n  line-height: 1.6;\n  font-family: Georgia, serif;\n}\nmain {\n  max-width: 900px;\n  margin: 0 auto;\n  padding: 0 16px;\n}\nnav ul {\n  list-style: none;\n  display: flex;\n  gap: 14px;\n  padding: 0;\n}\nimg {\n  max-width: 100%;\n  height: auto;\n}", ket: "Satu berkas ini dipakai ketiga halaman. Itulah gunanya link rel=stylesheet." }
+  ],
+  checks: [
+    /* pemeriksaan lintas berkas, dibaca dari kodenya langsung */
+    { b: "Di setiap halaman, dalam <head>, tulis <link rel=\"stylesheet\" href=\"style.css\">.", t: "Ketiga halaman menghubungkan style.css", w2: 3, src: true, fn: function (f) {
+        return ["index", "produk", "kontak"].every(function (k) { return /<link[^>]+href=["']style\.css["']/i.test(f[k] || ""); }); } },
+    { b: "Pindahkan semua gaya ke berkas style.css. Hapus <style> dan atribut style=\"\u2026\" dari halaman.", t: "Tidak ada <style> atau atribut style di dalam halaman", w2: 2, src: true, fn: function (f) {
+        return ["index", "produk", "kontak"].every(function (k) { return !/<style|\sstyle\s*=/i.test(f[k] || ""); }); } },
+    { b: "Salin blok <nav> yang sama ke ketiga halaman; ubah hanya letak aria-current=\"page\".", t: "Navigasi sama muncul di ketiga halaman", w2: 3, src: true, fn: function (f) {
+        return ["index", "produk", "kontak"].every(function (k) {
+          var s = f[k] || "";
+          return /<nav[\s>]/i.test(s) && /href=["']index\.html["']/i.test(s) && /href=["']produk\.html["']/i.test(s) && /href=["']kontak\.html["']/i.test(s);
+        }); } },
+    { b: "Beri judul berbeda: Beranda, Produk, dan Kontak \u2014 masing-masing diikuti nama kedai.", t: "Judul <title> ketiga halaman berbeda", w2: 2, src: true, fn: function (f) {
+        function ttl(s) { var m = (s || "").match(/<title>([^<]*)<\/title>/i); return m ? m[1].trim().toLowerCase() : ""; }
+        var a = ttl(f.index), b = ttl(f.produk), c2 = ttl(f.kontak);
+        return a && b && c2 && a !== b && b !== c2 && a !== c2; } },
+    { b: "Isi style.css dengan minimal empat aturan, misalnya untuk body, main, nav ul, dan .kartu.", t: "style.css berisi gaya yang sungguh ditulis", w2: 2, src: true, fn: function (f) {
+        var s = (f.css || "").replace(/\/\*[\s\S]*?\*\//g, "");
+        return (s.match(/\{[^}]*[a-z-]+\s*:[^}]+\}/g) || []).length >= 4; } },
+    /* pemeriksaan per halaman di dalam iframe */
+    { b: "Di index.html: satu <h1>, satu tautan ber-aria-current=\"page\", dan satu gambar ber-alt.", t: "Beranda: satu h1, navigasi aktif ditandai, ada gambar ber-alt", w2: 3, file: "index", fn: function (c) {
+        return c.all("h1").length === 1 && c.all('nav a[aria-current="page"]').length === 1 &&
+          c.all("img").length >= 1 && c.all("img").every(function (i) { return (i.getAttribute("alt") || "").length > 3; }); } },
+    { b: "Atur body { color: #1b2430; background: #fbfbf7; font-size: 17px; } di style.css.", t: "Beranda: kontras teks lolos dan huruf badan minimal 16px", w2: 2, file: "index", fn: function (c) {
+        var p = c.q("p"), b = c.q("body");
+        if (!p || !b) return false;
+        var r = c.kontras(p);
+        return r != null && r >= 4.5 && c.px(c.st(b).fontSize) >= 16; } },
+    { b: "Buat tiga <article>, masing-masing dengan <strong>Rp\u2026</strong> di dalamnya.", t: "Produk: minimal tiga <article> dengan harga ber-<strong>", w2: 3, file: "produk", fn: function (c) {
+        var a = c.all("article");
+        if (a.length < 3) return false;
+        var h = 0;
+        for (var i = 0; i < a.length; i++) {
+          var s = a[i].querySelectorAll("strong");
+          for (var j = 0; j < s.length; j++) if (/rp\s?\d/i.test(s[j].textContent)) { h++; break; }
+        }
+        return h >= 3; } },
+    { b: "Di style.css: .daftar { display: flex; flex-wrap: wrap; gap: 16px; } .kartu { flex: 1 1 260px; }", t: "Produk: kartu sejajar pada 1280", w2: 2, file: "produk", layout: true, fn: function (c) {
+        var a = c.all("article"); if (a.length < 2) return false;
+        return Math.abs(a[1].getBoundingClientRect().top - a[0].getBoundingClientRect().top) < 8; } },
+    { b: "Tambahkan img { max-width: 100%; } dan hindari lebar tetap pada kartu.", t: "Produk: tidak bocor ke samping pada 360", w2: 3, file: "produk", w: 360, layout: true, fn: function (c) { return !c.bocor(); } },
+    { b: "Minimal tiga kolom, masing-masing dengan label for dan id yang cocok, termasuk satu type=\"email\".", t: "Kontak: formulir lengkap dengan label terhubung", w2: 3, file: "kontak", fn: function (c) {
+        var f = c.all("form input, form select, form textarea").filter(function (n) { return n.type !== "submit"; });
+        if (f.length < 3) return false;
+        for (var i = 0; i < f.length; i++) if (!f[i].id || !c.q('label[for="' + f[i].id + '"]')) return false;
+        return !!c.q('input[type="email"]'); } },
+    { b: "Tambahkan <button type=\"submit\">Kirim</button> dan atribut required pada kolom wajib.", t: "Kontak: tombol kirim submit dan ada kolom wajib", w2: 2, file: "kontak", fn: function (c) {
+        return (!!c.q('form button[type="submit"]') || !!c.q('form input[type="submit"]')) && c.all("form [required]").length >= 1; } },
+    { b: "Tambahkan <footer><p>Kopi Kemuning \u00b7 Palembang \u00b7 2026</p></footer> di setiap halaman.", t: "Semua halaman punya <footer> berisi tahun", w2: 2, file: "index", fn: function (c) {
+        var f = c.q("footer"); return !!f && /20\d\d/.test(c.teks(f)); } }
+  ],
+  badge: "proyek"
+}
+];
+
+/* ---------------- sepuluh kerusakan untuk tantangan 9 ---------------- */
+var RUSAK = [
+  { k: "lang", ok: '<html lang="id">', bad: "<html>" },
+  { k: "charset", ok: '  <meta charset="UTF-8">\n', bad: "" },
+  { k: "viewport", ok: '  <meta name="viewport" content="width=device-width, initial-scale=1">\n', bad: '  <meta name="viewport" content="width=1024">\n' },
+  { k: "title", ok: "  <title>Beranda \u2014 Kopi Kemuning</title>\n", bad: "  <title>Dokumen</title>\n" },
+  { k: "h1", ok: "    <h2>Kopi pilihan bulan ini</h2>", bad: "    <h1>Kopi pilihan bulan ini</h1>" },
+  { k: "lompat", ok: "      <h3>Robusta Kemuning</h3>", bad: "      <h5>Robusta Kemuning</h5>" },
+  { k: "alt", ok: '      <img src="robusta.jpg" alt="Biji robusta sangrai medium" width="320" height="200">',
+    bad: '      <img src="robusta.jpg" width="320" height="200">' },
+  { k: "th", ok: "        <tr><th scope=\"col\">Sangrai</th><th scope=\"col\">Harga</th></tr>",
+    bad: "        <tr><td><b>Sangrai</b></td><td><b>Harga</b></td></tr>" },
+  { k: "label", ok: '      <label for="email">Email</label>\n      <input id="email" name="email" type="email" required>',
+    bad: '      <input name="email" type="text" placeholder="Email">' },
+  { k: "tautan", ok: '    <p>Baca <a href="produk.html">daftar kopi yang tersedia</a>.</p>',
+    bad: '    <p>Baca daftarnya <a href="produk.html">di sini</a>.</p>' },
+  { k: "kontras", okc: "  color: #1b2430;\n  background: #fbfbf7;", badc: "  color: #b9c0c7;\n  background: #ffffff;" },
+  { k: "huruf", okc: "  font-size: 17px;\n  line-height: 1.6;", badc: "  font-size: 12px;\n  line-height: 1.2;" },
+  { k: "lebar", okc: "  max-width: 900px;\n  margin: 0 auto;\n  padding: 0 16px;", badc: "  width: 1100px;\n  margin: 0 auto;" }
+];
+
+function bangunRusak(pecah) {
+  function p(k) {
+    var r = null;
+    for (var i = 0; i < RUSAK.length; i++) if (RUSAK[i].k === k) r = RUSAK[i];
+    if (!r) return "";
+    var rusak = inArr(pecah, k);
+    if (r.okc != null) return rusak ? r.badc : r.okc;
+    return rusak ? r.bad : r.ok;
+  }
+  var html = '<!DOCTYPE html>\n' + p("lang") + "\n<head>\n" + p("charset") + p("viewport") + p("title") +
+    '  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n' +
+    '  <header>\n    <nav aria-label="Menu utama"><ul>\n      <li><a href="index.html" aria-current="page">Beranda</a></li>\n' +
+    '      <li><a href="produk.html">Produk</a></li>\n      <li><a href="kontak.html">Kontak</a></li>\n    </ul></nav>\n  </header>\n' +
+    "  <main>\n    <h1>Kopi Kemuning</h1>\n" +
+    "    <p>Kami menyangrai robusta dari kebun sendiri di lereng Kemuning sejak 2019.</p>\n" +
+    p("tautan") + "\n" + p("h1") + "\n    <div class=\"daftar\">\n      <article class=\"kartu\">\n" +
+    p("lompat") + "\n" + p("alt") + "\n        <p><strong>Rp32.000</strong> per 200 gram</p>\n" +
+    "        <button>Pesan sekarang</button>\n      </article>\n    </div>\n" +
+    "    <h2>Perbandingan sangrai</h2>\n    <table>\n      <thead>\n" + p("th") + "\n      </thead>\n" +
+    "      <tbody>\n        <tr><td>Medium</td><td>Rp32.000</td></tr>\n        <tr><td>Gelap</td><td>Rp35.000</td></tr>\n      </tbody>\n    </table>\n" +
+    "    <h2>Tanya harga grosir</h2>\n    <form>\n" + p("label") + "\n      <button type=\"submit\">Kirim</button>\n    </form>\n" +
+    "  </main>\n  <footer>\n    <p>Kopi Kemuning \u00b7 Palembang \u00b7 2026</p>\n  </footer>\n</body>\n</html>\n";
+  var css = "body {\n" + p("kontras") + "\n" + p("huruf") + "\n  font-family: Georgia, serif;\n}\nmain {\n" + p("lebar") + "\n}\n" +
+    ".daftar { display: flex; flex-wrap: wrap; gap: 16px; }\n.kartu { flex: 1 1 260px; }\nimg { max-width: 100%; height: auto; }\n" +
+    "nav ul { list-style: none; display: flex; gap: 14px; padding: 0; }\nbutton { padding: 14px 20px; font-size: 16px; }\n" +
+    "table { border-collapse: collapse; }\nth, td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; }\n";
+  return { html: html, css: css };
+}
+function acakPecah(n) {
+  var kunci = RUSAK.map(function (r) { return r.k; });
+  for (var i = kunci.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1)), t = kunci[i];
+    kunci[i] = kunci[j]; kunci[j] = t;
+  }
+  return kunci.slice(0, n);
+}
+
+function tById(id) {
+  for (var i = 0; i < TANTANGAN.length; i++) if (TANTANGAN[i].id === id) return TANTANGAN[i];
+  return null;
+}
+function terbuka(i) { return i === 0 ? true : !!S.m[TANTANGAN[i - 1].id]; }
+/* =======================================================================
+   TAMPILAN
+   ======================================================================= */
+var cur = null, tFrame = null, debounce = null, jamBoss = null;
+
+function frameUji() {
+  if (tFrame) return tFrame;
+  var box = document.createElement("div");
+  box.setAttribute("style", "position:absolute;left:-10000px;top:0;width:1400px;height:900px;overflow:hidden");
+  tFrame = document.createElement("iframe");
+  tFrame.setAttribute("style", "width:1280px;height:900px;border:0");
+  tFrame.setAttribute("title", "penguji");
+  box.appendChild(tFrame);
+  document.body.appendChild(box);
+  return tFrame;
+}
+function setLebarUji(w) { tFrame.style.width = w + "px"; }
+
+function paintRail() {
+  var lv = levelOf(S.xp), nx = null;
+  for (var i = 0; i < LEVELS.length; i++) if (LEVELS[i].at > S.xp) { nx = LEVELS[i]; break; }
+  var pct = nx ? Math.round((S.xp - lv.at) / (nx.at - lv.at) * 100) : 100;
+  el("who").innerHTML = "<b>" + esc(lv.t) + "</b><em>" + S.xp + " poin" +
+    (nx ? " \u00b7 " + (nx.at - S.xp) + " lagi ke " + nx.t : " \u00b7 tertinggi") + "</em>" +
+    (S.nama ? "<em>" + esc(S.nama) + (S.npm ? " \u00b7 " + esc(S.npm) : "") + "</em>" : "") +
+    '<div class="xp"><i style="width:' + pct + '%"></i></div>' +
+    '<div class="badges">' + BADGES.map(function (b) {
+      return '<span class="badge' + (inArr(S.badges, b.id) ? " on" : "") + '">' + esc(b.t) + "</span>";
+    }).join("") + "</div>";
+  var html = "", blok = 0;
+  for (var j = 0; j < TANTANGAN.length; j++) {
+    var t = TANTANGAN[j];
+    if (t.blok !== blok) {
+      if (blok) html += "</ul>";
+      blok = t.blok;
+      html += '<div class="blok">' + esc(BLOK[blok]) + '</div><ul class="mlist">';
+    }
+    var dn = !!S.m[t.id], op = terbuka(j);
+    html += '<li><button data-go="' + t.id + '" data-n="' + t.no + '" class="' + (dn ? "done" : "") +
+      (op ? "" : " locked") + '"' + (op ? "" : " disabled") + (cur === t.id ? ' aria-current="true"' : "") + ">" +
+      esc(t.title) + (dn ? ' <span class="w">' + S.m[t.id].score + "</span>" : "") + "</button></li>";
+  }
+  html += "</ul>";
+  el("nav").innerHTML = html;
+}
+
+function shell(t, tugas) {
+  return '<div class="tag">' + esc(BLOK[t.blok]) + " \u00b7 tantangan " + t.no + " dari " + TANTANGAN.length + "</div>" +
+    '<div class="mt"><span class="no">' + t.no + "</span><h2>" + esc(t.title) + "</h2></div>" +
+    '<p class="goal">' + esc(t.goal) + "</p>" +
+    '<div class="brief">' + t.brief + "</div>" +
+    (t.langkah ? "<h3>Langkah kerja</h3><ol class=\"steps\">" +
+      t.langkah.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ol>" : "") +
+    '<div class="note">' + t.note + "</div>" + tugas;
+}
+function nextBtn(t) {
+  var i = TANTANGAN.indexOf(t), n = TANTANGAN[i + 1];
+  return '<div class="bar" id="after" hidden>' +
+    (n ? '<button class="btn ghost" id="bNext">Tantangan ' + n.no + ": " + esc(n.title) + "</button>"
+       : '<button class="btn ghost" id="bRapor">Lihat rapor akhir</button>') + "</div>";
+}
+function wireNext(t) {
+  var i = TANTANGAN.indexOf(t), n = TANTANGAN[i + 1];
+  if (el("bNext") && n) el("bNext").onclick = function () { go(n.id); };
+  if (el("bRapor")) el("bRapor").onclick = rapor;
+}
+function daftarUji(t, hasil) {
+  var urut = [];
+  for (var i = 0; i < t.checks.length; i++) urut.push(i);
+  if (hasil) {
+    urut.sort(function (a, b) {
+      function rank(x) { return hasil[x] === false ? 0 : (hasil[x] === "skip" ? 1 : 2); }
+      return rank(a) - rank(b) || a - b;
+    });
+  }
+  var li = urut.map(function (i) {
+    var c = t.checks[i], r = hasil ? hasil[i] : null;
+    var cls = r === "skip" ? "skip" : (r === true ? "ok" : (r === false ? "no" : ""));
+    var ket = "";
+    if (r === "skip") ket = ' <em>tidak bisa diuji di peramban ini</em>';
+    else if (r === false && c.b) ket = '<div class="cara"><b>Cara memperbaiki:</b> ' + esc(c.b) + "</div>";
+    else if (r === null && c.b) ket = '<div class="cara"><b>Yang perlu ada:</b> ' + esc(c.b) + "</div>";
+    return '<li class="' + cls + '">' + esc(c.t) + ' <span class="w">' + (c.w2 || 1) + " poin" +
+      (c.w === 360 ? " \u00b7 diuji di 360px" : "") + "</span>" + ket + "</li>";
+  }).join("");
+  var lolos = 0, gagal = 0;
+  if (hasil) for (var j = 0; j < t.checks.length; j++) { if (hasil[j] === true) lolos++; else if (hasil[j] === false) gagal++; }
+  return '<section class="checks"><header><span>Daftar uji</span><span>' +
+    (hasil ? lolos + " lolos \u00b7 " + gagal + " belum \u00b7 yang belum ditaruh di atas" : "belum dijalankan \u2014 setiap butir sudah memuat petunjuknya") +
+    "</span></header><ul>" + li + "</ul></section>";
+}
+
+function go(id) {
+  if (jamBoss) { clearInterval(jamBoss); jamBoss = null; }
+  clearTimeout(debounce);
+  cur = id; S.cur = id; save();
+  var t = tById(id); if (!t) return;
+  if (t.kind === "proyek") vProyek(t);
+  else if (t.kind === "boss") vBoss(t);
+  else vKode(t);
+  paintRail(); window.scrollTo(0, 0);
+}
+
+/* ---------- studio umum: editor + pratinjau ---------- */
+function studioHTML(tabs, nilaiHtml, nilaiCss) {
+  return '<div class="studio">' +
+    '<div class="pane"><header><span>Kode</span><span class="tabs" id="tabsKode">' + tabs + "</span></header>" +
+    '<textarea class="code" id="edHtml" spellcheck="false" aria-label="kode HTML">' + esc(nilaiHtml) + "</textarea>" +
+    '<textarea class="code" id="edCss" spellcheck="false" aria-label="kode CSS" hidden>' + esc(nilaiCss) + "</textarea></div>" +
+    '<div class="pane"><header><span>Pratinjau</span><span class="tabs" id="tabsLebar">' +
+    '<button data-w="360">360</button><button data-w="768">768</button><button data-w="0" aria-pressed="true">penuh</button>' +
+    "</span></header>" +
+    '<div class="frameBox"><iframe class="prev" id="prev" title="pratinjau halaman"></iframe></div></div></div>';
+}
+function wireStudio(getHtml, getCss) {
+  var pv = el("prev");
+  function gambar() { tulisKe(pv, gabung(getHtml(), getCss())); }
+  function tunda() { clearTimeout(debounce); debounce = setTimeout(gambar, 420); }
+  if (el("edHtml")) el("edHtml").oninput = tunda;
+  if (el("edCss")) el("edCss").oninput = tunda;
+  if (el("tabsKode")) el("tabsKode").onclick = function (e) {
+    var b = e.target.closest("button[data-t]"); if (!b) return;
+    var k = b.getAttribute("data-t");
+    el("edHtml").hidden = k !== "html"; el("edCss").hidden = k !== "css";
+    var bs = el("tabsKode").querySelectorAll("button");
+    for (var i = 0; i < bs.length; i++) bs[i].setAttribute("aria-pressed", bs[i] === b ? "true" : "false");
+  };
+  el("tabsLebar").onclick = function (e) {
+    var b = e.target.closest("button[data-w]"); if (!b) return;
+    var w = +b.getAttribute("data-w");
+    pv.className = "prev" + (w === 360 ? " w360" : w === 768 ? " w768" : "");
+    var bs = el("tabsLebar").querySelectorAll("button");
+    for (var i = 0; i < bs.length; i++) bs[i].setAttribute("aria-pressed", bs[i] === b ? "true" : "false");
+  };
+  gambar();
+  return gambar;
+}
+
+/* ---------- perpustakaan contoh potongan kode ----------
+   Bukan kunci jawaban: potongan umum yang boleh dibaca dan disisipkan,
+   seperti membaca dokumentasi. Tidak ada pengurangan nilai. */
+function sisip(idEditor, kode) {
+  var ta = el(idEditor);
+  if (!ta) return;
+  var a = ta.selectionStart, b = ta.selectionEnd;
+  if (a == null) { ta.value += "\n" + kode; }
+  else { ta.value = ta.value.slice(0, a) + kode + ta.value.slice(b); ta.selectionStart = ta.selectionEnd = a + kode.length; }
+  ta.focus();
+  ta.dispatchEvent(new Event("input", { bubbles: true }));
+}
+function panelContoh(t, idHtml, idCss) {
+  if (!t.contoh || !t.contoh.length) { toast("Tantangan ini belum punya contoh potongan."); return; }
+  modal("<h2>Contoh potongan kode</h2>" +
+    "<p>Potongan umum yang dipakai di halaman web mana pun. Boleh dibaca, boleh disisipkan, tidak mengurangi nilai \u2014 tetapi kamu masih harus menyesuaikannya dengan tantangan ini.</p>" +
+    t.contoh.map(function (x, i) {
+      var css = /^[.#a-z-]+\s*\{|^\s*(body|main|img|nav|a|button|input|\.)/i.test(x.kode) && x.kode.indexOf("<") < 0;
+      return '<h3 style="margin:16px 0 4px">' + esc(x.nm) + "</h3>" +
+        "<p style=\"margin:0 0 6px;font-size:.93rem\">" + esc(x.ket) + "</p>" +
+        '<textarea class="rep" id="ct' + i + '" rows="' + Math.min(12, x.kode.split("\n").length + 1) + '">' + esc(x.kode) + "</textarea>" +
+        '<div class="bar" style="margin:4px 0 0"><button class="btn ghost" data-s="' + i + '" data-k="' + (css ? "css" : "html") + '">Sisipkan ke ' + (css ? "CSS" : "HTML") + "</button>" +
+        '<button class="btn ghost" data-c="' + i + '">Copy</button></div>';
+    }).join("") +
+    '<div class="bar" style="margin-top:14px"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+  el("sheet").onclick = function (e) {
+    var si = e.target.closest("button[data-s]"), ci = e.target.closest("button[data-c]");
+    if (si) {
+      var i = +si.getAttribute("data-s"), k = si.getAttribute("data-k");
+      var target = (k === "css" && idCss) ? idCss : idHtml;
+      if (k === "css" && idCss && el(idCss) && el(idCss).hidden) {
+        var tab = el("tabsKode") && el("tabsKode").querySelector('button[data-t="css"]');
+        if (tab) tab.click();
+      }
+      sisip(target, t.contoh[i].kode);
+      closeModal(); toast("Potongan disisipkan. Sesuaikan isinya dengan tantangan ini.");
+      return;
+    }
+    if (ci) salin("ct" + ci.getAttribute("data-c"));
+  };
+}
+
+/* ---------- pemeriksaan cepat: kesalahan tulis yang sering bikin bingung ---------- */
+function periksaCepat(html, css) {
+  var p = [];
+  var pasangan = ["html", "head", "body", "main", "header", "footer", "section", "article", "nav", "ul", "ol", "li", "p", "h1", "h2", "h3", "figure", "figcaption", "form", "label", "select", "textarea", "button", "table", "tr", "td", "th", "div", "a", "strong", "em"];
+  for (var i = 0; i < pasangan.length; i++) {
+    var tg = pasangan[i];
+    var buka = (html.match(new RegExp("<" + tg + "(\\s[^>]*)?>", "gi")) || []).length;
+    var tutup = (html.match(new RegExp("</" + tg + "\\s*>", "gi")) || []).length;
+    if (buka > tutup) p.push("Tag &lt;" + tg + "&gt; dibuka " + buka + " kali tetapi ditutup " + tutup + " kali.");
+    else if (tutup > buka) p.push("Ada &lt;/" + tg + "&gt; tanpa pembuka.");
+  }
+  var bk = (css.match(/\{/g) || []).length, bt = (css.match(/\}/g) || []).length;
+  if (bk !== bt) p.push("Kurung kurawal di CSS tidak seimbang: " + bk + " buka, " + bt + " tutup.");
+  if (/[a-z-]+\s*:\s*[^;{}\n]+\n\s*[a-z-]+\s*:/i.test(css)) p.push("Sepertinya ada baris CSS yang lupa diakhiri tanda titik koma.");
+  if ((html.match(/"/g) || []).length % 2 !== 0) p.push("Jumlah tanda kutip di HTML ganjil \u2014 mungkin ada atribut yang belum ditutup.");
+  return p.slice(0, 4);
+}
+
+/* =========================== TANTANGAN KODE =========================== */
+function vKode(t) {
+  var d = (S.m[t.id] && S.m[t.id].data) || {};
+  var tabs = '<button data-t="html" aria-pressed="true">HTML</button><button data-t="css">CSS</button>';
+  el("stage").innerHTML = shell(t,
+    studioHTML(tabs, d.html != null ? d.html : t.html, d.css != null ? d.css : (t.css || "")) +
+    '<div id="uji">' + daftarUji(t, null) + "</div>" +
+    '<div class="bar"><button class="btn go" id="bUji">Jalankan uji</button>' +
+    '<button class="btn ghost" id="bContoh">Contoh potongan kode</button>' +
+    '<button class="btn ghost" id="bHint">Petunjuk lengkap (\u221210 poin)</button>' +
+    '<button class="btn ghost" id="bSetel">Setel ulang kode</button>' +
+    '<span class="meterline" id="meter"></span></div>' +
+    '<div id="out"></div>' + nextBtn(t));
+  var rec = S.m[t.id] || { runs: 0, hint: 0 };
+  function meter() {
+    var sisa = Math.max(0, 3 - (rec.runs || 0));
+    el("meter").innerHTML = "<b>" + (rec.runs || 0) + "</b> uji terpakai \u00b7 " +
+      (sisa ? sisa + " uji lagi tanpa pengurangan" : "tiap uji berikutnya \u22123 poin, maksimal \u221218") +
+      (rec.hint ? " \u00b7 petunjuk dipakai \u221210" : "");
+  }
+  meter();
+  var gambar = wireStudio(function () { return el("edHtml").value; }, function () { return el("edCss").value; });
+  el("bSetel").onclick = function () {
+    if (!confirm("Kembalikan kode ke keadaan awal? Yang kamu tulis akan hilang.")) return;
+    el("edHtml").value = t.html; el("edCss").value = t.css || ""; gambar();
+  };
+  el("bContoh").onclick = function () { panelContoh(t, "edHtml", "edCss"); };
+  el("bHint").onclick = function () {
+    modal("<h2>Petunjuk lengkap</h2>" +
+      "<p>Ini menjelaskan urutan jawabannya, dan mengurangi 10 poin. Sebelum membukanya, coba dua hal yang tidak mengurangi nilai: baca <b>Cara memperbaiki</b> di bawah setiap butir merah, dan buka <b>Contoh potongan kode</b>.</p>" +
+      '<div class="bar"><button class="btn" id="hYa">Tetap buka (\u221210 poin)</button>' +
+      '<button class="btn ghost" onclick="closeModal()">Batal</button></div>');
+    el("hYa").onclick = function () {
+      if (!rec.hint) { rec.hint = 1; S.m[t.id] = { score: (S.m[t.id] || {}).score || 0, runs: rec.runs || 0, hint: 1, data: (S.m[t.id] || {}).data || {} }; save(); meter(); }
+      modal("<h2>Petunjuk lengkap</h2><p>" + t.hint + '</p><div class="bar"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+    };
+  };
+  el("bUji").onclick = function () {
+    var html = el("edHtml").value, css = el("edCss").value;
+    el("bUji").disabled = true; el("bUji").textContent = "Menguji\u2026";
+    rec.runs = (rec.runs || 0) + 1;
+    uji(frameUji(), html, css, t.checks, function (hasil) {
+      el("bUji").disabled = false; el("bUji").textContent = "Jalankan uji";
+      el("uji").innerHTML = daftarUji(t, hasil);
+      var n = nilaiDari(t.checks, hasil, rec.runs, rec.hint);
+      var gagal = t.checks.filter(function (c, i) { return hasil[i] === false; });
+      var pc = periksaCepat(html, css);
+      var pcHtml = pc.length ? '<div class="note" style="margin-bottom:10px"><b>Pemeriksaan cepat menemukan ini:</b><br>' + pc.join("<br>") + "</div>" : "";
+      el("out").innerHTML = pcHtml + '<section class="score"><header><span>Nilai tantangan ' + t.no + "</span><span>" +
+        (n.denda ? "dasar " + n.dasar + " \u2212 denda " + n.denda : "tanpa denda") + "</span></header>" +
+        '<div class="body"><div class="v">' + n.nilai + '<span style="font-size:1rem;color:var(--ink-soft)">/100</span></div>' +
+        '<div class="track"><i style="width:' + n.nilai + '%"></i></div>' +
+        "<p style=\"margin:0\">" + (gagal.length
+          ? "Masih ada " + gagal.length + " butir merah. Perbaiki satu, jalankan lagi, lihat hasilnya \u2014 jangan memperbaiki semuanya sekaligus."
+          : "Semua butir lolos. Kode ini sudah memenuhi standar yang dipakai di pekerjaan nyata, bukan hanya \u201cjalan di laptop sendiri\u201d.") +
+        "</p>" + (n.skip ? '<p class="hint" style="margin:8px 0 0">' + n.skip + " butir tidak bisa diuji di peramban ini dan tidak dihitung.</p>" : "") +
+        "</div></section>";
+      var data = { html: html, css: css };
+      S.m[t.id] = { score: Math.max((S.m[t.id] || {}).score || 0, n.nilai), runs: rec.runs, hint: rec.hint, data: data, at: Date.now() };
+      S.xp = 0; for (var k in S.m) S.xp += S.m[k].score;
+      if (t.badge && !gagal.length) award(t.badge);
+      if (!gagal.length && rec.runs <= 2 && !rec.hint) award("bersih");
+      save(); paintRail(); meter();
+      el("after").hidden = false; wireNext(t);
+    });
+  };
+  wireNext(t);
+}
+
+/* =========================== BOSS: BONGKAR SITUS =========================== */
+function vBoss(t) {
+  var d = (S.m[t.id] && S.m[t.id].data) || {};
+  if (!d.pecah || !d.html) { var g = acakPecah(6), b = bangunRusak(g); d = { pecah: g, html: b.html, css: b.css, mulai: Date.now() }; }
+  var tabs = '<button data-t="html" aria-pressed="true">HTML</button><button data-t="css">CSS</button>';
+  el("stage").innerHTML = shell(t,
+    '<div class="note"><b>' + d.pecah.length + " jenis kerusakan</b> ditanam di halaman ini, diambil acak dari sepuluh jenis. Daftar uji di bawah tidak memberitahu yang mana \u2014 kamu yang mencarinya.</div>" +
+    studioHTML(tabs, d.html, d.css) +
+    '<div id="uji">' + daftarUji(t, null) + "</div>" +
+    '<div class="bar"><button class="btn go" id="bUji">Jalankan uji</button>' +
+    '<button class="btn ghost" id="bContoh">Contoh potongan kode</button>' +
+    '<button class="btn ghost" id="bHint">Petunjuk</button>' +
+    '<button class="btn ghost" id="bAcak">Acak ulang kerusakan</button>' +
+    '<span class="meterline" id="meter"></span></div>' +
+    '<div id="out"></div>' + nextBtn(t));
+  var mulai = d.mulai || Date.now();
+  function meter() {
+    var s = Math.round((Date.now() - mulai) / 1000);
+    el("meter").innerHTML = "<b>" + Math.floor(s / 60) + " menit " + (s % 60) + " detik</b> sejak mulai \u00b7 uji tidak dibatasi di tantangan ini";
+  }
+  meter();
+  jamBoss = setInterval(function () {
+    if (cur === t.id && el("meter")) meter();
+    else { clearInterval(jamBoss); jamBoss = null; }
+  }, 5000);
+  var gambar = wireStudio(function () { return el("edHtml").value; }, function () { return el("edCss").value; });
+  el("bAcak").onclick = function () {
+    if (!confirm("Ambil kerusakan baru? Perbaikan yang sudah kamu tulis akan hilang.")) return;
+    var g = acakPecah(6), b = bangunRusak(g);
+    S.m[t.id] = { score: (S.m[t.id] || {}).score || 0, runs: 0, hint: 0, data: { pecah: g, html: b.html, css: b.css, mulai: Date.now() } };
+    save(); go(t.id);
+  };
+  el("bContoh").onclick = function () { panelContoh(t, "edHtml", "edCss"); };
+  el("bHint").onclick = function () {
+    modal("<h2>Petunjuk</h2><p>" + t.hint + '</p><div class="bar"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+  };
+  el("bUji").onclick = function () {
+    var html = el("edHtml").value, css = el("edCss").value;
+    el("bUji").disabled = true; el("bUji").textContent = "Menguji\u2026";
+    uji(frameUji(), html, css, t.checks, function (hasil) {
+      el("bUji").disabled = false; el("bUji").textContent = "Jalankan uji";
+      el("uji").innerHTML = daftarUji(t, hasil);
+      var n = nilaiDari(t.checks, hasil, 0, 0);
+      var menit = (Date.now() - mulai) / 60000;
+      var bonus = (n.nilai >= 95 && menit <= 15) ? 5 : 0;
+      var akhir = Math.min(100, n.nilai + bonus);
+      var gagal = t.checks.filter(function (c, i) { return hasil[i] === false; }).length;
+      el("out").innerHTML = '<section class="score"><header><span>Hasil audit</span><span>' +
+        (bonus ? "bonus kecepatan +5" : "selesai di bawah 15 menit dapat bonus 5") + "</span></header>" +
+        '<div class="body"><div class="v">' + akhir + '<span style="font-size:1rem;color:var(--ink-soft)">/100</span></div>' +
+        '<div class="track"><i style="width:' + akhir + '%"></i></div><p style="margin:0">' +
+        (gagal ? "Sisa " + gagal + " butir merah. Bandingkan butir itu dengan kodenya baris per baris."
+               : "Situs mitra bersih. Untuk latihan tambahan, tekan Acak ulang kerusakan \u2014 susunannya akan berbeda.") +
+        "</p></div></section>";
+      S.m[t.id] = { score: Math.max((S.m[t.id] || {}).score || 0, akhir), runs: 0, hint: 0,
+        data: { pecah: d.pecah, html: html, css: css, mulai: mulai }, at: Date.now() };
+      S.xp = 0; for (var k in S.m) S.xp += S.m[k].score;
+      if (!gagal) award("boss");
+      save(); paintRail();
+      el("after").hidden = false; wireNext(t);
+    });
+  };
+  wireNext(t);
+}
+
+/* =========================== PROYEK AKHIR =========================== */
+function vProyek(t) {
+  var d = (S.m[t.id] && S.m[t.id].data && S.m[t.id].data.f) || {};
+  var F = {};
+  for (var i = 0; i < t.files.length; i++) { var f = t.files[i]; F[f.k] = d[f.k] != null ? d[f.k] : f.start; }
+  vProyek._F = F; vProyek._aktif = "index";
+  var tab = t.files.map(function (f) {
+    return '<button data-f="' + f.k + '"' + (f.k === "index" ? ' aria-pressed="true"' : "") + ">" + esc(f.nm) + "</button>";
+  }).join("");
+  el("stage").innerHTML = shell(t,
+    '<div class="files" id="files">' + tab + "</div>" +
+    '<div class="studio"><div class="pane"><header><span id="namaBerkas">index.html</span><span class="tabs"></span></header>' +
+    '<textarea class="code" id="edF" spellcheck="false" aria-label="kode berkas">' + esc(F.index) + "</textarea></div>" +
+    '<div class="pane"><header><span>Pratinjau</span><span class="tabs" id="tabsLebar">' +
+    '<button data-w="360">360</button><button data-w="768">768</button><button data-w="0" aria-pressed="true">penuh</button>' +
+    "</span></header>" +
+    '<div class="frameBox"><iframe class="prev" id="prev" title="pratinjau halaman"></iframe></div></div></div>' +
+    '<div id="uji">' + daftarUji(t, null) + "</div>" +
+    '<div class="bar"><button class="btn go" id="bUji">Jalankan uji</button>' +
+    '<button class="btn ghost" id="bContoh">Contoh potongan kode</button>' +
+    '<button class="btn ghost" id="bHint">Petunjuk</button>' +
+    '<button class="btn" id="bUnduh">Unduh berkas situs</button>' +
+    '<span class="meterline" id="meter"></span></div>' +
+    '<div id="out"></div>' + nextBtn(t));
+  var rec = S.m[t.id] || { runs: 0, hint: 0 };
+  function meter() { el("meter").innerHTML = "<b>" + (rec.runs || 0) + "</b> uji terpakai \u00b7 uji tidak dibatasi di proyek akhir"; }
+  meter();
+  var pv = el("prev");
+  function gambar() {
+    var k = vProyek._aktif === "css" ? "index" : vProyek._aktif;
+    tulisKe(pv, gabung(F[k] || "", F.css || ""));
+  }
+  el("edF").oninput = function () {
+    F[vProyek._aktif] = this.value;
+    clearTimeout(debounce); debounce = setTimeout(gambar, 420);
+  };
+  el("files").onclick = function (e) {
+    var b = e.target.closest("button[data-f]"); if (!b) return;
+    F[vProyek._aktif] = el("edF").value;
+    vProyek._aktif = b.getAttribute("data-f");
+    el("edF").value = F[vProyek._aktif];
+    el("namaBerkas").textContent = b.textContent;
+    var bs = el("files").querySelectorAll("button");
+    for (var i = 0; i < bs.length; i++) bs[i].setAttribute("aria-pressed", bs[i] === b ? "true" : "false");
+    gambar();
+  };
+  el("tabsLebar").onclick = function (e) {
+    var b = e.target.closest("button[data-w]"); if (!b) return;
+    var w = +b.getAttribute("data-w");
+    pv.className = "prev" + (w === 360 ? " w360" : w === 768 ? " w768" : "");
+    var bs = el("tabsLebar").querySelectorAll("button");
+    for (var i = 0; i < bs.length; i++) bs[i].setAttribute("aria-pressed", bs[i] === b ? "true" : "false");
+  };
+  gambar();
+  el("bContoh").onclick = function () { panelContoh(t, "edF", null); };
+  el("bHint").onclick = function () {
+    modal("<h2>Petunjuk</h2><p>" + t.hint + '</p><div class="bar"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+  };
+  el("bUnduh").onclick = function () { F[vProyek._aktif] = el("edF").value; unduhSitus(t, F); };
+  el("bUji").onclick = function () {
+    F[vProyek._aktif] = el("edF").value;
+    el("bUji").disabled = true; el("bUji").textContent = "Menguji\u2026";
+    rec.runs = (rec.runs || 0) + 1;
+    ujiProyek(F, t.checks, function (hasil) {
+      el("bUji").disabled = false; el("bUji").textContent = "Jalankan uji";
+      el("uji").innerHTML = daftarUji(t, hasil);
+      var n = nilaiDari(t.checks, hasil, 0, 0);
+      var gagal = t.checks.filter(function (c, i) { return hasil[i] === false; }).length;
+      el("out").innerHTML = '<section class="score"><header><span>Nilai proyek akhir</span><span>' +
+        (gagal ? gagal + " butir belum lolos" : "seluruh butir lolos") + "</span></header>" +
+        '<div class="body"><div class="v">' + n.nilai + '<span style="font-size:1rem;color:var(--ink-soft)">/100</span></div>' +
+        '<div class="track"><i style="width:' + n.nilai + '%"></i></div><p style="margin:0">' +
+        (gagal ? "Perbaiki butir merah, lalu jalankan lagi. Uji tidak dibatasi di proyek akhir."
+               : "Situsmu siap terbit. Tekan <b>Unduh berkas situs</b>, lalu buka <b>Cara menerbitkan situs</b> di menu kiri \u2014 setelah itu alamatnya milikmu sendiri.") +
+        "</p></div></section>";
+      S.m[t.id] = { score: Math.max((S.m[t.id] || {}).score || 0, n.nilai), runs: rec.runs, hint: rec.hint, data: { f: F }, at: Date.now() };
+      S.xp = 0; for (var k in S.m) S.xp += S.m[k].score;
+      if (!gagal) award("proyek");
+      save(); paintRail(); meter();
+      el("after").hidden = false; wireNext(t);
+    });
+  };
+  wireNext(t);
+}
+
+/* uji proyek: butir src dibaca dari kode, butir file dijalankan per halaman */
+function ujiProyek(F, checks, cb) {
+  var hasil = [], sisa = [];
+  for (var i = 0; i < checks.length; i++) {
+    var c = checks[i];
+    if (c.src) { try { hasil[i] = !!c.fn(F); } catch (e) { hasil[i] = false; } }
+    else sisa.push(i);
+  }
+  var tugas = [];
+  for (var j = 0; j < sisa.length; j++) {
+    var idx = sisa[j], ch = checks[idx];
+    tugas.push({ i: idx, file: ch.file || "index", w: ch.w || 1280, ch: ch });
+  }
+  var p = 0;
+  function lanjut() {
+    if (p >= tugas.length) { cb(hasil); return; }
+    var g = tugas[p], html = F[g.file] || "";
+    jalankan(frameUji(), html, F.css || "", g.w, function (c) {
+      var r;
+      try { r = g.ch.fn(c); } catch (e) { r = false; }
+      if (g.ch.layout && !c.layoutOK) r = "skip";
+      hasil[g.i] = r; p++; lanjut();
+    });
+  }
+  lanjut();
+}
+
+function unduhSitus(t, F) {
+  var daftar = t.files.map(function (f) {
+    return '<h3 style="margin:14px 0 4px">' + esc(f.nm) + "</h3>" +
+      '<textarea class="rep" id="dl_' + f.k + '" rows="7">' + esc(F[f.k] || "") + "</textarea>" +
+      '<div class="bar" style="margin:4px 0 0"><button class="btn ghost" data-c="' + f.k + '">Copy ' + esc(f.nm) + "</button>" +
+      '<button class="btn ghost" data-d="' + f.k + '" data-n="' + esc(f.nm) + '">Download ' + esc(f.nm) + "</button></div>";
+  }).join("");
+  modal("<h2>Berkas situsmu</h2>" +
+    "<p>Inilah situs sungguhan: empat berkas, tanpa perkakas apa pun. Simpan keempatnya di satu folder, buka <code>index.html</code> dengan klik dua kali \u2014 situsnya jalan, bahkan tanpa internet.</p>" +
+    "<p>Di iPhone dan iPad tombol download biasanya tidak berfungsi. Pakai Copy, tempel ke aplikasi catatan atau kirim ke dirimu sendiri, lalu simpan sebagai berkas di laptop.</p>" +
+    daftar +
+    '<div class="bar" style="margin-top:16px"><button class="btn go" id="dlTerbit">Cara menerbitkannya</button>' +
+    '<button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+  el("sheet").onclick = function (e) {
+    var c = e.target.closest("button[data-c]"), dd = e.target.closest("button[data-d]");
+    if (c) { salin("dl_" + c.getAttribute("data-c")); return; }
+    if (dd) {
+      var k = dd.getAttribute("data-d"), nm = dd.getAttribute("data-n");
+      try {
+        var b = new Blob([F[k] || ""], { type: k === "css" ? "text/css" : "text/html" });
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(b); a.download = nm;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+        toast("Berkas " + nm + " diunduh.");
+      } catch (e2) { toast("Peramban ini menolak unduh. Pakai tombol Copy."); }
+    }
+  };
+  el("dlTerbit").onclick = terbitkan;
+}
+/* =======================================================================
+   BUKU ACUAN, PENERBITAN, RAPOR, EKSPOR, PEMBUKA
+   ======================================================================= */
+function salin(id) {
+  var ta = el(id);
+  ta.focus(); ta.select();
+  try { ta.setSelectionRange(0, ta.value.length); } catch (e) {}
+  var ok = false;
+  try { ok = document.execCommand("copy"); } catch (e2) { ok = false; }
+  if (!ok && navigator.clipboard) {
+    navigator.clipboard.writeText(ta.value).then(function () { toast("Tersalin."); },
+      function () { toast("Tekan lama di kotak teks, lalu Select All \u2192 Copy."); });
+    return;
+  }
+  toast(ok ? "Tersalin." : "Tekan lama di kotak teks, lalu Select All \u2192 Copy.");
+}
+
+function acuan() {
+  modal("<h2>Buku acuan</h2>" +
+    "<p>Semua yang diuji di studio ini punya alasan. Ini daftarnya, supaya kamu tidak menghafal melainkan mengerti.</p>" +
+    "<h3>Kerangka</h3>" +
+    "<p><code>&lt;!DOCTYPE html&gt;</code> membuat browser memakai aturan modern. Tanpa itu, CSS berperilaku seperti tahun 1999.<br>" +
+    "<code>lang=\"id\"</code> memberitahu pembaca layar bahasa apa yang dilafalkan.<br>" +
+    "<code>meta charset</code> mencegah huruf berubah jadi tanda tanya.<br>" +
+    "<code>meta viewport</code> membuat halaman menyesuaikan lebar ponsel.</p>" +
+    "<h3>Tag yang bermakna</h3>" +
+    "<p><code>&lt;main&gt;</code> isi utama \u00b7 <code>&lt;nav&gt;</code> navigasi \u00b7 <code>&lt;article&gt;</code> satuan isi yang berdiri sendiri \u00b7 <code>&lt;section&gt;</code> bagian bertema \u00b7 <code>&lt;footer&gt;</code> penutup.<br>" +
+    "<code>&lt;strong&gt;</code> dan <code>&lt;em&gt;</code> menyatakan makna; <code>&lt;b&gt;</code> dan <code>&lt;i&gt;</code> hanya mengubah tampilan.<br>" +
+    "Heading turun berurutan: h1 lalu h2 lalu h3. Melompat ke h4 membingungkan pembaca layar yang memakai daftar heading untuk berpindah.</p>" +
+    "<h3>Gambar</h3>" +
+    "<p><code>alt</code> menjelaskan makna gambar. Gambar hiasan murni diberi <code>alt=\"\"</code> dengan sengaja.<br>" +
+    "<code>width</code> dan <code>height</code> mencegah teks melompat saat gambar selesai dimuat.<br>" +
+    "<code>img { max-width: 100%; height: auto; }</code> mencegah gambar keluar layar.</p>" +
+    "<h3>Angka yang dipakai penguji</h3>" +
+    "<p>Kontras teks minimal <b>4,5:1</b> \u00b7 huruf badan minimal <b>16px</b> \u00b7 tinggi baris minimal <b>1,4</b> \u00b7 sasaran sentuh minimal <b>44px</b> \u00b7 lebar uji <b>360px</b> untuk ponsel dan <b>1280px</b> untuk laptop.</p>" +
+    "<h3>Tata letak</h3>" +
+    "<p><code>display: flex</code> dengan <code>flex-wrap: wrap</code> dan <code>gap</code> membuat kartu menumpuk sendiri di layar sempit.<br>" +
+    "<code>flex: 1 1 260px</code> berarti: boleh melar, boleh menyusut, mulai menumpuk di bawah 260px.<br>" +
+    "Ganti <code>width: 400px</code> dengan <code>max-width: 400px</code> \u2014 satu kata ini penyebab paling sering halaman bocor ke samping.</p>" +
+    "<h3>Formulir</h3>" +
+    "<p>Setiap kolom butuh <code>&lt;label for=\"x\"&gt;</code> yang cocok dengan <code>id=\"x\"</code>. Placeholder bukan label.<br>" +
+    "<code>type=\"email\"</code> dan <code>type=\"tel\"</code> mengubah papan ketik ponsel.<br>" +
+    "<code>required</code> mencegah kolom wajib terlewat.</p>" +
+    '<div class="bar"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+}
+
+function terbitkan() {
+  modal("<h2>Cara menerbitkan situsmu</h2>" +
+    "<p>Berkas yang kamu unduh dari proyek akhir sudah berupa situs lengkap. Yang kurang hanya tempat menaruhnya. Ini caranya, gratis dan tanpa langganan.</p>" +
+    "<h3>1. Siapkan foldernya</h3>" +
+    "<p>Buat satu folder di laptop, misalnya <code>situs-kopi</code>. Masukkan keempat berkas: <code>index.html</code>, <code>produk.html</code>, <code>kontak.html</code>, <code>style.css</code>. Nama berkas harus persis, huruf kecil semua.</p>" +
+    "<p>Klik dua kali <code>index.html</code>. Situsmu terbuka di browser dan menu antarhalaman sudah bekerja. Ini sudah situs sungguhan \u2014 hanya belum bisa dibuka orang lain.</p>" +
+    "<h3>2. Buat akun dan repositori</h3>" +
+    "<p>Daftar di github.com, lalu buka <code>github.com/new</code>. Beri nama, misalnya <code>situs-kopi</code>, pilih <b>Public</b>, klik Create repository.</p>" +
+    "<h3>3. Unggah berkasnya</h3>" +
+    "<p>Di halaman repositori baru, klik <b>uploading an existing file</b>. Seret keempat berkas ke sana, lalu klik <b>Commit changes</b>.</p>" +
+    "<h3>4. Nyalakan GitHub Pages</h3>" +
+    "<p>Masuk <b>Settings</b> \u2192 <b>Pages</b>. Bagian Source pilih <b>Deploy from a branch</b>, Branch <b>main</b>, folder <b>/ (root)</b>, lalu Save. Tunggu satu sampai tiga menit.</p>" +
+    "<h3>5. Situsmu hidup</h3>" +
+    "<p>Alamatnya <code>https://namaakunmu.github.io/situs-kopi/</code>. Bisa dibuka siapa pun, dari mana pun, di ponsel maupun laptop.</p>" +
+    "<div class=\"note\"><b>Yang baru saja kamu lakukan tanpa Wix dan tanpa WordPress:</b> menulis strukturnya sendiri, menata tampilannya sendiri, dan menerbitkannya sendiri. Bedanya bukan sekadar hemat biaya langganan \u2014 kamu bisa mengubah apa pun, memindahkannya ke penyedia lain kapan saja, dan tidak ada yang bisa mengunci situsmu di dalam sistemnya.</div>" +
+    '<div class="bar"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+}
+
+function laporan() {
+  var L = [];
+  L.push("LAPORAN STUDIO KODE \u2014 PERANCANGAN WEB LANJUTAN");
+  L.push("");
+  L.push("Nama : " + (S.nama || "-"));
+  L.push("NPM  : " + (S.npm || "-"));
+  L.push("");
+  function pad(s, n) { s = String(s); while (s.length < n) s += " "; return s; }
+  L.push(pad("Tantangan", 40) + pad("Nilai", 8) + pad("Uji", 6) + "Petunjuk");
+  L.push(new Array(66).join("-"));
+  var tot = 0, n = 0;
+  for (var i = 0; i < TANTANGAN.length; i++) {
+    var t = TANTANGAN[i], r = S.m[t.id];
+    var j = t.no + ". " + t.title;
+    if (j.length > 38) j = j.slice(0, 37) + "\u2026";
+    L.push(pad(j, 40) + pad(r ? r.score : "-", 8) + pad(r ? (r.runs || 0) : "-", 6) + (r && r.hint ? "ya" : "-"));
+    if (r) { tot += r.score; n++; }
+  }
+  L.push(new Array(66).join("-"));
+  L.push(pad("Rata-rata dari " + n + " tantangan selesai", 40) + (n ? Math.round(tot / n) : 0));
+  L.push("");
+  var got = [];
+  for (var b = 0; b < BADGES.length; b++) if (inArr(S.badges, BADGES[b].id)) got.push(BADGES[b].t);
+  L.push("Badge: " + (got.length ? got.join(", ") : "belum ada"));
+  L.push("");
+  L.push("Nilai di studio ini dihitung dari hasil pengujian halaman yang");
+  L.push("sungguh dirender: struktur, gaya terhitung, dan ukuran sebenarnya.");
+  L.push("Bukan dari kecocokan dengan kunci jawaban.");
+  return L.join("\n");
+}
+function rapor() {
+  var rows = TANTANGAN.map(function (t) {
+    var r = S.m[t.id];
+    return "<tr><td>" + t.no + "</td><td>" + esc(t.title) + '</td><td class="n">' + (r ? r.score : "\u2014") +
+      '</td><td class="n">' + (r ? (r.runs || 0) : "\u2014") + '</td><td class="n">' + (r && r.hint ? "ya" : "\u2014") + "</td></tr>";
+  }).join("");
+  modal("<h2>Rapor saya</h2>" +
+    '<div class="card"><label class="fl" for="rn">Nama</label><input type="text" id="rn" value="' + esc(S.nama) + '">' +
+    '<label class="fl" for="rp">NPM</label><input type="text" id="rp" value="' + esc(S.npm) + '"></div>' +
+    '<table class="t"><tr><th>#</th><th>Tantangan</th><th class="n">Nilai</th><th class="n">Uji</th><th class="n">Petunjuk</th></tr>' + rows + "</table>" +
+    '<textarea class="rep" id="repT" rows="14"></textarea>' +
+    '<div class="bar"><button class="btn go" id="rC">Copy laporan</button>' +
+    '<button class="btn ghost" onclick="window.print()">Cetak / PDF</button>' +
+    '<button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+  el("repT").value = laporan();
+  el("rn").oninput = function () { S.nama = this.value; save(); paintRail(); el("repT").value = laporan(); };
+  el("rp").oninput = function () { S.npm = this.value; save(); paintRail(); el("repT").value = laporan(); };
+  el("rC").onclick = function () { salin("repT"); };
+}
+
+function exportDialog() {
+  var json = JSON.stringify(S, null, 2);
+  var nama = "studiokode-" + (S.npm || "siswa").replace(/[^a-zA-Z0-9]+/g, "") + "-" + new Date().toISOString().slice(0, 10) + ".json";
+  modal("<h2>Export jawaban</h2><p>Berisi seluruh kode yang kamu tulis di setiap tantangan. Di iPhone tombol download biasanya tidak berfungsi \u2014 pakai Copy.</p>" +
+    '<div class="bar"><button class="btn go" id="eC">Copy semua teks</button><button class="btn ghost" id="eD">Download .json</button></div>' +
+    '<textarea class="rep" id="eT" rows="8">' + esc(json) + "</textarea>" +
+    '<p class="hint">Nama berkas: ' + esc(nama) + "</p>" +
+    '<div class="bar"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+  el("eC").onclick = function () { salin("eT"); };
+  el("eD").onclick = function () {
+    try {
+      var b = new Blob([json], { type: "application/json" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(b); a.download = nama;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+      toast("Berkas " + nama + " diunduh.");
+    } catch (e) { toast("Peramban ini menolak unduh. Pakai Copy."); }
+  };
+}
+function applyImport(txt) {
+  try {
+    var o = JSON.parse(txt);
+    if (!o || o.v !== 1) throw 0;
+    S = o; if (!S.m) S.m = {}; if (!S.badges) S.badges = [];
+    save(); closeModal(); paintRail(); go(S.cur || TANTANGAN[0].id); toast("Jawaban dimuat.");
+  } catch (e) { toast("Teks tidak dikenali. Pastikan seluruh isi berkas .json tersalin."); }
+}
+function importDialog() {
+  modal("<h2>Import jawaban</h2><p>Pilih berkas .json, atau tempel isinya ke kotak di bawah.</p>" +
+    '<input type="file" id="iF" accept="application/json,text/plain,.json" style="margin-bottom:12px">' +
+    '<textarea class="rep" id="iT" rows="6" placeholder="Tempel isi berkas .json di sini."></textarea>' +
+    '<div class="bar"><button class="btn go" id="iG">Muat</button><button class="btn ghost" onclick="closeModal()">Batal</button></div>');
+  el("iF").onchange = function () {
+    if (!this.files || !this.files[0]) return;
+    var r = new FileReader();
+    r.onload = function () { applyImport(r.result); };
+    r.onerror = function () { toast("Berkas tidak bisa dibaca. Pakai cara tempel teks."); };
+    r.readAsText(this.files[0]);
+  };
+  el("iG").onclick = function () {
+    var v = el("iT").value.trim();
+    if (!v) { toast("Kotaknya masih kosong."); return; }
+    applyImport(v);
+  };
+}
+
+function pembuka() {
+  cur = null; paintRail();
+  el("stage").innerHTML =
+    '<div class="tag">Sebelum mulai</div><h1>Sepuluh tantangan menulis kode sendiri</h1>' +
+    '<p class="goal" style="font-size:1.1rem">Di lab sebelumnya kamu menilai halaman buatan orang lain. Di sini kamu yang menulisnya \u2014 HTML dan CSS, dari berkas kosong, dengan pratinjau langsung di sebelah kananmu. Di tantangan terakhir kamu mengunduh situs tiga halaman buatanmu sendiri dan menerbitkannya ke internet.</p>' +
+    '<div class="card"><h3>Isi identitas dulu</h3><p class="hint">Dipakai di rapor dan berkas yang kamu kumpulkan.</p>' +
+    '<label class="fl" for="pn">Nama</label><input type="text" id="pn" value="' + esc(S.nama) + '">' +
+    '<label class="fl" for="pp">NPM</label><input type="text" id="pp" value="' + esc(S.npm) + '"></div>' +
+    '<div class="note"><b>Cara penilaiannya berbeda dari lab sebelumnya.</b> Tidak ada pilihan ganda dan tidak ada kunci jawaban. Penguji memuat halaman yang kamu tulis, lalu memeriksa hasilnya: strukturnya, gaya yang benar-benar dipakai browser, dan ukuran sebenarnya di layar 360 dan 1280 piksel. Jalan mana pun boleh, asal hasilnya benar.</div>' +
+    '<div class="note"><b>Tiga uji pertama tiap tantangan gratis;</b> setelah itu tiap uji mengurangi 3 poin sampai batas 18, dan petunjuk mengurangi 10. Bukan untuk menghukum, tetapi supaya kamu membaca pratinjau dan berpikir dulu \u2014 kebiasaan yang membedakan orang yang belajar dari orang yang menebak. Tantangan 9 dan 10 tidak dibatasi.</div>' +
+    '<div class="bar"><button class="btn go" id="bGo">Mulai tantangan 1</button>' +
+    (Object.keys(S.m).length ? '<button class="btn ghost" id="bLanjut">Lanjutkan yang terakhir</button>' : "") + "</div>";
+  el("bGo").onclick = function () {
+    S.nama = el("pn").value; S.npm = el("pp").value; save(); go(TANTANGAN[0].id);
+  };
+  if (el("bLanjut")) el("bLanjut").onclick = function () {
+    S.nama = el("pn").value; S.npm = el("pp").value; save(); go(S.cur || TANTANGAN[0].id);
+  };
+}
+
+/* ---------------- init ---------------- */
+load();
+el("modal").addEventListener("click", function (e) { if (e.target === el("modal")) closeModal(); });
+document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
+document.addEventListener("click", function (e) {
+  var b = e.target.closest("button[data-go]");
+  if (b && !b.disabled) { go(b.getAttribute("data-go")); el("stage").focus(); }
+});
+el("btnRef").onclick = acuan;
+el("btnTerbit").onclick = terbitkan;
+el("btnRapor").onclick = rapor;
+el("btnExport").onclick = exportDialog;
+el("btnImport").onclick = importDialog;
+el("btnReset").onclick = function () {
+  modal("<h2>Kosongkan semua?</h2><p>Seluruh kode, nilai, dan badge di peramban ini akan dihapus dan tidak bisa dikembalikan. Export dulu kalau masih dibutuhkan.</p>" +
+    '<div class="bar"><button class="btn" id="rz">Ya, kosongkan</button><button class="btn ghost" onclick="closeModal()">Batal</button></div>');
+  el("rz").onclick = function () { S = fresh(); save(); closeModal(); pembuka(); };
+};
+if (S.nama || Object.keys(S.m).length) { paintRail(); go(S.cur || TANTANGAN[0].id); } else pembuka();
+
+</script>
+</body>
+</html>
