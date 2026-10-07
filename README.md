@@ -11,8 +11,11 @@ mahasiswa masing-masing.
 | `analitik-prepost/` | Lab Analitik & Pre-Post | Copywriting dan SEO |
 | `pemasaran-digital/` | Studio UMKM | Pemasaran Digital |
 | `perancangan-web/` | Ruang Rancang | Perancangan Web |
+| `perancangan-web-lanjutan/` | Studio Kode | Perancangan Web |
 | `kesekretariatan/` | Meja Sekretaris | Kesekretariatan 2 |
+| `kas-kecil/` | Laci Kas Kecil | Kesekretariatan 2 |
 | `kewirausahaan/` | Ruang Usaha | Manajemen dan Kewirausahaan |
+| `hitung-kios/` | Hitung Kios | Manajemen dan Kewirausahaan |
 
 Halaman `index.html` di akar adalah menu yang menautkan seluruh lab.
 

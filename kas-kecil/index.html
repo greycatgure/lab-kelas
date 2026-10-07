@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laci Kas Kecil — Minggu Pertama</title>
+<style>
+/* =========================================================
+   LACI KAS KECIL — simulasi pemegang dana kas kecil
+   Sekeluarga dengan Meja Sekretaris: kertas, tinta, aksen amber.
+   ========================================================= */
+:root{
+  --paper:#F1F2EC; --card:#FBFBF7; --ink:#17202B; --ink-soft:#4A5563; --rule:#CDD1C2;
+  --amber:#B4700E; --good:#2E6B45; --bad:#A32020; --info:#2547C8; --desk:#C9A578; --desk-dk:#8C6A3F;
+  --sans:"Arial Narrow","Helvetica Neue Condensed","Liberation Sans Narrow",system-ui,sans-serif;
+  --serif:Georgia,"Iowan Old Style","Palatino Linotype",serif;
+  --mono:ui-monospace,"SFMono-Regular","Consolas","Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:17px; line-height:1.6; -webkit-text-size-adjust:100%}
+h1,h2,h3,h4,.u-sans{font-family:var(--sans); letter-spacing:-.01em; font-weight:700; line-height:1.1}
+h1{font-size:2.3rem;margin:0}
+h2{font-size:1.6rem;margin:0 0 6px}
+h3{font-size:1.1rem;margin:18px 0 6px}
+p{margin:0 0 .85em; max-width:66ch}
+button:focus{outline:2px solid var(--amber); outline-offset:2px}
+:focus-visible{outline:3px solid var(--amber); outline-offset:2px}
+
+/* ---------- kepala & HUD ---------- */
+header.top{background:var(--ink); color:#E7EAE2; padding:12px 18px; display:flex; flex-wrap:wrap; gap:12px 22px; align-items:center; justify-content:space-between}
+.wm{font-family:var(--sans); font-size:1.25rem; line-height:1}
+.wm span{display:block; font-family:var(--mono); font-size:.66rem; color:#9AA69B; margin-top:4px}
+.hud{display:flex; gap:16px; flex-wrap:wrap; font-family:var(--sans); font-size:.86rem}
+.hud div{display:flex; flex-direction:column; line-height:1.15}
+.hud small{font-family:var(--mono); font-size:.64rem; color:#9AA69B; text-transform:uppercase; letter-spacing:.04em}
+.hud b{font-size:1.1rem; color:#fff}
+.hud .ok b{color:#9ED37A} .hud .no b{color:#F28B82}
+.tools{display:flex; gap:6px; flex-wrap:wrap}
+.tools button{background:none; border:1px solid #3A4C60; color:#C9D0C6; font-family:var(--sans); font-size:.82rem; padding:5px 10px; border-radius:3px; cursor:pointer}
+.tools button:hover{background:#22303F; color:#fff}
+
+main{max-width:1060px; margin:0 auto; padding:20px 16px 70px}
+
+/* ---------- panggung kantor ---------- */
+.dayband{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; gap:10px; flex-wrap:wrap}
+.dayband h2{margin:0}
+.dayband .q{font-family:var(--mono); font-size:.78rem; color:var(--ink-soft)}
+.office{
+  position:relative; height:250px; border-radius:6px; overflow:hidden; margin-bottom:14px;
+  background:
+    linear-gradient(180deg,#E9EDE4 0,#E9EDE4 62%,var(--desk) 62%,var(--desk) 100%);
+  border:1px solid var(--rule);
+}
+.office .win{position:absolute; top:22px; left:24px; width:120px; height:84px; background:linear-gradient(180deg,#CFE3EE,#E8F2F7); border:4px solid #fff; box-shadow:0 0 0 1px var(--rule)}
+.office .win:after{content:""; position:absolute; left:50%; top:0; bottom:0; width:3px; background:#fff}
+.office .clock{position:absolute; top:24px; right:28px; width:46px; height:46px; border-radius:50%; background:#fff; border:3px solid var(--ink)}
+.office .clock:before,.office .clock:after{content:""; position:absolute; left:50%; top:50%; background:var(--ink); transform-origin:0 0}
+.office .clock:before{width:2px; height:14px; transform:rotate(180deg)}
+.office .clock:after{width:2px; height:10px; transform:rotate(var(--jam,240deg))}
+.office .board{position:absolute; top:24px; left:170px; right:100px; height:58px; background:#fff; border:1px solid var(--rule); font-family:var(--mono); font-size:.66rem; padding:6px 10px; color:var(--ink-soft); overflow:hidden}
+.office .board b{font-family:var(--sans); color:var(--ink); font-size:.8rem}
+.office .desk{position:absolute; left:0; right:0; bottom:0; height:38%; background:linear-gradient(180deg,var(--desk),var(--desk-dk))}
+.office .tray{position:absolute; bottom:12px; right:18px; width:92px; height:50px; background:#E5D3B3; border:2px solid var(--desk-dk); border-radius:2px}
+.office .tray i{position:absolute; left:8px; right:8px; height:6px; background:#fff; border:1px solid #ccc}
+.office .lamp{position:absolute; bottom:44px; left:30px; width:14px; height:40px; background:var(--ink); border-radius:2px}
+.office .lamp:after{content:""; position:absolute; top:-14px; left:-14px; width:42px; height:18px; background:var(--amber); border-radius:20px 20px 4px 4px}
+
+.npc{position:absolute; bottom:34px; left:42%; width:120px; text-align:center; animation:masuk .55s cubic-bezier(.2,.8,.3,1) both}
+.npc svg{display:block; margin:0 auto; animation:napas 3.2s ease-in-out infinite}
+.npc .nm{font-family:var(--sans); font-size:.82rem; background:var(--ink); color:#fff; display:inline-block; padding:1px 8px; border-radius:99px; margin-top:-4px; position:relative}
+.npc.pergi{animation:pergi .45s ease-in both}
+.bubble{
+  position:absolute; bottom:120px; left:calc(42% + 128px); right:16px; max-width:430px;
+  background:#fff; border:2px solid var(--ink); border-radius:12px; padding:10px 13px;
+  font-size:.95rem; line-height:1.45; box-shadow:3px 3px 0 var(--ink); animation:muncul .3s .35s both;
+}
+.bubble:before{content:""; position:absolute; left:-12px; bottom:18px; border:6px solid transparent; border-right-color:var(--ink); border-right-width:12px; border-left:0}
+.bubble .peran{display:block; font-family:var(--mono); font-size:.66rem; color:var(--ink-soft); margin-bottom:2px}
+
+@keyframes masuk{from{transform:translateX(160%); opacity:0} to{transform:none; opacity:1}}
+@keyframes pergi{to{transform:translateX(-160%); opacity:0}}
+@keyframes napas{0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)}}
+@keyframes muncul{from{opacity:0; transform:scale(.85)} to{opacity:1; transform:none}}
+
+/* ---------- stempel ---------- */
+.stamp{position:absolute; top:34%; left:50%; z-index:5; font-family:var(--sans); font-size:2.3rem; font-weight:700; letter-spacing:.08em;
+  padding:6px 18px; border:5px solid currentColor; border-radius:6px; transform:translate(-50%,-50%) rotate(-12deg);
+  animation:capp .5s cubic-bezier(.2,1.4,.4,1) both; background:rgba(255,255,255,.82); pointer-events:none}
+.stamp.ok{color:var(--good)} .stamp.no{color:var(--bad)}
+@keyframes capp{0%{transform:translate(-50%,-50%) scale(3) rotate(-22deg); opacity:0} 70%{opacity:1} 100%{transform:translate(-50%,-50%) scale(1) rotate(-12deg); opacity:1}}
+
+/* ---------- area kerja ---------- */
+.work{display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:14px}
+.card{background:var(--card); border:1px solid var(--rule); border-radius:5px; padding:14px 16px; margin-bottom:14px}
+.card>h3:first-child{margin-top:0}
+.hint{font-family:var(--mono); font-size:.72rem; color:var(--ink-soft); margin:-4px 0 10px}
+.btn{font-family:var(--sans); font-size:.98rem; background:var(--ink); color:#fff; border:0; padding:9px 18px; border-radius:3px; cursor:pointer}
+.btn:hover{background:#0E151D}
+.btn.go{background:var(--good)} .btn.go:hover{background:#22533A}
+.btn.no{background:var(--bad)} .btn.no:hover{background:#7E1919}
+.btn.ghost{background:none; color:var(--ink); border:1px solid var(--ink)}
+.btn.ghost:hover{background:#E6E9DC}
+.btn.amb{background:var(--amber)} .btn.amb:hover{background:#8C5709}
+.btn:disabled{opacity:.42; cursor:not-allowed}
+.row{display:flex; gap:9px; flex-wrap:wrap; align-items:center; margin:8px 0 4px}
+
+/* nota / kuitansi */
+.notas{display:flex; gap:10px; flex-wrap:wrap}
+.nota{flex:1 1 210px; background:#FFFEF7; border:1px solid #D9D3BC; padding:10px 12px 12px; font-family:var(--mono); font-size:.74rem; line-height:1.45;
+  box-shadow:0 1px 0 #fff inset,2px 3px 0 rgba(0,0,0,.06); position:relative; transform:rotate(-.6deg); max-width:320px}
+.nota:nth-child(2){transform:rotate(.8deg)}
+.nota .toko{font-family:var(--sans); font-size:.98rem; font-weight:700; text-align:center; letter-spacing:.02em}
+.nota .sub{text-align:center; color:#6B6455; font-size:.66rem; margin-bottom:6px}
+.nota table{width:100%; border-collapse:collapse}
+.nota td{padding:1px 0; vertical-align:top}
+.nota td.n{text-align:right; white-space:nowrap}
+.nota .tot td{border-top:1px dashed #9A927D; padding-top:4px; font-weight:700}
+.nota .ttd{margin-top:8px; display:flex; justify-content:space-between; font-size:.64rem; color:#6B6455}
+.nota .ttd i{font-family:"Brush Script MT","Segoe Script",cursive; font-size:1rem; color:#1F3A8A; font-style:normal}
+.nota .cap{position:absolute; right:12px; bottom:22px; color:#B23B3B; border:2px solid #B23B3B; border-radius:50%; width:52px; height:52px; display:grid; place-items:center; font-size:.5rem; text-align:center; line-height:1.05; transform:rotate(-14deg); opacity:.75; font-family:var(--sans)}
+.nota.kosong{display:grid; place-items:center; min-height:120px; color:var(--bad); font-family:var(--sans); font-size:1rem; border-style:dashed; transform:none}
+.mintabox{font-family:var(--sans); font-size:1rem; background:#FFF7E6; border:1px dashed var(--amber); padding:6px 10px; border-radius:3px; display:inline-block; margin-bottom:8px}
+
+/* voucher */
+.voucher{background:#fff; border:2px solid var(--ink); border-radius:3px; padding:12px 14px; font-size:.92rem}
+.voucher .vh{display:flex; justify-content:space-between; font-family:var(--sans); border-bottom:2px solid var(--ink); padding-bottom:5px; margin-bottom:8px}
+.voucher .vh b{font-size:1.02rem}
+.voucher label{display:block; font-family:var(--sans); font-size:.86rem; margin:6px 0 2px}
+.voucher input,.voucher select{width:100%; font-family:var(--mono); font-size:.95rem; padding:7px 9px; border:1px solid var(--rule); border-radius:3px; background:#FFFEF7}
+.voucher select{font-family:var(--sans)}
+.terbilang{font-family:var(--serif); font-style:italic; font-size:.84rem; color:var(--ink-soft); margin-top:3px; min-height:1.2em}
+
+/* laci uang */
+.drawer{background:linear-gradient(180deg,#5A4632,#3E3022); border-radius:6px; padding:10px; color:#F3E9D6}
+.drawer .lh{display:flex; justify-content:space-between; font-family:var(--sans); font-size:.86rem; margin-bottom:6px}
+.slots{display:grid; grid-template-columns:repeat(7,1fr); gap:6px}
+.slot{background:#2C2218; border-radius:3px; padding:6px 3px 4px; text-align:center; cursor:pointer; border:1px solid #6B5640; transition:transform .12s}
+.slot:hover{transform:translateY(-2px)}
+.slot:disabled,.slot.habis{opacity:.35; cursor:not-allowed}
+.bill{height:30px; border-radius:2px; margin:0 auto 3px; width:92%; position:relative; box-shadow:0 2px 0 rgba(0,0,0,.35); display:grid; place-items:center; font-family:var(--sans); font-size:.62rem; font-weight:700; color:#fff}
+.bill.coin{width:26px; height:26px; border-radius:50%}
+.slot .c{font-family:var(--mono); font-size:.66rem; color:#D9C9AE}
+.handtray{min-height:52px; background:#EFE6D3; border:2px dashed var(--desk-dk); border-radius:4px; margin-top:9px; padding:6px; display:flex; flex-wrap:wrap; gap:4px; align-items:center}
+.handtray .tb{width:46px; height:24px; border-radius:2px; cursor:pointer; display:grid; place-items:center; font-family:var(--sans); font-size:.58rem; color:#fff; font-weight:700; animation:jatuh .32s cubic-bezier(.3,1.5,.5,1) both}
+.handtray .tb.coin{width:22px; height:22px; border-radius:50%}
+.handtray .kosong{font-family:var(--sans); font-size:.82rem; color:#8C7A5A; padding:4px}
+@keyframes jatuh{from{transform:translateY(-40px) scale(.6); opacity:0} to{transform:none; opacity:1}}
+.traysum{font-family:var(--sans); font-size:.98rem; margin-top:7px; display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap}
+.traysum b.ok{color:var(--good)} .traysum b.no{color:var(--bad)}
+
+/* alasan tolak */
+.reasons{display:grid; gap:6px}
+.reasons button{text-align:left; font-family:var(--sans); font-size:.94rem; background:#fff; border:1px solid var(--rule); padding:8px 11px; border-radius:3px; cursor:pointer}
+.reasons button:hover{border-color:var(--ink)}
+
+/* umpan balik */
+.fb{border-radius:5px; padding:13px 16px; margin-bottom:14px; animation:muncul .3s both}
+.fb.ok{background:#E3F0E6; border:1px solid #9DC6A8}
+.fb.no{background:#F7E4E2; border:1px solid #E0A6A1}
+.fb.part{background:#F6EBD6; border:1px solid #DDBE86}
+.fb h3{margin:0 0 5px}
+.fb ul{margin:6px 0 0; padding-left:20px; font-size:.93rem}
+.fb li{margin-bottom:3px}
+.pts{font-family:var(--mono); font-size:.8rem; float:right}
+
+/* buku aturan */
+.sop{counter-reset:r; list-style:none; padding:0; margin:0}
+.sop li{counter-increment:r; position:relative; padding:7px 0 7px 36px; border-bottom:1px solid var(--rule); font-size:.95rem; max-width:70ch}
+.sop li:before{content:counter(r); position:absolute; left:0; top:7px; width:24px; height:24px; background:var(--amber); color:#fff; border-radius:50%; display:grid; place-items:center; font-family:var(--mono); font-size:.78rem}
+.sop li.big{background:#FDF1F0}
+.sop li.big:before{background:var(--bad)}
+
+/* audit */
+.audit{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px}
+.audit label{display:block; font-family:var(--sans); font-size:.9rem; margin-bottom:3px}
+.audit input{width:100%; font-family:var(--mono); font-size:1rem; padding:8px 10px; border:1px solid var(--rule); border-radius:3px; margin-bottom:4px}
+.pile{display:flex; flex-wrap:wrap; gap:5px; margin:6px 0 10px}
+.pile span{font-family:var(--mono); font-size:.72rem; background:#fff; border:1px solid var(--rule); padding:3px 7px; border-radius:2px}
+.pile span.x{border-color:var(--bad); color:var(--bad); text-decoration:line-through}
+table.t{width:100%; border-collapse:collapse; font-size:.9rem; margin:8px 0 12px}
+table.t th,table.t td{border-bottom:1px solid var(--rule); padding:6px 7px; text-align:left}
+table.t th{font-family:var(--sans)}
+table.t td.n{font-family:var(--mono); text-align:right}
+.big-eq{font-family:var(--sans); font-size:1.25rem; text-align:center; padding:12px; background:#fff; border:2px solid var(--ink); border-radius:5px; margin:10px 0}
+.big-eq b.ok{color:var(--good)} .big-eq b.no{color:var(--bad)}
+
+.medal{display:inline-grid; place-items:center; width:84px; height:84px; border-radius:50%; font-family:var(--sans); font-size:1.6rem; font-weight:700; color:#fff; animation:capp .6s both; transform:none}
+.badges{display:flex; gap:6px; flex-wrap:wrap; margin:8px 0}
+.badge{font-family:var(--sans); font-size:.8rem; border:1px solid var(--rule); color:var(--ink-soft); padding:3px 9px; border-radius:99px; background:#fff}
+.badge.on{background:var(--amber); color:#fff; border-color:var(--amber)}
+
+label.fl{display:block; font-family:var(--sans); font-size:.9rem; margin-bottom:3px}
+input[type=text]{width:100%; font-family:var(--serif); font-size:1rem; padding:8px 10px; border:1px solid var(--rule); border-radius:3px; margin-bottom:10px}
+.modal{position:fixed; top:0; right:0; bottom:0; left:0; background:rgba(23,32,43,.72); display:grid; place-items:center; padding:16px; z-index:60}
+.modal[hidden]{display:none}
+.sheet{background:var(--paper); border-radius:5px; padding:22px; max-width:720px; width:100%; max-height:88vh; overflow:auto}
+.toast{position:fixed; left:50%; bottom:20px; transform:translateX(-50%); background:var(--ink); color:#fff; font-family:var(--sans); padding:10px 17px; border-radius:3px; z-index:70; max-width:90vw}
+.toast[hidden]{display:none}
+.rep{font-family:var(--mono); font-size:.76rem; width:100%; min-height:200px; padding:9px; border:1px solid var(--rule); border-radius:3px}
+
+
+/* =================== v2: lapisan permainan =================== */
+.hud .sp{display:flex; gap:4px; align-items:center}
+.hud .sp i{display:inline-block; width:22px; height:26px; border-radius:2px; background:#2C3C4E; border:1px solid #3A4C60; font-style:normal; font-family:var(--mono); font-size:.62rem; color:#7E8A80; text-align:center; line-height:26px}
+.hud .sp i.on{background:var(--bad); border-color:#F28B82; color:#fff; animation:capp .5s both}
+.rep-bar{width:96px; height:8px; background:#0E151D; border-radius:99px; overflow:hidden; margin-top:3px}
+.rep-bar i{display:block; height:100%; background:#9ED37A; transition:width .5s, background .5s}
+
+.office{height:280px}
+.office .door{position:absolute; right:22px; bottom:38%; width:74px; height:150px; background:#8C6A3F; border:4px solid #6B4F2C; border-bottom:0}
+.office .door:after{content:""; position:absolute; left:10px; top:72px; width:8px; height:8px; border-radius:50%; background:#E0C080}
+.office .queue{position:absolute; right:108px; bottom:34px; display:flex; gap:2px; align-items:flex-end}
+.office .queue .qp{width:56px; text-align:center; opacity:.8; transform-origin:bottom; animation:antri 2.4s ease-in-out infinite}
+.office .queue .qp:nth-child(2){animation-delay:.6s}
+.office .queue .qp svg{width:56px; height:70px}
+.office .queue .qp b{display:block; font-family:var(--sans); font-size:.6rem; background:rgba(23,32,43,.75); color:#fff; border-radius:99px}
+@keyframes antri{0%,100%{transform:translateY(0)} 50%{transform:translateY(-2px)}}
+.npc{left:30%}
+.npc .sabar{position:absolute; top:-14px; left:16px; right:16px; height:7px; background:#E2E5DA; border-radius:99px; overflow:hidden; border:1px solid var(--ink)}
+.npc .sabar i{display:block; height:100%; width:100%; background:var(--good); transition:width 1s linear, background .4s}
+.npc .marah{position:absolute; top:-40px; right:4px; font-family:var(--sans); font-weight:700; font-size:1.5rem; color:var(--bad); animation:muncul .3s both}
+.npc.jalan svg{animation:jalan .35s ease-in-out infinite}
+@keyframes jalan{0%,100%{transform:translateY(0) rotate(-2deg)} 50%{transform:translateY(-5px) rotate(2deg)}}
+.npc.masuk{animation:masukPintu .9s cubic-bezier(.3,.8,.4,1) both}
+@keyframes masukPintu{0%{transform:translateX(330%); opacity:0} 20%{opacity:1} 100%{transform:none}}
+.bubble{left:calc(30% + 126px)}
+
+.goyang{animation:goyang .45s both}
+@keyframes goyang{10%,90%{transform:translateX(-2px)} 20%,80%{transform:translateX(4px)} 30%,50%,70%{transform:translateX(-7px)} 40%,60%{transform:translateX(7px)}}
+.kilat{position:fixed; inset:0; pointer-events:none; z-index:80; animation:kilat .6s both}
+.kilat.merah{background:rgba(163,32,32,.35)} .kilat.hijau{background:rgba(46,107,69,.22)}
+@keyframes kilat{from{opacity:1} to{opacity:0}}
+
+.terbang{position:fixed; z-index:90; pointer-events:none; border-radius:2px; display:grid; place-items:center; font-family:var(--sans); font-size:.6rem; font-weight:700; color:#fff; transition:transform .5s cubic-bezier(.3,.7,.3,1), opacity .5s}
+.drawer{transform-origin:top; animation:laciBuka .45s cubic-bezier(.3,1.3,.5,1) both}
+@keyframes laciBuka{from{transform:scaleY(.2) translateY(-20px); opacity:0} to{transform:none; opacity:1}}
+
+.surat{position:fixed; inset:0; z-index:85; display:grid; place-items:center; background:rgba(23,32,43,.6); padding:16px}
+.surat .kertas{background:#FFFEF7; max-width:440px; width:100%; padding:22px 24px; border:1px solid #D9D3BC; box-shadow:0 12px 40px rgba(0,0,0,.35); font-family:var(--serif); animation:suratJatuh .7s cubic-bezier(.2,1.2,.4,1) both; position:relative}
+.surat .kertas h2{color:var(--bad); font-size:1.5rem; margin:0 0 4px}
+.surat .kertas .kop{font-family:var(--sans); font-size:.8rem; color:var(--ink-soft); border-bottom:2px solid var(--ink); padding-bottom:6px; margin-bottom:12px}
+.surat .kertas .cap2{position:absolute; right:22px; top:58px; color:var(--bad); border:3px solid var(--bad); border-radius:6px; padding:3px 10px; font-family:var(--sans); font-weight:700; transform:rotate(-14deg); animation:capp .5s .5s both}
+@keyframes suratJatuh{0%{transform:translateY(-120vh) rotate(-8deg)} 100%{transform:none}}
+
+.sirene{position:fixed; top:0; left:0; right:0; z-index:84; background:repeating-linear-gradient(45deg,#A32020 0 22px,#C8323A 22px 44px); color:#fff; text-align:center; font-family:var(--sans); font-weight:700; font-size:1.4rem; letter-spacing:.1em; padding:14px; animation:sirene .5s cubic-bezier(.3,1.4,.5,1) both, kedip 1s .5s 3}
+@keyframes sirene{from{transform:translateY(-100%)} to{transform:none}}
+@keyframes kedip{50%{filter:brightness(1.4)}}
+
+.konfeti{position:fixed; inset:0; pointer-events:none; z-index:83; overflow:hidden}
+.konfeti i{position:absolute; top:-12px; width:8px; height:14px; animation:jatuhK 1.8s ease-in forwards}
+@keyframes jatuhK{to{transform:translateY(110vh) rotate(720deg)}}
+
+.mode{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; margin:10px 0}
+.mode button{text-align:left; background:#fff; border:2px solid var(--rule); border-radius:5px; padding:12px 14px; cursor:pointer; font-family:var(--serif)}
+.mode button[aria-pressed="true"]{border-color:var(--amber); box-shadow:inset 0 0 0 1px var(--amber)}
+.mode button b{display:block; font-family:var(--sans); font-size:1.08rem}
+.hitung{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px}
+.hitung label{display:block; font-family:var(--sans); font-size:.9rem; margin-bottom:3px}
+.hitung input{width:100%; font-family:var(--mono); font-size:1rem; padding:8px 10px; border:1px solid var(--rule); border-radius:3px}
+.gameover{text-align:center; padding:20px 10px}
+.gameover h1{color:var(--bad); font-size:2.6rem}
+
+@media (max-width:860px){
+  .work{grid-template-columns:1fr}
+  .office{height:230px}
+  .npc{left:4%}
+  .bubble{left:calc(4% + 122px); bottom:110px; font-size:.86rem}
+  .office .queue{display:none}
+  .office .board{display:none}
+  .slots{grid-template-columns:repeat(4,1fr)}
+}
+@media (max-width:480px){
+  .bubble{left:12px; right:12px; bottom:auto; top:10px; max-width:none}
+  .bubble:before{display:none}
+  .npc{left:50%; margin-left:-60px}
+  h1{font-size:1.8rem}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+@media print{header.top,.row,.modal{display:none!important} body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wm">LACI KAS KECIL<span>minggu pertama &middot; pt maju bersama</span></div>
+  <div class="hud" id="hud"></div>
+  <div class="tools">
+    <button id="btnSop">Buku aturan</button>
+    <button id="btnRapor">Rapor</button>
+    <button id="btnExport">Export</button>
+    <button id="btnImport">Import</button>
+    <button id="btnReset">Mulai ulang</button>
+  </div>
+</header>
+<main id="stage" tabindex="-1"></main>
+<div class="modal" id="modal" hidden><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast" hidden></div>
+<script>
+/* =======================================================================
+   LACI KAS KECIL \u2014 MINGGU PERTAMA (v2)
+   Pemegang dana kas kecil PT Maju Bersama, Palembang.
+   Tiga Surat Peringatan berarti diberhentikan. Setiap minggu diacak.
+   ======================================================================= */
+"use strict";
+
+var KEY = "laciKasKecil.v2";
+var DANA = 3000000;
+var BATAS = 500000;
+var PECAHAN = [
+  { n: 100000, c: "#C8323A", lb: "100rb" }, { n: 50000, c: "#2F5FA8", lb: "50rb" },
+  { n: 20000, c: "#3E8E5A", lb: "20rb" }, { n: 10000, c: "#7C4B9E", lb: "10rb" },
+  { n: 5000, c: "#9A7B3C", lb: "5rb" }, { n: 2000, c: "#7D838C", lb: "2rb" },
+  { n: 1000, c: "#A8ADB4", lb: "1rb", coin: 1 }
+];
+var LACI_AWAL = { 100000: 15, 50000: 16, 20000: 20, 10000: 20, 5000: 12, 2000: 15, 1000: 10 };
+
+var BADGES = [
+  { id: "tegas", t: "Tahan Godaan", d: "Menolak semua permintaan pinjam" },
+  { id: "atasan", t: "Tegas ke Atasan", d: "Menolak pinjaman dari manajer" },
+  { id: "teliti", t: "Mata Elang", d: "Menolak semua bukti yang cacat" },
+  { id: "pas", t: "Uang Pas", d: "Setiap pembayaran tepat sampai ribuan" },
+  { id: "bersih", t: "Tanpa SP", d: "Selesai seminggu tanpa satu pun surat peringatan" },
+  { id: "seimbang", t: "Kas Seimbang", d: "Tidak ada selisih di dua pemeriksaan" },
+  { id: "disayang", t: "Disayang Kantor", d: "Reputasi tetap di atas 80" }
+];
+
+/* ---------------- acak dengan benih: minggu yang sama kalau dimuat ulang ---------------- */
+function rngDari(seed) {
+  var a = seed >>> 0;
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    var t = Math.imul ? Math.imul(a ^ a >>> 15, 1 | a) : ((a ^ a >>> 15) * (1 | a)) | 0;
+    t = t + (Math.imul ? Math.imul(t ^ t >>> 7, 61 | t) : ((t ^ t >>> 7) * (61 | t)) | 0) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+var R = Math.random;
+function rint(a, b) { return a + Math.floor(R() * (b - a + 1)); }
+function pick(arr) { return arr[Math.floor(R() * arr.length)]; }
+function kocok(arr) {
+  for (var i = arr.length - 1; i > 0; i--) { var j = Math.floor(R() * (i + 1)), t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
+  return arr;
+}
+
+/* ---------------- state ---------------- */
+var S = null;
+function fresh() {
+  var l = {}; for (var k in LACI_AWAL) l[k] = LACI_AWAL[k];
+  return { v: 2, nama: "", npm: "", mode: "kerja", seed: 0, plan: [], ev: 0, tahap: "mulai",
+    laci: l, voucher: [], log: [], sp: 0, spAlasan: [], teguran: 0, rep: 100, repSp: false,
+    badges: [], tutup: {}, audit: {}, minggu: 1 };
+}
+function load() {
+  try { var r = localStorage.getItem(KEY); S = r ? JSON.parse(r) : fresh(); }
+  catch (e) { S = fresh(); }
+  if (!S || S.v !== 2) S = fresh();
+}
+var gagalSimpan = false;
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) {
+    if (!gagalSimpan) { gagalSimpan = true; toast("Browser menolak menyimpan. Tab ini mungkin mode Private \u2014 pakai Export sebelum menutup."); }
+  }
+}
+function award(id) {
+  if (S.badges.indexOf(id) < 0) {
+    S.badges.push(id);
+    for (var i = 0; i < BADGES.length; i++) if (BADGES[i].id === id) { toast("Badge baru: " + BADGES[i].t); return; }
+  }
+}
+
+/* ---------------- helper ---------------- */
+function el(id) { return document.getElementById(id); }
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
+var tt = null;
+function toast(m) { var t = el("toast"); t.textContent = m; t.hidden = false; clearTimeout(tt); tt = setTimeout(function () { t.hidden = true; }, 3600); }
+function modal(h) { el("sheet").innerHTML = h; el("modal").hidden = false; }
+function closeModal() { el("modal").hidden = true; }
+function rp(n) {
+  if (n == null || isNaN(n)) return "\u2014";
+  var s = Math.round(Math.abs(n)).toString(), o = "", c = 0;
+  for (var i = s.length - 1; i >= 0; i--) { o = s.charAt(i) + o; if (++c % 3 === 0 && i > 0) o = "." + o; }
+  return (n < 0 ? "\u2212Rp" : "Rp") + o;
+}
+function angka(v) { var t = String(v == null ? "" : v).replace(/[^0-9]/g, ""); return t ? parseInt(t, 10) : null; }
+function isiLaci(l) { var t = 0; for (var k in l) t += (+k) * l[k]; return t; }
+function sumBukti() { var t = 0; for (var i = 0; i < S.voucher.length; i++) if (!S.voucher[i].batal) t += S.voucher[i].jumlah; return t; }
+function bktAktif() { return S.voucher.filter(function (v) { return !v.batal; }); }
+function noBKK(i) { var s = String(i); while (s.length < 3) s = "0" + s; return "BKK-" + s; }
+function notaTotal(n) { var t = 0; for (var i = 0; i < n.item.length; i++) t += n.item[i][1] * n.item[i][2]; return n.ganti != null ? n.ganti : t; }
+
+function terbilang(n) {
+  var sat = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"];
+  n = Math.floor(n);
+  if (n < 12) return sat[n];
+  if (n < 20) return terbilang(n - 10) + " belas";
+  if (n < 100) return terbilang(Math.floor(n / 10)) + " puluh" + (n % 10 ? " " + terbilang(n % 10) : "");
+  if (n < 200) return "seratus" + (n - 100 ? " " + terbilang(n - 100) : "");
+  if (n < 1000) return terbilang(Math.floor(n / 100)) + " ratus" + (n % 100 ? " " + terbilang(n % 100) : "");
+  if (n < 2000) return "seribu" + (n - 1000 ? " " + terbilang(n - 1000) : "");
+  if (n < 1000000) return terbilang(Math.floor(n / 1000)) + " ribu" + (n % 1000 ? " " + terbilang(n % 1000) : "");
+  if (n < 1000000000) return terbilang(Math.floor(n / 1000000)) + " juta" + (n % 1000000 ? " " + terbilang(n % 1000000) : "");
+  return String(n);
+}
+function terbilangRp(n) { if (!n) return ""; var t = terbilang(n) + " rupiah"; return t.charAt(0).toUpperCase() + t.slice(1); }
+
+/* ---------------- avatar: senang, datar, sedih, marah ---------------- */
+function avatar(o, raut) {
+  raut = raut || o.raut || "senang";
+  var kulit = o.kulit || "#C99A6E", baju = o.baju || "#2F5FA8", rambut;
+  if (o.jilbab) rambut = '<path d="M27 44 Q27 14 50 14 Q73 14 73 44 L76 70 Q50 82 24 70 Z" fill="' + o.jilbab + '"/>';
+  else if (o.rambut === "pendek") rambut = '<path d="M30 36 Q30 16 50 16 Q70 16 70 36 Q68 26 50 25 Q32 26 30 36 Z" fill="#2B2018"/>';
+  else if (o.rambut === "botak") rambut = '<path d="M31 32 Q33 22 40 20" stroke="#2B2018" stroke-width="3" fill="none"/>';
+  else rambut = '<path d="M29 40 Q28 15 50 15 Q72 15 71 40 Q66 24 50 23 Q34 24 29 40 Z" fill="#2B2018"/>';
+  var kc = o.kacamata ? '<g fill="none" stroke="#1B1B1B" stroke-width="2"><circle cx="42" cy="40" r="6"/><circle cx="58" cy="40" r="6"/><path d="M48 40 L52 40"/></g>' : "";
+  var dasi = o.dasi ? '<path d="M50 78 L46 84 L50 104 L54 84 Z" fill="' + o.dasi + '"/>' : "";
+  var muka = o.jilbab ? '<ellipse cx="50" cy="42" rx="17" ry="19" fill="' + kulit + '"/>' : '<ellipse cx="50" cy="40" rx="20" ry="22" fill="' + kulit + '"/>';
+  var mulut = { senang: "M43 50 Q50 56 57 50", datar: "M43 51 L57 51", sedih: "M43 53 Q50 48 57 53", marah: "M42 54 Q50 47 58 54" }[raut];
+  var alis = raut === "marah" ? '<path d="M36 32 L46 35 M64 32 L54 35" stroke="#2B2018" stroke-width="2.5" stroke-linecap="round"/>' :
+    raut === "sedih" ? '<path d="M37 34 L46 32 M63 34 L54 32" stroke="#2B2018" stroke-width="2" stroke-linecap="round"/>' : "";
+  var pipi = raut === "marah" ? '<ellipse cx="38" cy="48" rx="4" ry="2.5" fill="#E05A5A" opacity=".55"/><ellipse cx="62" cy="48" rx="4" ry="2.5" fill="#E05A5A" opacity=".55"/>' : "";
+  return '<svg width="100" height="126" viewBox="0 0 100 126" aria-hidden="true">' +
+    '<path d="M16 126 Q16 82 50 78 Q84 82 84 126 Z" fill="' + baju + '"/>' + dasi +
+    (o.jilbab ? rambut + muka : muka + rambut) + pipi + alis +
+    '<circle cx="42" cy="40" r="2.3" fill="#1B1B1B"/><circle cx="58" cy="40" r="2.3" fill="#1B1B1B"/>' +
+    '<path d="' + mulut + '" stroke="#5A2E1E" stroke-width="2.4" fill="none" stroke-linecap="round"/>' + kc + "</svg>";
+}
+/* =======================================================================
+   CERITA DAN GENERATOR MINGGU
+   Susunan tiap hari tetap (supaya pelajarannya berjenjang),
+   tetapi angka, nomor nota, toko, dan urutan diacak setiap minggu.
+   ======================================================================= */
+
+var ORANG = {
+  udin:   { nm: "Pak Udin",   peran: "Office boy",           baju: "#3E8E5A", rambut: "botak",  kulit: "#B9845A" },
+  doni:   { nm: "Mas Doni",   peran: "Kurir dan sopir",      baju: "#D9792B", rambut: "pendek", kulit: "#A87249" },
+  sari:   { nm: "Mbak Sari",  peran: "Staf pemasaran",       baju: "#C2557A", jilbab: "#7A2E45", kulit: "#D4A37A" },
+  rizal:  { nm: "Rizal",      peran: "Staf IT",              baju: "#5B6472", rambut: "pendek", kacamata: 1, kulit: "#C99A6E" },
+  dewi:   { nm: "Dewi",       peran: "Resepsionis",          baju: "#1F8A8A", rambut: "panjang", kulit: "#DDB08A" },
+  hendra: { nm: "Pak Hendra", peran: "Manajer umum \u2014 atasanmu", baju: "#23395B", rambut: "pendek", kacamata: 1, dasi: "#B23B3B", kulit: "#C08C60" },
+  ratna:  { nm: "Bu Ratna",   peran: "Bagian keuangan",      baju: "#2F4F6F", jilbab: "#1F3550", kacamata: 1, kulit: "#D2A276" }
+};
+var HARI = [null, "Senin, 5 Oktober 2026", "Selasa, 6 Oktober 2026", "Rabu, 7 Oktober 2026", "Kamis, 8 Oktober 2026", "Jumat, 9 Oktober 2026"];
+var TGL = [null, "05/10/26", "06/10/26", "07/10/26", "08/10/26", "09/10/26"];
+var KATEGORI = ["ATK dan cetak", "Konsumsi dan rapat", "Pengiriman dan transportasi", "Kebersihan dan perlengkapan", "Meterai dan lain-lain"];
+var ALASAN = [
+  { k: "pinjam",   t: "Kas kecil tidak boleh dipinjam, oleh siapa pun" },
+  { k: "bukti",    t: "Tidak ada bukti transaksi" },
+  { k: "tidaksah", t: "Bukti tidak sah: ada coretan, salah nama, atau lewat 7 hari" },
+  { k: "batas",    t: "Melebihi batas Rp500.000 per transaksi" },
+  { k: "pribadi",  t: "Untuk keperluan pribadi, bukan operasional kantor" },
+  { k: "pecah",    t: "Transaksi dipecah untuk menghindari batas" },
+  { k: "ganda",    t: "Bukti ini sudah pernah dibayar" },
+  { k: "setuju",   t: "Belum ada persetujuan atasan" }
+];
+var SOP = [
+  { t: "Dana kas kecil ditetapkan <b>Rp3.000.000</b> dengan metode imprest (dana tetap)." },
+  { t: "Kas kecil hanya untuk pengeluaran <b>operasional kantor</b> yang kecil, rutin, atau mendesak." },
+  { t: "Batas pembayaran <b>Rp500.000 per transaksi</b>. Di atas itu lewat pengajuan pembelian ke bagian keuangan." },
+  { t: "Setiap pengeluaran wajib ada <b>bukti asli</b> dan dicatat pada <b>bukti kas keluar</b>." },
+  { t: "Bukti sah hanya kalau: <b>atas nama PT Maju Bersama</b> (untuk kuitansi), <b>tanpa coretan atau perubahan angka</b>, dan diajukan <b>paling lama 7 hari</b> setelah transaksi." },
+  { t: "Bayar <b>sesuai angka di nota</b>, bukan jumlah yang diminta. Hitung ulang rinciannya." },
+  { t: "Konsumsi rapat wajib ada <b>tanda tangan persetujuan atasan</b>." },
+  { t: "<b>Kas kecil tidak boleh dipinjam, oleh siapa pun \u2014 termasuk atasan.</b> Kebutuhan pribadi tidak dibayar dari kas kecil.", big: 1 },
+  { t: "Satu bukti hanya dibayar <b>sekali</b> \u2014 periksa catatanmu. Memecah satu pembelian menjadi beberapa nota adalah pelanggaran." },
+  { t: "<b>Uang di laci + bukti sah = Rp3.000.000.</b> Selisih kurang menjadi tanggung jawab pemegang kas.", big: 1 },
+  { t: "Selisih kas, salah hitung saat pemeriksaan, atau terlalu banyak keluhan rekan kerja berujung <b>Surat Peringatan</b>. <b>SP3 berarti diberhentikan.</b>", big: 1 }
+];
+
+/* ---------------- pembuat nota ---------------- */
+function noAcak() { return String(rint(1000, 9899)); }
+function nota(toko, sub, item, hari, ext) {
+  var n = { toko: toko, sub: sub, no: noAcak(), tgl: TGL[hari], item: item, ttd: pick(["Yanti", "Agus", "Rina", "Hasan", "Fajar", "Lina"]), cap: 1 };
+  if (ext) for (var k in ext) n[k] = ext[k];
+  return n;
+}
+
+/* ---------------- pengeluaran sah ---------------- */
+var SAH = {
+  galon: function (h) { var q = rint(3, 6), p = pick([19000, 20000, 21000]);
+    return { orang: "udin", kat: 1, kata: pick(["Galon di pantry habis, saya beli " + q + " galon di depot depan. Ini notanya.", "Air minum kantor sudah saya isi ulang, " + q + " galon. Notanya ada."]),
+      nota: [nota("DEPOT AIR TIRTA", "Jl. Kapten Rivai, Palembang", [["Isi ulang galon", q, p]], h)] }; },
+  kurir: function (h) { var p = pick([35000, 40000, 45000, 52000]);
+    return { orang: "doni", kat: 2, kata: pick(["Dokumen kontrak sudah sampai di kantor mitra. Ongkos kurirnya ini, ada kuitansinya.", "Berkas penawaran sudah saya antar ke klien. Ini kuitansi kurirnya."]),
+      nota: [nota("KILAT EKSPRES", "Kuitansi pengiriman", [["Kirim dokumen, dalam kota", 1, p]], h, { kepada: "PT Maju Bersama" })] }; },
+  atk: function (h) { var q1 = pick([10, 20]), p1 = pick([2000, 2500]), q2 = rint(6, 12), p2 = pick([3000, 4000]);
+    return { orang: "dewi", kat: 0, kata: pick(["Map dan pulpen di meja depan habis. Aku beli di toko buku, ini notanya.", "Stok alat tulis meja depan menipis, sudah kubeli. Ini notanya."]),
+      nota: [nota("TOKO BUKU ILMU", "Jl. Merdeka, Palembang", [["Map plastik", q1, p1], ["Pulpen biru", q2, p2]], h)] }; },
+  bersih: function (h) {
+    return { orang: "udin", kat: 3, kata: "Sabun lantai, pel, dan kantong sampah sudah habis. Saya belanja di toko grosir.",
+      nota: [nota("GROSIR BERKAH", "Pasar 16 Ilir, Palembang", [["Cairan pembersih lantai", 2, pick([21000, 23000])], ["Kain pel", rint(1, 3), 18000], ["Kantong sampah besar", rint(2, 5), 11000]], h)] }; },
+  tol: function (h) {
+    return { orang: "doni", kat: 2, kata: "Antar barang ke Kertapati tadi, bayar tol dan parkir. Ini struknya, lengkap.",
+      nota: [nota("KARCIS TOL DAN PARKIR", "Ruas Palindra \u00b7 parkir Kertapati", [["Tol Palindra", 1, pick([24000, 26000, 28000])], ["Parkir", 1, pick([5000, 8000, 10000])]], h, { cap: 0 })] }; },
+  fotokopi: function (h) {
+    return { orang: "sari", kat: 0, kata: "Bahan presentasi klien sudah difotokopi dan dijilid. Ini notanya.",
+      nota: [nota("FOTOKOPI CEMERLANG", "Jl. Sudirman, Palembang", [["Fotokopi", pick([200, 240, 320, 400]), 250], ["Jilid spiral", rint(2, 4), pick([7000, 8000])]], h)] }; },
+  konsumsi: function (h, tanpaSetuju) { var q = rint(6, 10);
+    return { orang: "sari", kat: 1, kata: "Rapat dengan klien kemarin, pesan makan siang " + q + " orang. Ini notanya" + (tanpaSetuju ? "." : ", sudah ditandatangani Pak Hendra."),
+      nota: [nota("RM PINDANG MERANGIN", "Jl. Veteran, Palembang", [["Paket nasi pindang", q, pick([25000, 30000])], ["Air mineral", q, 3000]], h, tanpaSetuju ? {} : { setuju: "Hendra" })] }; },
+  meterai: function (h) { var q = rint(3, 6);
+    return { orang: "dewi", kat: 4, kata: "Kontrak sewa butuh meterai, aku beli " + q + " lembar di kantor pos.",
+      nota: [nota("KANTOR POS PALEMBANG", "Loket meterai", [["Meterai 10.000", q, 12000]], h)] }; }
+};
+function sah(jenis, h) {
+  var b = SAH[jenis](h), t = notaTotal(b.nota[0]);
+  return { hari: h, orang: b.orang, kata: b.kata, minta: t, nota: b.nota, benar: "bayar", jumlah: t, kat: b.kat, tipe: "sah",
+    pelajaran: "Pengeluaran operasional kecil dengan bukti asli yang lengkap dan angka yang cocok. Inilah tujuan kas kecil. Menolaknya hanya membuat pekerjaan kantor terhambat." };
+}
+
+/* ---------------- jebakan ---------------- */
+function mintaLebih(jenis, h) {
+  var e = sah(jenis, h), naik = pick([8000, 12000, 15000, 18000, 20000]);
+  e.minta = e.jumlah + naik; e.tipe = "lebih";
+  e.kata = e.kata + " Totalnya " + rp(e.minta) + " ya.";
+  e.pelajaran = "Yang diminta " + rp(e.minta) + ", tetapi rincian di nota berjumlah " + rp(e.jumlah) + ". Selalu hitung ulang rinciannya dan bayar sesuai bukti. Kelebihan " + rp(naik) + " akan menjadi selisih kas yang kamu tanggung.";
+  return e;
+}
+function pinjam(orang, h, jml, kata, atasan) {
+  return { hari: h, orang: orang, kata: kata, minta: jml, nota: [], benar: "tolak", alasan: "pinjam", tipe: "pinjam", atasan: atasan ? 1 : 0,
+    pelajaran: atasan
+      ? "Yang meminta atasanmu sendiri, dan ia minta tidak dicatat. Justru karena itu harus ditolak dengan sopan. Aturan yang hanya berlaku untuk bawahan bukan aturan. Tunjukkan jalan yang sah: uang muka lewat bagian keuangan."
+      : "Kas kecil bukan dana talangan. Uang yang dipinjamkan keluar dari laci tanpa bukti yang sah, dan saat pemeriksaan selisihnya ditagih kepadamu, bukan kepada peminjam." };
+}
+function tanpaBukti(h) { var j = pick([26000, 34000, 38000, 45000]);
+  return { hari: h, orang: "doni", kata: "Kemarin bayar tol dan parkir " + rp(j) + ". Struknya hilang, Mas. Ganti ya, sudah biasa kok.", minta: j, nota: [],
+    benar: "tolak", alasan: "bukti", tipe: "tanpabukti",
+    pelajaran: "Jumlahnya kecil dan ceritanya masuk akal, tetapi tanpa bukti tidak ada yang bisa diperiksa. \u201cSudah biasa kok\u201d adalah awal kebocoran kas kecil." }; }
+function pribadi(h) {
+  var v = pick([
+    { o: "dewi", k: "Aku tadi makan siang di warung depan. Sekalian diganti ya, kan aku jaga meja depan terus.", t: "WARUNG MAK INAH", it: [["Nasi ayam goreng", 1, 28000], ["Es jeruk", 1, 7000]] },
+    { o: "rizal", k: "Pulsa HP-ku habis buat koordinasi kerja. Ini struknya, ganti dari kas kecil ya.", t: "KONTER SINYAL", it: [["Pulsa 100.000", 1, 101000]] },
+    { o: "sari", k: "Pulang lembur kemarin naik ojek ke rumah. Ini buktinya, diganti ya.", t: "OJEK DARING", it: [["Perjalanan kantor ke rumah", 1, 34000]] }]);
+  var n = nota(v.t, "Bukti pembayaran", v.it, h);
+  return { hari: h, orang: v.o, kata: v.k, minta: notaTotal(n), nota: [n], benar: "tolak", alasan: "pribadi", tipe: "pribadi",
+    pelajaran: "Buktinya ada dan angkanya cocok, tetapi ini keperluan pribadi. Bukti yang sah tidak mengubah pengeluaran pribadi menjadi pengeluaran kantor." };
+}
+function batas(h) {
+  var v = pick([["Monitor LED 24 inci", 1850000], ["Printer laser", 1450000], ["Kursi kerja ergonomis", 875000]]);
+  var n = nota("TOKO KOMPUTER SINAR", "Penawaran harga", [[v[0], 1, v[1]]], h);
+  return { hari: h, orang: "rizal", kata: v[0] + " di ruang admin harus diganti. Ambil dari kas kecil saja biar cepat, ya?", minta: v[1], nota: [n],
+    benar: "tolak", alasan: "batas", tipe: "batas",
+    pelajaran: "Jauh di atas batas Rp500.000. Barang bernilai besar harus lewat pengajuan pembelian supaya tercatat sebagai aset kantor." };
+}
+function pecah(h) {
+  var a = pick([380000, 420000, 450000, 470000]), b = pick([380000, 420000, 450000]);
+  var n1 = nota("TOKO KOMPUTER SINAR", "Jl. Jend. Sudirman, Palembang", [["Printer laser (bayar 1)", 1, a]], h);
+  var n2 = nota("TOKO KOMPUTER SINAR", "Jl. Jend. Sudirman, Palembang", [["Printer laser (bayar 2)", 1, b]], h);
+  n2.no = String(+n1.no + 1);
+  return { hari: h, orang: "rizal", kata: "Printer lantai dua mati, sudah kubeli. Notanya dua karena kubayar dua kali, masing-masing di bawah Rp500.000 kok.", minta: a + b, nota: [n1, n2],
+    benar: "tolak", alasan: "pecah", tipe: "pecah",
+    pelajaran: "Satu printer, satu toko, satu hari, nomor nota berurutan. Ini satu pembelian " + rp(a + b) + " yang sengaja dipecah supaya lolos batas. Inilah pelanggaran yang paling sering ditemukan auditor." };
+}
+function tidakSah(h, varian) {
+  varian = varian || pick(["coret", "nama", "lama"]);
+  var e = sah(pick(["galon", "kurir", "atk", "fotokopi"]), h), n = e.nota[0];
+  e.benar = "tolak"; e.alasan = "tidaksah"; e.tipe = "tidaksah";
+  if (varian === "coret") {
+    var asli = notaTotal(n); n.coret = asli; n.ganti = asli + pick([15000, 20000, 25000]); e.minta = n.ganti;
+    e.pelajaran = "Total di nota dicoret dan ditulis ulang dengan tangan, dari " + rp(asli) + " menjadi " + rp(n.ganti) + ". Bukti dengan coretan atau perubahan angka tidak sah, siapa pun yang mengubahnya. Minta nota baru dari penjualnya.";
+  } else if (varian === "nama") {
+    n.kepada = "PT Maju Jaya";
+    e.pelajaran = "Kuitansinya ditujukan kepada PT Maju Jaya, bukan PT Maju Bersama. Kuitansi atas nama pihak lain bukan bukti pengeluaran perusahaan ini.";
+  } else {
+    n.tgl = pick(["28/08/26", "02/09/26", "11/09/26"]);
+    e.kata = e.kata.replace("Ini notanya.", "Notanya ketemu di laci, maaf baru diajukan.");
+    e.pelajaran = "Tanggal nota " + n.tgl + ", sudah lewat jauh dari batas 7 hari. Bukti yang terlambat diajukan tidak diterima, supaya pengeluaran lama tidak bisa diselipkan kapan saja.";
+  }
+  return e;
+}
+function tanpaSetuju(h) {
+  var e = sah("konsumsi", h); var b = SAH.konsumsi(h, true);
+  e.nota = b.nota; e.kata = b.kata; e.jumlah = notaTotal(b.nota[0]); e.minta = e.jumlah;
+  e.benar = "tolak"; e.alasan = "setuju"; e.tipe = "setuju";
+  e.pelajaran = "Konsumsi rapat hanya boleh dibayar dengan tanda tangan persetujuan atasan. Notanya sah, angkanya cocok, tetapi kolom persetujuannya kosong. Tahan dulu sampai ditandatangani.";
+  return e;
+}
+
+/* ---------------- susun satu minggu ---------------- */
+function susunMinggu(seed) {
+  R = rngDari(seed);
+  var d1 = kocok([sah(pick(["galon", "atk"]), 1), sah("kurir", 1), mintaLebih(pick(["bersih", "fotokopi"]), 1),
+    pinjam("sari", 1, pick([200000, 300000]), "Eh, boleh pinjam dulu dari kas kecil? Buat bayar kos, mendesak banget. Tanggal 25 gajian langsung kuganti, janji!")]);
+  var d2 = kocok([sah("tol", 2), tidakSah(2, "coret"), sah("konsumsi", 2),
+    pinjam("hendra", 2, 500000, "Tolong ambilkan Rp500.000 dari kas kecil dulu ya. Dompet saya ketinggalan, nanti sore saya kembalikan. Tidak usah dicatat.", true)]);
+  var d3 = kocok([tanpaBukti(3), batas(3), sah(pick(["meterai", "bersih"]), 3), pribadi(3)]);
+  var d4 = kocok([pecah(4), tanpaSetuju(4), sah(pick(["atk", "galon"]), 4), mintaLebih("kurir", 4)]);
+  /* nota ganda: menyalin nota sah dari hari Senin */
+  var asal = null;
+  for (var i = 0; i < d1.length; i++) if (d1[i].tipe === "sah") { asal = d1[i]; break; }
+  var salinan = JSON.parse(JSON.stringify(asal.nota[0]));
+  var ganda = { hari: 5, orang: asal.orang === "dewi" ? "udin" : "dewi",
+    kata: (asal.orang === "dewi" ? "Dewi" : ORANG[asal.orang].nm) + " titip ini, katanya nota ini belum diganti. Dia lagi ke bank.",
+    minta: notaTotal(salinan), nota: [salinan], benar: "cek", refNo: salinan.no, jumlah: notaTotal(salinan), kat: asal.kat, tipe: "ganda",
+    pelajaran: "Periksa catatan bukti kas keluarmu: nota nomor " + salinan.no + " tanggal " + salinan.tgl + " berasal dari hari Senin. Kalau sudah dibayar, jangan dibayar lagi. Kalau belum, baru boleh dibayar." };
+  var d5 = kocok([ganda, sah(pick(["fotokopi", "meterai", "kurir"]), 5), tidakSah(5, pick(["nama", "lama"])),
+    pinjam(pick(["sari", "doni"]), 5, pick([100000, 150000]), "Aduh, kali ini beneran darurat. Buat ongkos pulang kampung saja. Senin pagi langsung kuganti, kamu kan baik\u2026")]);
+  var plan = d1.concat(d2, d3, d4, d5);
+  for (var j = 0; j < plan.length; j++) plan[j].id = j;
+  R = Math.random;
+  return plan;
+}
+/* =======================================================================
+   PERMAINAN
+   ======================================================================= */
+var GERAK = !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+var tangan = [], tik = null, jamSabar = null, sisaSabar = 0, totalSabar = 0, sibuk = false;
+
+function ev() { return S.plan[S.ev]; }
+function poinTotal() { var t = 0; for (var i = 0; i < S.log.length; i++) t += S.log[i].poin; return t; }
+
+function paintHud() {
+  var e = ev(), hari = S.tahap === "hari" && e ? HARI[e.hari].split(",")[0] : (S.tahap === "jumat" || S.tahap === "selesai" ? "Jumat sore" : S.tahap === "rabu" ? "Rabu siang" : "\u2014");
+  var sp = "";
+  for (var i = 1; i <= 3; i++) sp += '<i class="' + (S.sp >= i ? "on" : "") + '">SP' + i + "</i>";
+  var warna = S.rep >= 70 ? "#9ED37A" : S.rep >= 45 ? "#E0A94B" : "#F28B82";
+  el("hud").innerHTML =
+    "<div><small>Hari</small><b>" + esc(hari) + "</b></div>" +
+    '<div><small>Surat peringatan</small><span class="sp">' + sp + "</span></div>" +
+    "<div><small>Reputasi " + S.rep + '</small><span class="rep-bar"><i style="width:' + Math.max(0, S.rep) + "%;background:" + warna + '"></i></span></div>' +
+    "<div><small>Bukti kas keluar</small><b>" + S.voucher.length + " lembar</b></div>" +
+    "<div><small>Poin</small><b>" + poinTotal() + "</b></div>";
+}
+
+/* ---------------- efek ---------------- */
+function kilat(warna) {
+  if (!GERAK) return;
+  var k = document.createElement("div"); k.className = "kilat " + warna;
+  document.body.appendChild(k); setTimeout(function () { if (k.parentNode) k.parentNode.removeChild(k); }, 650);
+}
+function goyang() {
+  var o = el("office"); if (!o || !GERAK) return;
+  o.classList.remove("goyang"); void o.offsetWidth; o.classList.add("goyang");
+}
+function konfeti() {
+  if (!GERAK) return;
+  var w = document.createElement("div"); w.className = "konfeti";
+  var warna = ["#C8323A", "#2F5FA8", "#3E8E5A", "#E0A94B", "#7C4B9E"];
+  for (var i = 0; i < 46; i++) {
+    var c = document.createElement("i");
+    c.style.left = Math.random() * 100 + "%"; c.style.background = warna[i % 5];
+    c.style.animationDelay = (Math.random() * .6) + "s"; c.style.animationDuration = (1.3 + Math.random() * 1.1) + "s";
+    w.appendChild(c);
+  }
+  document.body.appendChild(w); setTimeout(function () { if (w.parentNode) w.parentNode.removeChild(w); }, 2800);
+}
+function stempel(ok, teks) {
+  var o = el("office"); if (!o) return;
+  var s = document.createElement("div"); s.className = "stamp " + (ok ? "ok" : "no"); s.textContent = teks; o.appendChild(s);
+}
+function ketik(teks) {
+  clearInterval(tik);
+  var t = el("kata"); if (!t) return;
+  if (!GERAK) { t.textContent = teks; return; }
+  var i = 0; t.textContent = "";
+  tik = setInterval(function () { i += 2; if (!el("kata")) { clearInterval(tik); return; } t.textContent = teks.slice(0, i); if (i >= teks.length) clearInterval(tik); }, 22);
+  el("bubble").onclick = function () { clearInterval(tik); t.textContent = teks; };
+}
+function wajah(raut, marah) {
+  var e = ev() || S.plan[S.ev - 1], n = el("npc"); if (!n || !e) return;
+  var s = n.querySelector("svg"); if (s) s.outerHTML = avatar(ORANG[e.orang], raut);
+  if (marah && !n.querySelector(".marah")) { var m = document.createElement("span"); m.className = "marah"; m.textContent = "!!"; n.appendChild(m); }
+}
+
+/* ---------------- surat peringatan ---------------- */
+function beriSP(alasan, lanjut) {
+  S.sp++; S.spAlasan.push(alasan); save(); paintHud();
+  kilat("merah");
+  var w = document.createElement("div"); w.className = "surat";
+  var akhir = S.sp >= 3;
+  w.innerHTML = '<div class="kertas"><div class="kop">PT MAJU BERSAMA \u00b7 Bagian Sumber Daya Manusia</div>' +
+    "<h2>" + (akhir ? "Surat Pemberhentian" : "Surat Peringatan " + S.sp) + "</h2>" +
+    '<div class="cap2">' + (akhir ? "DIBERHENTIKAN" : "SP" + S.sp) + "</div>" +
+    "<p>Kepada pemegang dana kas kecil, <b>" + esc(S.nama || "Saudara") + "</b>.</p>" +
+    "<p>" + esc(alasan) + "</p>" +
+    "<p>" + (akhir ? "Ini peringatan ketiga. Tugas Saudara sebagai pemegang kas kecil dihentikan." :
+      S.sp === 2 ? "Satu peringatan lagi, tugas Saudara sebagai pemegang kas kecil dihentikan." : "Perbaiki cara kerja Saudara. Peringatan berikutnya akan tercatat di berkas kepegawaian.") + "</p>" +
+    '<div class="row"><button class="btn ' + (akhir ? "no" : "amb") + '" id="spOk">' + (akhir ? "Terima surat" : "Saya mengerti") + "</button></div></div>";
+  document.body.appendChild(w);
+  el("spOk").onclick = function () {
+    document.body.removeChild(w);
+    if (akhir) gameOver(); else if (lanjut) lanjut();
+  };
+}
+function ubahRep(d, alasan) {
+  S.rep = Math.max(0, Math.min(100, S.rep + d));
+  if (S.rep < 40 && !S.repSp) {
+    S.repSp = true; save(); paintHud();
+    return function (lanjut) {
+      beriSP("Bagian umum menerima terlalu banyak keluhan: pengeluaran sah ditolak dan rekan kerja dibiarkan menunggu. Pekerjaan kantor terhambat. " + (alasan || ""), function () {
+        S.rep = 55; S.repSp = false; save(); paintHud(); lanjut();
+      });
+    };
+  }
+  return null;
+}
+
+/* ---------------- adegan kantor ---------------- */
+function scene(oKey, raut, papan, antri) {
+  var o = ORANG[oKey], idx = S.ev % 4;
+  var jam = ((8 + idx * 2) % 12) / 12 * 360;
+  var q = "";
+  if (antri) for (var i = 0; i < antri.length; i++) {
+    var p = ORANG[antri[i]];
+    q += '<span class="qp">' + avatar(p, "datar").replace('width="100" height="126"', 'width="56" height="70"') + "<b>" + esc(p.nm.split(" ").pop()) + "</b></span>";
+  }
+  return '<div class="office" id="office" style="--jam:' + jam + 'deg">' +
+    '<div class="win"></div><div class="clock"></div>' +
+    '<div class="board">' + (papan || "<b>Ingat:</b> batas Rp500.000 \u00b7 bukti asli tanpa coretan, maks. 7 hari \u00b7 kas kecil tidak boleh dipinjam") + "</div>" +
+    '<div class="desk"></div><div class="door"></div><div class="lamp"></div>' +
+    '<div class="tray"><i style="top:10px"></i><i style="top:20px"></i></div>' +
+    (q ? '<div class="queue">' + q + "</div>" : "") +
+    '<div class="npc' + (GERAK ? " masuk jalan" : "") + '" id="npc">' +
+    (S.mode === "kerja" && S.tahap === "hari" ? '<span class="sabar"><i id="sabar"></i></span>' : "") +
+    avatar(o, raut) + '<span class="nm">' + esc(o.nm) + "</span></div>" +
+    '<div class="bubble" id="bubble"><span class="peran">' + esc(o.peran) + '</span><span id="kata"></span></div></div>';
+}
+
+/* ---------------- kesabaran (mode kerja) ---------------- */
+function mulaiSabar(e) {
+  clearInterval(jamSabar);
+  if (S.mode !== "kerja") return;
+  totalSabar = sisaSabar = e.nota.length > 1 ? 95 : 75;
+  jamSabar = setInterval(function () {
+    if (!el("modal").hidden || sibuk) return;
+    sisaSabar--;
+    var b = el("sabar");
+    if (b) {
+      var p = Math.max(0, sisaSabar / totalSabar * 100);
+      b.style.width = p + "%";
+      b.style.background = p > 50 ? "var(--good)" : p > 22 ? "var(--amber)" : "var(--bad)";
+      if (p <= 22 && p > 0) wajah("marah");
+    }
+    if (sisaSabar <= 0) { clearInterval(jamSabar); habisSabar(); }
+  }, 1000);
+}
+function berhentiSabar() { clearInterval(jamSabar); jamSabar = null; }
+function habisSabar() {
+  var e = ev(); if (!e) return;
+  var harusBayar = e.benar === "bayar" || (e.benar === "cek" && !sudahDibayar(e.refNo));
+  tangan = [];
+  wajah("marah", true); goyang();
+  ketik(harusBayar ? "Lama sekali! Saya laporkan ke Pak Hendra." : "Ya sudah, saya urus sendiri.");
+  S.log.push({ ev: S.ev, aksi: "lewat", benar: false, poin: 0 });
+  var sp = harusBayar ? ubahRep(-15, ORANG[e.orang].nm + " menunggu terlalu lama.") : null;
+  S.ev++; save(); paintHud();
+  el("aksi").innerHTML = '<div class="fb no"><h3>Kesabaran habis</h3><p style="margin:0">' + esc(ORANG[e.orang].nm) +
+    (harusBayar ? " pergi dengan kesal. Pengeluarannya sah dan seharusnya dibayar; sekarang tercatat sebagai keluhan." : " pergi. Permintaannya memang tidak sah, tetapi kamu tetap harus memberi keputusan, bukan membiarkan orang menunggu.") +
+    '</p></div><div class="row"><button class="btn amb" id="bNext">Lanjut</button></div>';
+  el("bNext").onclick = function () { if (sp) sp(lanjutAntrian); else lanjutAntrian(); };
+}
+
+/* ---------------- satu permintaan ---------------- */
+function notaHTML(n) {
+  var rows = n.item.map(function (it) {
+    return "<tr><td>" + esc(it[0]) + '<br><span style="color:#6B6455">' + it[1] + " \u00d7 " + rp(it[2]) + '</span></td><td class="n">' + rp(it[1] * it[2]) + "</td></tr>";
+  }).join("");
+  var tot = n.coret != null
+    ? '<tr class="tot"><td>TOTAL</td><td class="n"><s style="color:#9A927D">' + rp(n.coret) + '</s><br><span style="font-family:\'Segoe Script\',cursive;color:#1F3A8A;font-size:.95rem">' + rp(n.ganti) + "</span></td></tr>"
+    : '<tr class="tot"><td>TOTAL</td><td class="n">' + rp(n.item.reduce(function (a, it) { return a + it[1] * it[2]; }, 0)) + "</td></tr>";
+  return '<div class="nota"><div class="toko">' + esc(n.toko) + '</div><div class="sub">' + esc(n.sub) + "</div>" +
+    '<div style="display:flex;justify-content:space-between"><span>No. ' + esc(n.no) + "</span><span>" + esc(n.tgl) + "</span></div>" +
+    (n.kepada ? '<div style="margin:3px 0">Telah terima dari: <b>' + esc(n.kepada) + "</b></div>" : "") +
+    "<table>" + rows + tot + "</table>" +
+    '<div class="ttd"><span>Penjual<br><i>' + esc(n.ttd) + "</i></span>" +
+    '<span>Disetujui<br><i>' + (n.setuju ? esc(n.setuju) : "") + "</i></span></div>" +
+    (n.cap ? '<div class="cap">LUNAS<br>' + esc(n.no) + "</div>" : "") + "</div>";
+}
+function antrianBerikut() {
+  var a = [];
+  for (var i = S.ev + 1; i < S.plan.length && a.length < 2; i++) {
+    if (S.plan[i].hari !== S.plan[S.ev].hari) break;
+    a.push(S.plan[i].orang);
+  }
+  return a;
+}
+function sudahDibayar(no) {
+  for (var i = 0; i < S.voucher.length; i++) if (S.voucher[i].nota === no) return true;
+  return false;
+}
+
+function permintaan() {
+  if (S.ev >= S.plan.length) { auditJumat(); return; }
+  var e = ev();
+  S.tahap = "hari"; save();
+  tangan = []; sibuk = false;
+  paintHud();
+  var bukti = e.nota.length ? '<div class="notas">' + e.nota.map(notaHTML).join("") + "</div>" : '<div class="nota kosong">Tidak ada bukti yang diserahkan</div>';
+  el("stage").innerHTML =
+    '<div class="dayband"><h2>' + esc(HARI[e.hari]) + '</h2><span class="q">orang ke-' + ((S.ev % 4) + 1) + " dari 4 hari ini \u00b7 total " + (S.ev + 1) + "/" + S.plan.length + "</span></div>" +
+    scene(e.orang, e.tipe === "pinjam" ? "sedih" : "senang", "", antrianBerikut()) +
+    '<div class="work"><div><div class="card"><h3>Bukti yang diserahkan</h3>' +
+    '<div class="mintabox">' + esc(ORANG[e.orang].nm) + " meminta <b>" + rp(e.minta) + "</b></div>" + bukti + "</div></div>" +
+    '<div id="aksi"><div class="card"><h3>Keputusanmu</h3>' +
+    "<p>Periksa nomor, tanggal, nama, rincian, coretan, dan tanda tangan. Bandingkan dengan catatan bukti kas keluarmu.</p>" +
+    '<div class="row"><button class="btn go" id="bBayar">Bayar dari kas kecil</button>' +
+    '<button class="btn no" id="bTolak">Tolak</button></div>' +
+    '<div class="row"><button class="btn ghost" id="bSop2">Buku aturan</button><button class="btn ghost" id="bCatat">Catatan bukti kas keluar</button></div></div></div></div>';
+  var jalan = setTimeout(function () { var n = el("npc"); if (n) n.classList.remove("jalan"); }, 900);
+  ketik(e.kata);
+  mulaiSabar(e);
+  el("bBayar").onclick = function () { panelBayar(e); };
+  el("bTolak").onclick = function () { panelTolak(e); };
+  el("bSop2").onclick = function () { bacaSop(false); };
+  el("bCatat").onclick = catatan;
+}
+function catatan() {
+  modal("<h2>Catatan bukti kas keluar</h2>" +
+    (S.voucher.length ? '<table class="t"><tr><th>No.</th><th>Hari</th><th>Kepada</th><th>Nota</th><th class="n">Jumlah</th></tr>' +
+      S.voucher.map(function (v) { return "<tr><td>" + esc(v.no) + "</td><td>" + esc(HARI[v.hari].split(",")[0]) + "</td><td>" + esc(v.ke) + "</td><td>" + esc(v.nota || "\u2014") + '</td><td class="n">' + rp(v.jumlah) + "</td></tr>"; }).join("") + "</table>"
+      : "<p>Belum ada pengeluaran.</p>") +
+    '<p class="hint">Catatan ini tidak menjumlahkan sendiri. Itu tugasmu.</p><div class="row"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+}
+
+/* ---------------- membayar: tanpa pengaman ---------------- */
+function panelBayar(e) {
+  sibuk = false;
+  var o = ORANG[e.orang];
+  el("aksi").innerHTML =
+    '<div class="card voucher"><div class="vh"><b>BUKTI KAS KELUAR</b><span>' + noBKK(S.voucher.length + 1) + "</span></div>" +
+    '<div style="font-size:.86rem">Tanggal: ' + esc(HARI[e.hari]) + "<br>Dibayarkan kepada: <b>" + esc(o.nm) + "</b></div>" +
+    '<label for="vJml">Jumlah (Rp)</label><input id="vJml" inputmode="numeric" autocomplete="off" placeholder="tulis angkanya">' +
+    '<div class="terbilang" id="vTb"></div>' +
+    '<label for="vKat">Kelompok pengeluaran</label><select id="vKat"><option value="">\u2014 pilih \u2014</option>' +
+    KATEGORI.map(function (k, i) { return '<option value="' + i + '">' + esc(k) + "</option>"; }).join("") + "</select></div>" +
+    '<div class="card drawer"><div class="lh"><span>Laci \u2014 ketuk uang untuk mengambil</span><span>hitung sendiri</span></div>' +
+    '<div class="slots" id="slots"></div><div class="handtray" id="hand"></div>' +
+    '<div class="traysum"><span id="tLembar">0 lembar di tanganmu</span><span class="hint" style="margin:0">ketuk uang di tangan untuk mengembalikan</span></div></div>' +
+    '<div class="row"><button class="btn go" id="bSerah" disabled>Serahkan uang</button><button class="btn ghost" id="bBatal">Batal</button></div>';
+  function jml() { return angka(el("vJml").value) || 0; }
+  function paint() {
+    var sisa = {}; for (var k in S.laci) sisa[k] = S.laci[k];
+    for (var t = 0; t < tangan.length; t++) sisa[Math.abs(tangan[t])]--;
+    el("slots").innerHTML = PECAHAN.map(function (p) {
+      var c = sisa[p.n];
+      return '<button class="slot' + (c <= 0 ? " habis" : "") + '" data-n="' + p.n + '"' + (c <= 0 ? " disabled" : "") + ">" +
+        '<div class="bill' + (p.coin ? " coin" : "") + '" style="background:' + p.c + '">' + (p.coin ? "1rb" : p.lb) + '</div><span class="c">\u00d7' + c + "</span></button>";
+    }).join("");
+    var mendarat = tangan.filter(function (n) { return n > 0; });
+    el("hand").innerHTML = mendarat.length ? tangan.map(function (n, i) {
+      if (n < 0) return "";
+      var p = null; for (var q = 0; q < PECAHAN.length; q++) if (PECAHAN[q].n === n) p = PECAHAN[q];
+      return '<span class="tb' + (p.coin ? " coin" : "") + '" data-i="' + i + '" style="background:' + p.c + '">' + (p.coin ? "1" : p.lb) + "</span>";
+    }).join("") : '<span class="kosong">Tangan kosong</span>';
+    el("tLembar").textContent = mendarat.length + " lembar di tanganmu";
+    el("bSerah").disabled = !(jml() > 0 && el("vKat").value !== "" && mendarat.length);
+  }
+  function terbang(dariEl, n, cb) {
+    if (!GERAK || !dariEl) { cb(); return; }
+    var p = null; for (var q = 0; q < PECAHAN.length; q++) if (PECAHAN[q].n === n) p = PECAHAN[q];
+    var a = dariEl.getBoundingClientRect(), b = el("hand").getBoundingClientRect();
+    if (!a.width) { cb(); return; }
+    var f = document.createElement("div"); f.className = "terbang";
+    f.style.left = a.left + "px"; f.style.top = a.top + "px";
+    f.style.width = (p.coin ? 24 : 46) + "px"; f.style.height = (p.coin ? 24 : 24) + "px";
+    f.style.background = p.c; if (p.coin) f.style.borderRadius = "50%";
+    f.textContent = p.coin ? "1" : p.lb;
+    document.body.appendChild(f);
+    requestAnimationFrame(function () {
+      f.style.transform = "translate(" + (b.left + 12 + (tangan.length % 8) * 8 - a.left) + "px," + (b.top + 10 - a.top) + "px) rotate(" + (Math.random() * 30 - 15) + "deg)";
+      f.style.opacity = ".85";
+    });
+    setTimeout(function () { if (f.parentNode) f.parentNode.removeChild(f); cb(); }, 470);
+  }
+  el("vJml").oninput = function () { el("vTb").textContent = jml() ? terbilangRp(jml()) : ""; paint(); };
+  el("vKat").onchange = paint;
+  el("slots").onclick = function (x) {
+    var b = x.target.closest(".slot"); if (!b || b.disabled) return;
+    var n = +b.getAttribute("data-n");
+    tangan.push(n); var idx = tangan.length - 1;
+    var bill = b.querySelector(".bill");
+    tangan[idx] = -n; /* sementara: belum mendarat */
+    terbang(bill, n, function () { tangan[idx] = n; paint(); });
+    var sisaLaci = S.laci[n]; for (var t = 0; t < tangan.length; t++) if (Math.abs(tangan[t]) === n) sisaLaci--;
+    var c = b.querySelector(".c"); if (c) c.textContent = "\u00d7" + sisaLaci;
+    if (sisaLaci <= 0) { b.disabled = true; b.classList.add("habis"); }
+  };
+  el("hand").onclick = function (x) { var s = x.target.closest(".tb"); if (!s) return; tangan.splice(+s.getAttribute("data-i"), 1); paint(); };
+  el("bBatal").onclick = function () { tangan = []; berhentiSabar(); var simpan = sisaSabar; permintaanLanjut(simpan); };
+  el("bSerah").onclick = function () {
+    tangan = tangan.filter(function (n) { return n > 0; });
+    var diberi = 0;
+    for (var i = 0; i < tangan.length; i++) { S.laci[tangan[i]]--; diberi += tangan[i]; }
+    var v = { no: noBKK(S.voucher.length + 1), ev: S.ev, hari: e.hari, ke: ORANG[e.orang].nm, jumlah: jml(), kat: +el("vKat").value, diberi: diberi,
+      nota: e.nota.length ? e.nota[0].no : null };
+    S.voucher.push(v);
+    tangan = [];
+    nilai(e, "bayar", v, null);
+  };
+  paint();
+  el("vJml").focus();
+}
+/* kembali dari Batal tanpa mengulang animasi masuk & tanpa mengisi ulang kesabaran */
+function permintaanLanjut(sisa) {
+  var e = ev();
+  el("aksi").innerHTML = '<div class="card"><h3>Keputusanmu</h3><p>Periksa nomor, tanggal, nama, rincian, coretan, dan tanda tangan. Bandingkan dengan catatan bukti kas keluarmu.</p>' +
+    '<div class="row"><button class="btn go" id="bBayar">Bayar dari kas kecil</button><button class="btn no" id="bTolak">Tolak</button></div>' +
+    '<div class="row"><button class="btn ghost" id="bSop2">Buku aturan</button><button class="btn ghost" id="bCatat">Catatan bukti kas keluar</button></div></div>';
+  el("bBayar").onclick = function () { panelBayar(e); };
+  el("bTolak").onclick = function () { panelTolak(e); };
+  el("bSop2").onclick = function () { bacaSop(false); };
+  el("bCatat").onclick = catatan;
+  if (S.mode === "kerja" && sisa > 0) {
+    mulaiSabar(e); sisaSabar = sisa;
+  }
+}
+
+/* ---------------- menolak ---------------- */
+function panelTolak(e) {
+  el("aksi").innerHTML = '<div class="card"><h3>Alasan menolak</h3><p class="hint">Alasan yang tepat sama pentingnya dengan keputusan menolak.</p>' +
+    '<div class="reasons" id="rs">' + ALASAN.map(function (a) { return '<button data-k="' + a.k + '">' + esc(a.t) + "</button>"; }).join("") + "</div>" +
+    '<div class="row"><button class="btn ghost" id="bBatal">Kembali</button></div></div>';
+  el("rs").onclick = function (x) { var b = x.target.closest("button[data-k]"); if (!b) return; nilai(e, "tolak", null, b.getAttribute("data-k")); };
+  el("bBatal").onclick = function () { var s = sisaSabar; berhentiSabar(); permintaanLanjut(s); };
+}
+
+/* ---------------- penilaian ---------------- */
+function nilai(e, aksi, v, alasan) {
+  berhentiSabar(); sibuk = true;
+  var benarBayar = e.benar === "bayar";
+  /* nota ganda: periksa catatan SEBELUM voucher ini ditambahkan */
+  if (e.benar === "cek") {
+    var lain = 0;
+    for (var i = 0; i < S.voucher.length; i++) if (S.voucher[i].nota === e.refNo && S.voucher[i] !== v) lain++;
+    benarBayar = lain === 0;
+  }
+  var alasanBenar = e.benar === "cek" ? "ganda" : e.alasan;
+  var poin = 0, catat = [], benarAksi = (aksi === "bayar") === benarBayar, repSp = null;
+
+  if (aksi === "bayar") {
+    if (benarAksi) {
+      poin += 5;
+      if (v.jumlah === e.jumlah) { poin += 3; catat.push("Jumlah di voucher tepat: " + rp(v.jumlah) + "."); }
+      else { catat.push("Jumlah di voucher " + rp(v.jumlah) + ", seharusnya " + rp(e.jumlah) + (v.jumlah === e.minta ? " \u2014 kamu menulis jumlah yang diminta, bukan yang tertera di bukti." : ".")); if (v.jumlah < e.jumlah) repSp = ubahRep(-5); }
+      if (v.kat === e.kat) { poin += 2; catat.push("Kelompok tepat: " + KATEGORI[e.kat] + "."); }
+      else catat.push("Kelompok seharusnya " + KATEGORI[e.kat] + ".");
+      ubahRep(+2);
+    } else {
+      catat.push("Seharusnya ditolak: " + alasanTeks(alasanBenar).toLowerCase() + ". Uang sudah keluar dari laci dengan bukti yang tidak akan diakui saat pemeriksaan.");
+    }
+  } else {
+    if (benarAksi) {
+      poin += 5;
+      if (alasan === alasanBenar) { poin += 5; catat.push("Alasan tepat: " + alasanTeks(alasan) + "."); }
+      else catat.push("Keputusan benar, alasan yang lebih tepat: " + alasanTeks(alasanBenar) + ".");
+    } else {
+      catat.push("Pengeluaran ini sah dan seharusnya dibayar " + rp(e.jumlah) + ". " + ORANG[e.orang].nm + " mengeluh ke bagian umum.");
+      repSp = ubahRep(-18, ORANG[e.orang].nm + " ditolak padahal buktinya sah.");
+    }
+  }
+  S.log.push({ ev: S.ev, aksi: aksi, alasan: alasan, benar: benarAksi, poin: poin });
+  S.ev++; save(); paintHud();
+
+  var ok = benarAksi && poin >= 10, setengah = benarAksi && !ok;
+  stempel(aksi === "bayar", aksi === "bayar" ? "DIBAYAR" : "DITOLAK");
+  if (benarAksi) { kilat("hijau"); wajah(aksi === "bayar" ? "senang" : (e.tipe === "pinjam" ? "sedih" : "datar")); }
+  else { goyang(); kilat("merah"); wajah(aksi === "tolak" ? "marah" : "senang", aksi === "tolak"); }
+  ketik(aksi === "bayar"
+    ? (benarAksi ? "Terima kasih, ya." : (e.tipe === "pinjam" ? "Wah, makasih! Nanti\u2026 ya, nanti kuganti." : "Hehe, makasih banyak!"))
+    : (benarAksi ? (e.tipe === "pinjam" ? "Hmm\u2026 ya sudah, aku ke bagian keuangan saja." : "Oh, begitu. Baik, nanti saya lengkapi.") : "Lho, ini kan sah! Saya laporkan ke Pak Hendra."));
+
+  var akhirHari = S.ev >= S.plan.length || S.plan[S.ev].hari !== e.hari;
+  el("aksi").innerHTML = '<div class="fb ' + (ok ? "ok" : setengah ? "part" : "no") + '"><span class="pts">+' + poin + " / 10</span>" +
+    "<h3>" + (ok ? "Tepat" : setengah ? "Hampir tepat" : "Keputusan keliru") + "</h3><ul>" +
+    catat.map(function (c) { return "<li>" + esc(c) + "</li>"; }).join("") + "</ul>" +
+    '<p style="margin:9px 0 0;font-size:.93rem">' + esc(e.pelajaran) + "</p></div>" +
+    '<div class="row"><button class="btn amb" id="bNext">' + (akhirHari ? "Tutup laci hari ini" : "Panggil berikutnya") + "</button></div>";
+  el("bNext").onclick = function () { if (repSp) repSp(lanjutAntrian); else lanjutAntrian(); };
+}
+function alasanTeks(k) { for (var i = 0; i < ALASAN.length; i++) if (ALASAN[i].k === k) return ALASAN[i].t; return k; }
+
+function lanjutAntrian() {
+  sibuk = false;
+  var prev = S.plan[S.ev - 1];
+  var akhirHari = S.ev >= S.plan.length || S.plan[S.ev].hari !== prev.hari;
+  var n = el("npc");
+  function go() { if (akhirHari) tutupBuku(prev.hari); else permintaan(); }
+  if (n && GERAK) { n.className = "npc pergi"; setTimeout(go, 380); } else go();
+}
+/* =======================================================================
+   TUTUP BUKU, OPNAME MENDADAK, PEMERIKSAAN JUMAT, PEMBERHENTIAN
+   ======================================================================= */
+function bacaSop(lanjut) {
+  modal("<h2>Buku aturan kas kecil</h2><p>PT Maju Bersama \u00b7 wajib dipatuhi pemegang dana kas kecil</p>" +
+    '<ol class="sop">' + SOP.map(function (r) { return "<li" + (r.big ? ' class="big"' : "") + ">" + r.t + "</li>"; }).join("") + "</ol>" +
+    '<div class="row" style="margin-top:14px">' + (lanjut ? '<button class="btn amb" id="sopOk">Saya mengerti, buka laci</button>' : '<button class="btn ghost" onclick="closeModal()">Tutup</button>') + "</div>");
+  if (lanjut) el("sopOk").onclick = function () { closeModal(); permintaan(); };
+}
+
+function pembuka() {
+  S.tahap = "mulai"; save(); paintHud();
+  el("stage").innerHTML =
+    scene("hendra", "senang", "<b>PT Maju Bersama</b> \u00b7 Palembang \u00b7 Senin pagi") +
+    "<h1>Seminggu memegang laci kas kecil</h1>" +
+    '<p style="font-size:1.05rem">Pak Hendra menyerahkan kunci laci berisi <b>Rp3.000.000</b>. Selama lima hari, dua puluh orang akan datang ke mejamu. Sebagian membawa bukti yang sah, sebagian bukti yang cacat, sebagian lagi meminjam uang. Rabu siang bisa ada pemeriksaan mendadak. Jumat sore pasti ada.</p>' +
+    '<p>Tidak ada pengaman: tombol bayar tidak menghitungkan uangmu, dan tidak ada yang memberitahu kalau laci mulai bolong. <b>Tiga Surat Peringatan dan kamu diberhentikan.</b></p>' +
+    '<div class="card"><h3>Identitas</h3>' +
+    '<label class="fl" for="pn">Nama</label><input type="text" id="pn" value="' + esc(S.nama) + '">' +
+    '<label class="fl" for="pp">NPM</label><input type="text" id="pp" value="' + esc(S.npm) + '"></div>' +
+    '<div class="card"><h3>Pilih cara kerja</h3><div class="mode" id="mode">' +
+    '<button data-m="kerja" aria-pressed="' + (S.mode === "kerja") + '"><b>Mode kerja</b>Ada antrian, dan setiap orang punya batas sabar. Seperti hari Senin sungguhan.</button>' +
+    '<button data-m="latihan" aria-pressed="' + (S.mode === "latihan") + '"><b>Mode latihan</b>Tanpa batas waktu. Aturan dan Surat Peringatan tetap berlaku.</button></div></div>' +
+    '<div class="row"><button class="btn amb" id="bMulai">Terima kunci laci</button></div>';
+  ketik("Selamat pagi. Mulai hari ini kamu yang pegang kas kecil. Tiga juta pas. Jangan sampai bolong \u2014 Bu Ratna dari keuangan bisa datang kapan saja.");
+  el("mode").onclick = function (x) {
+    var b = x.target.closest("button[data-m]"); if (!b) return;
+    S.mode = b.getAttribute("data-m");
+    var bs = el("mode").querySelectorAll("button"); for (var i = 0; i < bs.length; i++) bs[i].setAttribute("aria-pressed", bs[i] === b ? "true" : "false");
+  };
+  el("bMulai").onclick = function () {
+    S.nama = el("pn").value; S.npm = el("pp").value;
+    if (!S.plan.length) { S.seed = Math.floor(Math.random() * 2147483646) + 1; S.plan = susunMinggu(S.seed); S.ev = 0; }
+    save(); bacaSop(true);
+  };
+}
+
+/* ---------------- tutup buku harian ---------------- */
+function tabelLaci() {
+  return '<table class="t"><tr><th>Uang</th><th class="n">Pecahan</th><th class="n">Lembar</th></tr>' + PECAHAN.map(function (p) {
+    return '<tr><td><span class="bill' + (p.coin ? " coin" : "") + '" style="display:inline-grid;width:' + (p.coin ? "22px" : "54px") + ";height:22px;font-size:.58rem;background:" + p.c + '">' + (p.coin ? "1" : p.lb) + '</span></td><td class="n">' + rp(p.n) + '</td><td class="n">\u00d7 ' + S.laci[p.n] + "</td></tr>";
+  }).join("") + "</table>";
+}
+function tumpukan() {
+  var a = bktAktif();
+  return a.length ? '<div class="pile">' + a.map(function (v) { return "<span>" + esc(v.no) + " \u00b7 " + rp(v.jumlah) + "</span>"; }).join("") + "</div>" : "<p>Belum ada bukti kas keluar.</p>";
+}
+function tutupBuku(h) {
+  S.tahap = "tutup"; S.tutupHari = h; save(); paintHud();
+  if (h === 3) { opnameMendadak(); return; }
+  var hariIni = S.log.filter(function (l) { return S.plan[l.ev].hari === h; });
+  var benar = hariIni.filter(function (l) { return l.benar && l.poin >= 10; }).length;
+  el("stage").innerHTML =
+    '<div class="dayband"><h2>Tutup buku \u2014 ' + esc(HARI[h]) + '</h2><span class="q">' + benar + " dari " + hariIni.length + " keputusan sempurna hari ini</span></div>" +
+    '<div class="card"><p>Sebelum pulang, pemegang kas yang disiplin menghitung isi laci dan menjumlahkan bukti. Tidak ada kalkulator yang menjumlahkan untukmu di sini.</p></div>' +
+    '<div class="work"><div class="card"><h3>Isi laci</h3>' + tabelLaci() + '</div><div class="card"><h3>Bukti kas keluar</h3>' + tumpukan() + "</div></div>" +
+    '<div class="card"><div class="hitung"><div><label for="t1">Uang di laci (Rp)</label><input id="t1" inputmode="numeric"></div>' +
+    '<div><label for="t2">Jumlah semua bukti (Rp)</label><input id="t2" inputmode="numeric"></div></div>' +
+    '<div class="row"><button class="btn amb" id="bT">Tutup buku</button></div></div><div id="hT"></div>';
+  el("bT").onclick = function () {
+    var a = angka(el("t1").value), b = angka(el("t2").value), cash = isiLaci(S.laci), bk = sumBukti();
+    var ok1 = a === cash, ok2 = b === bk;
+    S.tutup[h] = { a: a, b: b, ok: [ok1, ok2] };
+    var teguran = !(ok1 && ok2);
+    if (teguran) S.teguran++;
+    save();
+    var seimbang = cash + bk === DANA;
+    el("hT").innerHTML = '<div class="fb ' + (teguran ? "no" : "ok") + '"><h3>' + (teguran ? "Hitunganmu meleset" : "Hitunganmu tepat") + "</h3><ul>" +
+      "<li>Uang di laci: " + (a == null ? "kosong" : rp(a)) + (ok1 ? " \u2014 tepat." : " \u2014 seharusnya " + rp(cash) + ".") + "</li>" +
+      "<li>Jumlah bukti: " + (b == null ? "kosong" : rp(b)) + (ok2 ? " \u2014 tepat." : " \u2014 seharusnya " + rp(bk) + ".") + "</li></ul>" +
+      '<p style="margin:8px 0 0">' + (seimbang
+        ? "Laci dan bukti berjumlah Rp3.000.000. Tetapi seimbang di buku belum tentu lolos pemeriksaan: setiap bukti juga harus sah."
+        : "<b>Laci dan bukti tidak berjumlah Rp3.000.000.</b> Ada uang yang kamu serahkan tidak sama dengan angka di voucher.") + "</p>" +
+      (teguran ? '<p style="margin:8px 0 0"><b>Teguran ' + S.teguran + " dari 2.</b> Dua teguran salah hitung menjadi satu Surat Peringatan.</p>" : "") + "</div>" +
+      '<div class="row"><button class="btn amb" id="bBesok">' + (h >= 5 ? "Bu Ratna datang: pemeriksaan Jumat sore" : "Pulang. Besok: " + esc(HARI[h + 1])) + "</button></div>";
+    if (!teguran && benar === hariIni.length) konfeti();
+    el("bT").disabled = true;
+    el("bBesok").onclick = function () {
+      if (S.teguran >= 2) { S.teguran = 0; beriSP("Dua kali salah menghitung isi laci dan bukti saat tutup buku. Pemegang kas harus tahu persis uang yang dipegangnya.", permintaan); }
+      else permintaan();
+    };
+  };
+}
+
+/* ---------------- pemeriksaan kas (Rabu & Jumat) ---------------- */
+function periksaKas() {
+  var cash = isiLaci(S.laci), sah = 0, semua = 0, temuan = [], dipakai = {};
+  var aktif = bktAktif();
+  for (var i = 0; i < aktif.length; i++) {
+    var v = aktif[i], e = S.plan[v.ev], d = 0, why = "";
+    semua += v.jumlah;
+    var bolehBayar = e.benar === "bayar" || (e.benar === "cek" && !dipakai[e.refNo] && !nomorSudahSah(e.refNo, v));
+    if (e.nota.length) {
+      if (dipakai[e.nota[0].no]) bolehBayar = false;
+    }
+    if (bolehBayar) {
+      d = Math.min(v.jumlah, e.jumlah);
+      if (v.jumlah > e.jumlah) why = "ditulis " + rp(v.jumlah - e.jumlah) + " lebih dari angka di nota";
+      if (e.nota.length) dipakai[e.nota[0].no] = 1;
+    } else why = e.benar === "cek" ? alasanTeks("ganda").toLowerCase() : alasanTeks(e.alasan).toLowerCase();
+    v.diakui = d; sah += d;
+    if (why) temuan.push({ no: v.no, ke: v.ke, jumlah: v.jumlah, diakui: d, why: why });
+  }
+  return { cash: cash, semua: semua, sah: sah, selisih: DANA - cash - sah, temuan: temuan };
+}
+function nomorSudahSah(no, kecuali) {
+  var a = bktAktif();
+  for (var i = 0; i < a.length; i++) {
+    if (a[i] === kecuali) return false;
+    var e = S.plan[a[i].ev];
+    if (e.nota.length && e.nota[0].no === no && e.benar === "bayar") return true;
+  }
+  return false;
+}
+
+function sirene(teks, cb) {
+  var s = document.createElement("div"); s.className = "sirene"; s.textContent = teks;
+  document.body.appendChild(s); kilat("merah");
+  setTimeout(function () { if (s.parentNode) s.parentNode.removeChild(s); cb(); }, GERAK ? 1900 : 0);
+}
+function opnameMendadak() {
+  S.tahap = "rabu"; save(); paintHud();
+  sirene("\u26a0 OPNAME KAS MENDADAK \u26a0", function () { pemeriksaan("rabu"); });
+}
+function auditJumat() {
+  S.tahap = "jumat"; save(); paintHud();
+  pemeriksaan("jumat");
+}
+
+function pemeriksaan(kapan) {
+  var P = periksaKas();
+  el("stage").innerHTML =
+    '<div class="dayband"><h2>' + (kapan === "rabu" ? "Rabu siang \u2014 pemeriksaan kas mendadak" : "Jumat sore \u2014 pemeriksaan kas") + '</h2><span class="q">langkah 1 dari 2</span></div>' +
+    scene("ratna", "datar", "<b>Pemeriksaan kas</b> \u00b7 uang di laci + bukti sah = Rp3.000.000") +
+    '<div class="work"><div class="card"><h3>Isi laci</h3>' + tabelLaci() + '</div><div class="card"><h3>Bukti kas keluar</h3>' + tumpukan() + "</div></div>" +
+    '<div class="card"><h3>Hitung di depan Bu Ratna</h3><p class="hint">Salah hitung saat pemeriksaan berarti Surat Peringatan.</p>' +
+    '<div class="hitung"><div><label for="p1">Uang di laci (Rp)</label><input id="p1" inputmode="numeric"></div>' +
+    '<div><label for="p2">Jumlah semua bukti (Rp)</label><input id="p2" inputmode="numeric"></div></div>' +
+    '<div class="row"><button class="btn amb" id="bP">Serahkan hitungan</button></div></div><div id="hP"></div>';
+  ketik(kapan === "rabu" ? "Permisi, pemeriksaan mendadak. Tolong hitung isi laci dan bukti sekarang juga, di depan saya." : "Selamat sore. Pemeriksaan akhir pekan sebelum pengisian kembali. Silakan hitung.");
+  el("bP").onclick = function () {
+    var a = angka(el("p1").value), b = angka(el("p2").value);
+    var ok = [a === P.cash, b === P.semua];
+    S.audit[kapan] = { a: a, b: b, ok: ok };
+    save(); el("bP").disabled = true;
+    el("hP").innerHTML = '<div class="fb ' + (ok[0] && ok[1] ? "ok" : "no") + '"><h3>Hitunganmu</h3><ul>' +
+      "<li>Uang di laci: " + (a == null ? "kosong" : rp(a)) + (ok[0] ? " \u2014 tepat." : " \u2014 seharusnya " + rp(P.cash) + ".") + "</li>" +
+      "<li>Jumlah bukti: " + (b == null ? "kosong" : rp(b)) + (ok[1] ? " \u2014 tepat." : " \u2014 seharusnya " + rp(P.semua) + ".") + "</li></ul></div>" +
+      '<div class="row"><button class="btn amb" id="bQ">Bu Ratna memeriksa bukti</button></div>';
+    el("bQ").onclick = function () {
+      if (!(ok[0] && ok[1])) beriSP("Saat pemeriksaan kas " + (kapan === "rabu" ? "mendadak hari Rabu" : "hari Jumat") + ", Saudara tidak dapat menghitung dengan benar uang dan bukti yang Saudara pegang sendiri.", function () { periksaBukti(kapan, P); });
+      else periksaBukti(kapan, P);
+    };
+  };
+}
+
+function periksaBukti(kapan, P) {
+  el("stage").innerHTML =
+    '<div class="dayband"><h2>Bu Ratna membaca bukti satu per satu</h2><span class="q">langkah 2 dari 2</span></div>' +
+    scene("ratna", P.temuan.length || P.selisih ? "datar" : "senang", "<b>Pemeriksaan bukti</b> \u00b7 hanya bukti sah yang diakui") +
+    '<div class="card"><div class="pile" id="pile2"></div><div id="tm"></div></div>' +
+    '<div class="card" id="lk" hidden><h3>Berita acara</h3><div class="hitung">' +
+    '<div><label for="q1">Jumlah bukti yang sah (Rp)</label><input id="q1" inputmode="numeric"></div>' +
+    '<div><label for="q2">Selisih kas (Rp)</label><input id="q2" inputmode="numeric"></div>' +
+    (kapan === "jumat" ? '<div><label for="q3">Pengisian kembali (Rp)</label><input id="q3" inputmode="numeric"></div>' : "") +
+    '</div><p class="hint">Selisih = Rp3.000.000 \u2212 uang di laci \u2212 bukti sah. Isi angka positifnya saja.</p>' +
+    '<div class="row"><button class="btn amb" id="bR">Tanda tangani berita acara</button></div></div><div id="hR"></div>';
+  ketik(P.temuan.length ? "Sebentar\u2026 ada yang tidak bisa saya akui." : (P.selisih ? "Buktinya sah, tetapi uangnya tidak cocok." : "Semua bukti sah. Rapi."));
+  var a = bktAktif(), i = 0, pile = el("pile2");
+  (function satu() {
+    if (i >= a.length) {
+      el("tm").innerHTML = P.temuan.length ? '<div class="fb no"><h3>' + P.temuan.length + " bukti tidak diakui</h3><ul>" +
+        P.temuan.map(function (t) { return "<li>" + esc(t.no) + " (" + esc(t.ke) + ", " + rp(t.jumlah) + "): " + esc(t.why) + " \u2014 diakui " + rp(t.diakui) + ".</li>"; }).join("") + "</ul></div>"
+        : '<div class="fb ok" style="margin:0"><p style="margin:0">Semua bukti sah dan jumlahnya cocok.</p></div>';
+      el("lk").hidden = false; return;
+    }
+    var v = a[i], x = v.diakui < v.jumlah, s = document.createElement("span");
+    s.className = x ? "x" : ""; s.textContent = v.no + " \u00b7 " + v.ke + " \u00b7 " + rp(v.jumlah) + (x ? " \u2717" : " \u2713");
+    pile.appendChild(s); i++;
+    setTimeout(satu, GERAK ? 240 : 0);
+  })();
+  el("bR").onclick = function () {
+    var q1 = angka(el("q1").value), q2 = angka(el("q2").value), q3 = kapan === "jumat" ? angka(el("q3").value) : null;
+    var sel = Math.abs(P.selisih);
+    var ok = [q1 === P.sah, q2 === sel];
+    if (kapan === "jumat") ok.push(q3 === P.sah);
+    S.audit[kapan].q = [q1, q2, q3]; S.audit[kapan].qok = ok; S.audit[kapan].P = { cash: P.cash, semua: P.semua, sah: P.sah, selisih: P.selisih, temuan: P.temuan };
+    save(); el("bR").disabled = true;
+    var kurang = P.selisih > 0, lebih = P.selisih < 0;
+    el("hR").innerHTML = '<div class="fb ' + (P.selisih ? "no" : "ok") + '"><h3>Berita acara pemeriksaan</h3><ul>' +
+      "<li>Bukti sah: " + (q1 == null ? "kosong" : rp(q1)) + (ok[0] ? " \u2014 tepat." : " \u2014 seharusnya " + rp(P.sah) + ".") + "</li>" +
+      "<li>Selisih: " + (q2 == null ? "kosong" : rp(q2)) + (ok[1] ? " \u2014 tepat." : " \u2014 seharusnya " + rp(sel) + ".") + "</li>" +
+      (kapan === "jumat" ? "<li>Pengisian kembali: " + (q3 == null ? "kosong" : rp(q3)) + (ok[2] ? " \u2014 tepat." : " \u2014 seharusnya " + rp(P.sah) + ".") + "</li>" : "") + "</ul>" +
+      '<div class="big-eq">' + rp(P.cash) + " + " + rp(P.sah) + " = <b class=\"" + (P.selisih ? "no" : "ok") + "\">" + rp(P.cash + P.sah) + "</b>" +
+      (kurang ? '<br><span style="font-size:.95rem">kurang ' + rp(P.selisih) + "</span>" : lebih ? '<br><span style="font-size:.95rem">lebih ' + rp(-P.selisih) + "</span>" : "") + "</div>" +
+      '<p style="margin:0">' + (kurang ? "Kekurangan " + rp(P.selisih) + " dipotong dari gajimu dan laci dikembalikan ke Rp3.000.000. Bukti yang tidak sah dikeluarkan dari tumpukan." :
+        lebih ? "Ada " + rp(-P.selisih) + " lebih di laci: ada rekan kerja yang kamu bayar kurang dari voucher-nya. Uang itu harus dikembalikan kepadanya." :
+        "Tidak ada selisih. " + (kapan === "jumat" ? "Pengisian kembali " + rp(P.sah) + " membuat laci kembali Rp3.000.000." : "Lanjutkan.")) + "</p></div>" +
+      '<div class="row"><button class="btn amb" id="bS">' + (kapan === "rabu" ? "Kembali bekerja" : "Lihat rapor") + "</button></div>";
+    if (!P.selisih) konfeti(); else goyang();
+    el("bS").onclick = function () {
+      selesaikanPemeriksaan(P);
+      var lanjut = kapan === "rabu" ? permintaan : rapor;
+      if (kurang && P.selisih >= 250000) beriSP("Pemeriksaan kas menemukan kekurangan " + rp(P.selisih) + " \u2014 jauh di atas batas wajar. Uang perusahaan keluar tanpa bukti yang sah.", function () {
+        if (S.sp >= 3) return; beriSP("Kekurangan kas sebesar ini tidak bisa ditoleransi. Peringatan kedua diberikan untuk temuan yang sama.", lanjut); });
+      else if (P.selisih) beriSP("Pemeriksaan kas menemukan selisih " + rp(Math.abs(P.selisih)) + ". Uang di laci dan bukti yang sah tidak berjumlah Rp3.000.000.", lanjut);
+      else lanjut();
+    };
+  };
+}
+function selesaikanPemeriksaan(P) {
+  var a = bktAktif();
+  for (var i = 0; i < a.length; i++) if (a[i].diakui < a[i].jumlah) { a[i].batal = a[i].diakui === 0; if (a[i].diakui) a[i].jumlah = a[i].diakui; }
+  S.ditanggung = (S.ditanggung || 0) + Math.max(0, P.selisih);
+  /* pulihkan laci ke Rp3.000.000: tambah (kurang) atau keluarkan (lebih) */
+  var butuh = DANA - isiLaci(S.laci) - sumBukti();
+  var den = [100000, 50000, 20000, 10000, 5000, 2000, 1000];
+  if (butuh > 0) for (var d = 0; d < den.length; d++) while (butuh >= den[d]) { S.laci[den[d]]++; butuh -= den[d]; }
+  if (butuh < 0) { var lebih = -butuh; for (var e = den.length - 1; e >= 0; e--) while (lebih >= den[e] && S.laci[den[e]] > 0) { S.laci[den[e]]--; lebih -= den[e]; } }
+  save();
+}
+
+/* ---------------- pemberhentian ---------------- */
+function gameOver() {
+  S.tahap = "dipecat"; berhentiSabar(); save(); paintHud();
+  var sk = skor();
+  el("stage").innerHTML = '<div class="gameover"><h1>Diberhentikan</h1>' +
+    '<p style="margin:6px auto 18px;font-size:1.05rem">Tugasmu sebagai pemegang kas kecil berakhir pada ' + esc(S.ev < S.plan.length ? HARI[S.plan[Math.min(S.ev, S.plan.length - 1)].hari] : "Jumat sore") + ".</p></div>" +
+    '<div class="card"><h3>Tiga surat peringatan</h3><ol>' + S.spAlasan.map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") + "</ol></div>" +
+    '<div class="card"><h3>Yang bisa dipelajari</h3><p>Hampir semua pemegang kas yang diberhentikan tidak pernah berniat curang. Mereka meminjamkan sedikit karena kasihan, membayar sesuai permintaan karena sungkan, atau tidak menghitung karena terburu-buru. Setiap kebiasaan kecil itu menumpuk menjadi selisih yang harus mereka tanggung sendiri.</p>' +
+    "<p>Poin keputusan: <b>" + poinTotal() + "</b> \u00b7 kerugian yang kamu tanggung: <b>" + rp(S.ditanggung || 0) + "</b></p></div>" +
+    '<div class="row" style="justify-content:center"><button class="btn amb" id="bBaru">Coba minggu baru</button><button class="btn ghost" id="bRap">Lihat rapor</button></div>';
+  el("bBaru").onclick = mingguBaru;
+  el("bRap").onclick = rapor;
+}
+function mingguBaru() {
+  var simpan = { nama: S.nama, npm: S.npm, badges: S.badges, mode: S.mode, minggu: (S.minggu || 1) + 1 };
+  S = fresh(); for (var k in simpan) S[k] = simpan[k];
+  S.seed = Math.floor(Math.random() * 2147483646) + 1; S.plan = susunMinggu(S.seed); save();
+  closeModal(); bacaSop(true);
+}
+
+/* ---------------- skor dan rapor ---------------- */
+function skor() {
+  var kep = Math.round(poinTotal() / (S.plan.length * 10) * 50);
+  var items = [];
+  for (var h in S.tutup) items = items.concat(S.tutup[h].ok);
+  ["rabu", "jumat"].forEach(function (k) { if (S.audit[k]) items = items.concat(S.audit[k].ok || [], S.audit[k].qok || []); });
+  var maks = 4 * 2 + 4 + 5;
+  var buk = Math.round(items.filter(Boolean).length / maks * 30);
+  var rep = Math.round(S.rep / 100 * 20);
+  var pot = Math.min(30, Math.round((S.ditanggung || 0) / 25000));
+  var potSp = S.sp * 12;   /* setiap surat peringatan memotong 12 poin */
+  return { kep: kep, buk: buk, rep: rep, pot: pot, potSp: potSp, total: Math.max(0, kep + buk + rep - pot - potSp) };
+}
+function tutupBadge() {
+  var tegas = true, atasan = false, teliti = true, pas = true, adaPinjam = false;
+  for (var i = 0; i < S.plan.length; i++) {
+    var e = S.plan[i], l = null;
+    for (var j = 0; j < S.log.length; j++) if (S.log[j].ev === i) l = S.log[j];
+    if (e.tipe === "pinjam") { adaPinjam = true; if (!(l && l.aksi === "tolak" && l.alasan === "pinjam")) tegas = false; if (e.atasan && l && l.aksi === "tolak" && l.alasan === "pinjam") atasan = true; }
+    if (["tidaksah", "pecah", "setuju", "batas", "tanpabukti", "pribadi"].indexOf(e.tipe) >= 0 && !(l && l.aksi === "tolak" && l.benar)) teliti = false;
+  }
+  for (var v = 0; v < S.voucher.length; v++) { var x = S.voucher[v], ex = S.plan[x.ev]; if (ex.benar === "bayar" && !(x.jumlah === ex.jumlah && x.diberi === ex.jumlah)) pas = false; }
+  if (tegas && adaPinjam) award("tegas");
+  if (atasan) award("atasan");
+  if (teliti) award("teliti");
+  if (pas && S.voucher.length) award("pas");
+  if (S.sp === 0) award("bersih");
+  var r = S.audit.rabu && S.audit.rabu.P, f = S.audit.jumat && S.audit.jumat.P;
+  if (r && f && !r.selisih && !f.selisih) award("seimbang");
+  if (S.rep >= 80) award("disayang");
+}
+function rapor() {
+  if (S.tahap !== "dipecat") { S.tahap = "selesai"; tutupBadge(); }
+  save(); paintHud(); closeModal();
+  var sk = skor(), dipecat = S.tahap === "dipecat";
+  /* surat peringatan membatasi predikat: SP1 paling tinggi B, SP2 paling tinggi C */
+  var batasNilai = S.sp >= 2 ? 74 : S.sp === 1 ? 89 : 100;
+  var t = Math.min(sk.total, batasNilai);
+  var m = dipecat ? { h: "\u2715", nm: "Diberhentikan", c: "var(--bad)" } : t >= 90 ? { h: "A", nm: "Pemegang Kas Teladan", c: "var(--good)" } :
+    t >= 75 ? { h: "B", nm: "Pemegang Kas Andal", c: "var(--info)" } : t >= 60 ? { h: "C", nm: "Masih Perlu Teliti", c: "var(--amber)" } : { h: "D", nm: "Ulangi Minggu Ini", c: "var(--bad)" };
+  sk.total = t;
+  el("stage").innerHTML =
+    '<div class="dayband"><h2>Rapor pemegang kas kecil</h2><span class="q">minggu ke-' + (S.minggu || 1) + " \u00b7 mode " + esc(S.mode) + "</span></div>" +
+    '<div class="card" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap"><span class="medal" style="background:' + m.c + '">' + m.h + "</span>" +
+    '<div><h2 style="margin:0">' + sk.total + "/100 \u2014 " + esc(m.nm) + "</h2>" +
+    '<p style="margin:4px 0 0">Keputusan ' + sk.kep + "/50 \u00b7 pembukuan " + sk.buk + "/30 \u00b7 reputasi " + sk.rep + "/20" + (sk.pot ? ' \u00b7 <b style="color:var(--bad)">kerugian \u2212' + sk.pot + "</b>" : "") +
+    (sk.potSp ? ' \u00b7 <b style="color:var(--bad)">surat peringatan \u2212' + sk.potSp + "</b>" : "") + "</p>" +
+    '<p style="margin:4px 0 0">Surat peringatan: <b>' + S.sp + "</b> \u00b7 uang pribadi yang hilang: <b>" + rp(S.ditanggung || 0) + "</b></p></div></div>" +
+    '<div class="card"><h3>Badge</h3><div class="badges">' + BADGES.map(function (b) { return '<span class="badge' + (S.badges.indexOf(b.id) >= 0 ? " on" : "") + '" title="' + esc(b.d) + '">' + esc(b.t) + "</span>"; }).join("") + "</div></div>" +
+    (S.spAlasan.length ? '<div class="card"><h3>Surat peringatan yang diterima</h3><ol>' + S.spAlasan.map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") + "</ol></div>" : "") +
+    '<div class="card"><h3>Laporan untuk dikumpulkan</h3><textarea class="rep" id="repT" rows="12"></textarea>' +
+    '<div class="row"><button class="btn amb" id="bCp">Copy laporan</button><button class="btn ghost" onclick="window.print()">Cetak / PDF</button>' +
+    '<button class="btn ghost" id="bBaru2">Minggu baru (soal diacak ulang)</button></div></div>';
+  var L = ["LAPORAN SIMULASI KAS KECIL \u2014 PT MAJU BERSAMA", "Minggu ke-" + (S.minggu || 1) + ", mode " + S.mode + ", kode minggu " + S.seed, "",
+    "Nama : " + (S.nama || "-"), "NPM  : " + (S.npm || "-"), "",
+    "Status           : " + m.nm, "Nilai            : " + sk.total + "/100",
+    "Keputusan        : " + sk.kep + "/50", "Pembukuan        : " + sk.buk + "/30", "Reputasi         : " + sk.rep + "/20 (akhir " + S.rep + ")",
+    "Kerugian pribadi : " + rp(S.ditanggung || 0), "Surat peringatan : " + S.sp, ""];
+  S.spAlasan.forEach(function (a, i) { L.push("SP" + (i + 1) + ": " + a); });
+  L.push(""); L.push("Badge: " + (BADGES.filter(function (b) { return S.badges.indexOf(b.id) >= 0; }).map(function (b) { return b.t; }).join(", ") || "belum ada"));
+  el("repT").value = L.join("\n");
+  el("bCp").onclick = function () { salin("repT"); };
+  el("bBaru2").onclick = mingguBaru;
+  if (!dipecat && sk.total >= 90) konfeti();
+}
+
+/* ---------------- salin, ekspor, impor ---------------- */
+function salin(id) {
+  var ta = el(id); ta.focus(); ta.select();
+  try { ta.setSelectionRange(0, ta.value.length); } catch (e) {}
+  var ok = false; try { ok = document.execCommand("copy"); } catch (e2) {}
+  if (!ok && navigator.clipboard) { navigator.clipboard.writeText(ta.value); ok = true; }
+  toast(ok ? "Tersalin. Tempel ke WhatsApp, email, atau LMS." : "Tekan lama di kotak teks, lalu Select All \u2192 Copy.");
+}
+function exportDialog() {
+  var json = JSON.stringify(S);
+  modal("<h2>Export jawaban</h2><p>Di iPhone dan iPad tombol download biasanya tidak berfungsi \u2014 pakai Copy.</p>" +
+    '<div class="row"><button class="btn amb" id="eC">Copy semua teks</button><button class="btn ghost" id="eD">Download .json</button></div>' +
+    '<textarea class="rep" id="eT" rows="8">' + esc(json) + '</textarea><div class="row"><button class="btn ghost" onclick="closeModal()">Tutup</button></div>');
+  el("eC").onclick = function () { salin("eT"); };
+  el("eD").onclick = function () {
+    try {
+      var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([json], { type: "application/json" }));
+      a.download = "kaskecil-" + (S.npm || "mahasiswa").replace(/[^a-zA-Z0-9]+/g, "") + ".json";
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    } catch (e) { toast("Peramban ini menolak unduh. Pakai Copy."); }
+  };
+}
+function importDialog() {
+  modal("<h2>Import jawaban</h2><p>Pilih berkas .json, atau tempel isinya.</p>" +
+    '<input type="file" id="iF" accept="application/json,text/plain,.json" style="margin-bottom:10px">' +
+    '<textarea class="rep" id="iT" rows="6"></textarea><div class="row"><button class="btn amb" id="iG">Muat</button><button class="btn ghost" onclick="closeModal()">Batal</button></div>');
+  function muat(t) {
+    try { var o = JSON.parse(t); if (!o || o.v !== 2 || !o.laci || !o.plan) throw 0; S = o; save(); closeModal(); jalur(); toast("Jawaban dimuat."); }
+    catch (e) { toast("Teks tidak dikenali sebagai progres Laci Kas Kecil."); }
+  }
+  el("iF").onchange = function () { if (!this.files || !this.files[0]) return; var r = new FileReader(); r.onload = function () { muat(r.result); }; r.readAsText(this.files[0]); };
+  el("iG").onclick = function () { var v = el("iT").value.trim(); if (v) muat(v); };
+}
+function jalur() {
+  berhentiSabar();
+  if (S.tahap === "hari") permintaan();
+  else if (S.tahap === "tutup") tutupBuku(S.tutupHari);
+  else if (S.tahap === "rabu") pemeriksaan("rabu");
+  else if (S.tahap === "jumat") auditJumat();
+  else if (S.tahap === "selesai") rapor();
+  else if (S.tahap === "dipecat") gameOver();
+  else pembuka();
+}
+
+load();
+el("modal").addEventListener("click", function (e) { if (e.target === el("modal")) closeModal(); });
+document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
+el("btnSop").onclick = function () { bacaSop(false); };
+el("btnRapor").onclick = function () { if (S.tahap === "selesai" || S.tahap === "dipecat") rapor(); else toast("Rapor tersedia setelah pemeriksaan Jumat sore."); };
+el("btnExport").onclick = exportDialog;
+el("btnImport").onclick = importDialog;
+el("btnReset").onclick = function () {
+  modal("<h2>Mulai minggu baru?</h2><p>Laci kembali Rp3.000.000 dan semua permintaan diacak ulang. Badge tetap tersimpan.</p>" +
+    '<div class="row"><button class="btn" id="uYa">Ya, minggu baru</button><button class="btn ghost" onclick="closeModal()">Batal</button></div>');
+  el("uYa").onclick = mingguBaru;
+};
+paintHud();
+jalur();
+
+</script>
+</body>
+</html>
